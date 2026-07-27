@@ -1,0 +1,13 @@
+{
+  "runId": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "completed",
+  "planPath": ".opencode/plans/plan.md",
+  "totalIterations": 2,
+  "approvedIteration": 2,
+  "buildSessionId": "build-456",
+  "currentPhase": "building",
+  "reviewAdapter": "chatgpt-browser",
+  "createdAt": "2025-01-15T10:30:00Z",
+  "completedAt": "2025-01-15T10:45:00Z",
+  "fieldGuideUpdated": true
+}

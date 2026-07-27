@@ -1,0 +1,28 @@
+{
+  "runId": "550e8400-e29b-41d4-a716-446655440000",
+  "fromIteration": 1,
+  "toIteration": 2,
+  "planHashPrev": "a1b2c3d4",
+  "planHashCurrent": "e5f6g7h8",
+  "planFingerprintPrev": "fingerprint-abc",
+  "planFingerprintCurrent": "fingerprint-def",
+  "issuesAddressed": [
+    {
+      "issueId": "issue-001",
+      "description": "Added error handling for failed context requests",
+      "changes": ["Added try/catch in context-handler.ts", "Added user-visible error toast"]
+    },
+    {
+      "issueId": "issue-002",
+      "description": "Added timeout configuration",
+      "changes": ["Added timeoutMs config with default 30000", "Added AbortSignal.timeout integration"]
+    }
+  ],
+  "issuesIntroduced": [],
+  "regressions": [],
+  "unchangedFiles": ["packages/protocol/src/validate.ts"],
+  "changedFiles": [
+    "packages/opencode-plugin/src/context-handler.ts",
+    "packages/opencode-plugin/src/config.ts"
+  ]
+}

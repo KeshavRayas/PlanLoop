@@ -1,0 +1,19 @@
+{
+  "type": "review_request",
+  "protocolVersion": "1.0",
+  "runId": "550e8400-e29b-41d4-a716-446655440000",
+  "iteration": 1,
+  "planPath": ".opencode/plans/plan.md",
+  "planContent": "# Plan: Add context request support\n\n## Issues\n1. No context request handling\n2. Missing timeout configuration\n",
+  "repositoryBrief": {
+    "repository": { "name": "PlanLoop" },
+    "packages": [],
+    "totalFiles": 42,
+    "totalLines": 3891,
+    "techStack": ["TypeScript"]
+  },
+  "fieldGuideSummary": {
+    "totalLessons": 0,
+    "relevantLessons": []
+  }
+}

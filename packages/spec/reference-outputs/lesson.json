@@ -1,0 +1,27 @@
+{
+  "id": "lesson-789",
+  "category": "principles/architecture",
+  "title": "Use context request first, not plan rewrite",
+  "content": "When ChatGPT needs more information to review a plan, use the context_request mechanism to ask the plan agent for clarification. Do not rewrite the plan yourself. This preserves the plan agent's ownership and keeps the review focused on issues, not implementation.",
+  "confidence": 0.92,
+  "source": "derived",
+  "applicableTo": ["opencode-plugin", "review-adapters"],
+  "references": [
+    {
+      "type": "run",
+      "id": "run-abc-123",
+      "iteration": 1,
+      "description": "First context request resolved successfully"
+    }
+  ],
+  "introduced": "2025-01-15",
+  "last_used": "2025-01-15",
+  "usage_count": 1,
+  "status": "active",
+  "metadata": {
+    "extracted_from": "run-abc-123",
+    "extraction_confidence": 0.88,
+    "related_lessons": [],
+    "contradictions": []
+  }
+}

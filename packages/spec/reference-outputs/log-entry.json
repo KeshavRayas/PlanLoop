@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-01-15T10:30:00.123Z",
+  "runId": "550e8400-e29b-41d4-a716-446655440000",
+  "iteration": 1,
+  "component": "plugin",
+  "level": "info",
+  "message": "Review submitted to chatgpt-browser",
+  "metadata": {
+    "adapterId": "chatgpt-browser",
+    "packetHash": "a1b2c3",
+    "issueCount": 3
+  }
+}

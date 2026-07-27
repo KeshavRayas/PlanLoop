@@ -1,0 +1,16 @@
+{
+  "type": "context_fulfillment",
+  "protocolVersion": "1.0",
+  "runId": "550e8400-e29b-41d4-a716-446655440000",
+  "iteration": 1,
+  "files": [
+    {
+      "path": "packages/opencode-plugin/src/context-handler.ts",
+      "content": "export async function handleContextRequest(paths: string[]): Promise<void> {\n  // fetch, redact, resubmit\n}\n"
+    },
+    {
+      "path": "packages/opencode-plugin/src/config.ts",
+      "content": "export const config = {\n  context: { maxContextRounds: 3 }\n} as const\n"
+    }
+  ]
+}

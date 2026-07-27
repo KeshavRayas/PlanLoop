@@ -1,0 +1,12 @@
+{
+  "runId": "550e8400-e29b-41d4-a716-446655440000",
+  "planPath": ".opencode/plans/plan.md",
+  "approvedPlanPath": ".opencode/planloop/runs/550e8400-e29b-41d4-a716-446655440000/approved-plan.md",
+  "approvedIteration": 2,
+  "totalIterations": 2,
+  "criticalIssues": 0,
+  "majorIssues": 0,
+  "verificationPassed": true,
+  "userConfirmed": true,
+  "approvedAt": "2025-01-15T10:45:00Z"
+}

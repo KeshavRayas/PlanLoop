@@ -1,0 +1,40 @@
+{
+  "repository": {
+    "name": "PlanLoop",
+    "path": "/Users/dev/PlanLoop",
+    "packages": [
+      {
+        "name": "@planloop/protocol",
+        "path": "packages/protocol",
+        "files": 12,
+        "lines": 847
+      },
+      {
+        "name": "@planloop/browser-transport",
+        "path": "packages/browser-transport",
+        "files": 8,
+        "lines": 623
+      },
+      {
+        "name": "@planloop/opencode-plugin",
+        "path": "packages/opencode-plugin",
+        "files": 15,
+        "lines": 1203
+      }
+    ],
+    "totalFiles": 42,
+    "totalLines": 3891,
+    "techStack": ["TypeScript", "Bun", "WebSocket", "Chrome Extension MV3"]
+  },
+  "recentChanges": [
+    {
+      "file": "packages/protocol/src/validate.ts",
+      "summary": "Added compat range validation",
+      "linesChanged": 45
+    }
+  ],
+  "fieldGuideSummary": {
+    "totalLessons": 5,
+    "categories": ["principles/architecture", "decisions/tool-choices"]
+  }
+}
