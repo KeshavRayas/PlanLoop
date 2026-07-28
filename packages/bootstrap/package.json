@@ -1,0 +1,16 @@
+{
+  "name": "@planloop/bootstrap",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "setup": "bun run src/setup.ts",
+    "doctor": "bun run src/doctor.ts",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  }
+}

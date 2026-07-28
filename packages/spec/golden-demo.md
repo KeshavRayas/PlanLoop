@@ -2,6 +2,21 @@
 
 One complete happy-path run. If an implementation passes this scenario, the entire system works.
 
+## Phase boundaries
+
+This demo runs against the complete system. Phase ownership within it:
+
+- **Phase -1 (Bootstrap)** ends after environment detection, dependency
+  installation, workspace validation, and diagnostics readiness — Steps 1–2
+  and the detect/report portions of Steps 3–4. On a Phase -1-only workspace,
+  `bun run setup` stops here and reports bridge/extension as actionable
+  errors, because those packages do not exist yet
+  (`acceptance-tests/phase-m1-bootstrap.test.md`).
+- **Phase 1 (Transport)** owns extension build, bridge startup, and bridge
+  verification — the build/start/verify portions of Steps 3–4
+  (`acceptance-tests/phase-1-transport.test.md`). The demo can proceed past
+  Step 4 only from Phase 1 onward.
+
 ## Step 1: Fresh clone
 
 ```
@@ -39,9 +54,9 @@ Events: none
 Logs:
   [info] Detecting environment...
   [info] Bun: v1.x ✓ | Node: v20.x ✓
-  [info] Building extension...
-  [info] Starting bridge on ws://127.0.0.1:9477
-  [info] Bridge health: healthy
+  [info] Building extension...                     # Phase 1 responsibility
+  [info] Starting bridge on ws://127.0.0.1:9477    # Phase 1 responsibility
+  [info] Bridge health: healthy                    # Phase 1 responsibility
   [info] Setup complete in 12.3s
 State:  Bridge listening, extension ready to load
 ```
@@ -58,11 +73,11 @@ Logs:
   [info] Doctor checks:
   [info]   Bun: ✓
   [info]   Node: ✓
-  [info]   Bridge: ✓ (ws://127.0.0.1:9477)
-  [info]   Extension: ✓ (loaded in Chrome)
+  [info]   Bridge: ✓ (ws://127.0.0.1:9477)          # green only from Phase 1
+  [info]   Extension: ✓ (loaded in Chrome)          # green only from Phase 1
   [info]   Protocol: ✓ (v1.0)
   [info]   Field Guide: ✓ (0 lessons)
-  [info] All checks passed
+  [info] All checks passed                          # all-green doctor is a Phase 1 outcome
 State:  System healthy
 ```
 
