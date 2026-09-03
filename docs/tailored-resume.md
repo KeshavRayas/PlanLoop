@@ -74,3 +74,22 @@ Separate state fields (no mega-enum): `renderStatus` (PENDING/SUCCESS/FAILED),
 canonical — `storage/` is gitignored, PDFs regenerate from content.
 ATS result is concrete checks (extractable, sections 4/4, 7/10 skills,
 warnings), never a universal score.
+
+## Hardening + workflow semantics (Phase 2.5)
+
+1. **Failure preservation** (`src/__tests__/workflow.test.ts`, DB-backed):
+   analyze/tailor upsert only after validation; PDF failure marks FAILED
+   without touching content; re-tailor failure keeps the old version
+   byte-identical. Fixed a real JSONB key-reordering bug found this way
+   (`evidenceText` now iterates sorted keys).
+2. **Versioning**: `(jobId, version)` identity + `isCurrent`, exactly one
+   current per job (transaction: demote then create). Re-tailor never
+   overwrites. PDF paths carry the version.
+3. **Apply lifecycle**: `ApplicationDecision` (QUEUED/OPENED/APPLIED/SAVED/
+   SKIPPED). Opening the URL records OPENED only; APPLIED needs the explicit
+   confirmation. Footer redesigned around this.
+4. **Apply-time liveness** (`POST /api/jobs/:id/liveness`): HEAD, GET
+   fallback, 5s timeout, dead-page markers. No persistence, no crawling.
+5. **Calibration**: `humanVerdict` + `judgedAt` on `JobMatch`,
+   observational only (ranking ignores them). `npx tsx scripts/judge-queue.ts`
+   prints the table; `--rate <jobId> <EXCELLENT|GOOD|BAD>` records.
