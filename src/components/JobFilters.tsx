@@ -2,54 +2,11 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
-import { Search, Sparkles, X } from "lucide-react";
 import { ALL_SKILLS } from "@/lib/constants";
-
-const EMPLOYMENT_OPTIONS = [
-  { label: "Full-Time", value: "FULL_TIME" },
-  { label: "Contract", value: "CONTRACT" },
-  { label: "Internship", value: "INTERNSHIP" },
-];
-
-const LOCATION_OPTIONS = [
-  { label: "Remote", value: "REMOTE" },
-  { label: "Hybrid", value: "HYBRID" },
-  { label: "On-site", value: "ONSITE" },
-];
-
-const EXPERIENCE_OPTIONS = [
-  { label: "Entry Level", value: "ENTRY" },
-];
 
 const DEPARTMENT_OPTIONS = ALL_SKILLS.slice(0, 12);
 
-const WORK_MODE_LABELS: Record<string, string> = {
-  REMOTE: "Remote",
-  HYBRID: "Hybrid",
-  ONSITE: "On-site",
-};
-
-const JOB_TYPE_LABELS: Record<string, string> = {
-  FULL_TIME: "Full-Time",
-  CONTRACT: "Contract",
-  INTERNSHIP: "Internship",
-};
-
-function ActiveChip({ label, onRemove }: { label: string; onRemove: () => void }) {
-  return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border-2 border-black bg-surface text-label font-bold text-[11px]">
-      {label}
-      <button
-        onClick={onRemove}
-        className="hover:text-red-500 leading-none transition-[150ms]"
-      >
-        <X className="w-3 h-3" />
-      </button>
-    </span>
-  );
-}
-
-export function JobFilters() {
+export function JobFilters({ total }: { total: number }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -68,32 +25,8 @@ export function JobFilters() {
 
   const currentQuery = searchParams.get("q") || "";
   const currentWorkMode = searchParams.get("workMode");
-  const currentExp = searchParams.get("experience") || "ENTRY";
-  const currentSkill = searchParams.get("skills");
   const currentJobType = searchParams.get("jobType");
-
-  const activeSkills = currentSkill ? currentSkill.split(",") : [];
-
-  function removeSkill(skill: string) {
-    const remaining = activeSkills.filter((s) => s !== skill);
-    setParams({ skills: remaining.length > 0 ? remaining.join(",") : null });
-  }
-
-  function isLocationSelected(value: string): boolean {
-    return currentWorkMode === value;
-  }
-
-  function handleLocation(value: string) {
-    if (value === "REMOTE") {
-      setParams({ workMode: "REMOTE", location: null });
-    } else if (value === "HYBRID") {
-      setParams({ workMode: "HYBRID", location: "Bangalore" });
-    } else if (value === "ONSITE") {
-      setParams({ workMode: "ONSITE", location: "Bangalore" });
-    } else {
-      setParams({ workMode: null, location: null });
-    }
-  }
+  const activeSkills = searchParams.get("skills")?.split(",").filter(Boolean) ?? [];
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -102,210 +35,165 @@ export function JobFilters() {
     setParams({ q: q || null });
   }
 
-  const hasActiveFilters = currentWorkMode || currentExp !== "ENTRY" || currentJobType || activeSkills.length > 0;
+  const isAll = !currentWorkMode && !currentJobType && activeSkills.length === 0;
+
+  function pillClass(on: boolean) {
+    return `calm-pill cursor-pointer ${on ? "on" : ""}`;
+  }
 
   return (
-    <div className="bg-surface border-3 border-black rounded-[20px] p-6 brutal-shadow-md flex flex-col gap-10 h-full overflow-y-auto custom-scrollbar">
-        {/* Personal badge */}
-        <div className="flex items-center gap-2 bg-purple/10 border-2 border-purple rounded-[10px] px-3 py-2">
-          <Sparkles className="w-4 h-4 text-purple shrink-0" />
-          <span className="text-label font-extrabold uppercase tracking-[0.06em] text-purple">
-            Entry-Level CS &middot; BLR &amp; Remote
+    <div className="w-full max-w-xl mx-auto text-center">
+      <form onSubmit={handleSearch}>
+        <div className="flex items-center gap-2 bg-[#F4F4F1] border border-black/10 rounded-full px-5 py-3 transition-colors duration-500 focus-within:border-black/30">
+          <span className="text-black/40" aria-hidden>
+            ⌕
+          </span>
+          <input
+            type="text"
+            name="q"
+            defaultValue={currentQuery}
+            key={currentQuery}
+            placeholder="Try ‘React Bangalore’…"
+            className="bg-transparent outline-none flex-1 text-[15px] placeholder:text-black/35 text-left"
+          />
+          <span className="text-[11px] uppercase tracking-widest text-black/30 hidden sm:inline">
+            {total} open
           </span>
         </div>
+      </form>
 
-        {/* Search */}
-        <form onSubmit={handleSearch}>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" />
-            <input
-              type="text"
-              name="q"
-              defaultValue={currentQuery}
-              placeholder="Search jobs..."
-              className="w-full pl-9 pr-3 py-2.5 border-3 border-black rounded-[10px] text-body font-medium placeholder:text-text-secondary focus:outline-none"
-            />
-          </div>
-        </form>
+      <div className="mt-4 flex justify-center gap-2 flex-wrap">
+        <button className={pillClass(isAll)} onClick={() => router.push("/")}>
+          All
+        </button>
+        <button
+          className={pillClass(currentWorkMode === "REMOTE")}
+          onClick={() =>
+            setParams(
+              currentWorkMode === "REMOTE"
+                ? { workMode: null, location: null }
+                : { workMode: "REMOTE", location: null }
+            )
+          }
+        >
+          Remote
+        </button>
+        <button
+          className={pillClass(currentJobType === "FULL_TIME")}
+          onClick={() =>
+            setParams({ jobType: currentJobType === "FULL_TIME" ? null : "FULL_TIME" })
+          }
+        >
+          Full-time
+        </button>
+        <button
+          className={pillClass(activeSkills.length > 0)}
+          onClick={() =>
+            setParams({
+              skills: activeSkills.length > 0 ? null : "React",
+            })
+          }
+          title="Toggle a starter skill filter"
+        >
+          React
+        </button>
+      </div>
 
-        {/* Active Filter Chips */}
-        {hasActiveFilters && (
-          <section>
-            <h3 className="text-label font-extrabold uppercase tracking-[0.08em] mb-3">
-              Active
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {currentWorkMode && (
-                <ActiveChip
-                  label={WORK_MODE_LABELS[currentWorkMode] || currentWorkMode}
-                  onRemove={() => setParams({ workMode: null, location: null })}
-                />
-              )}
-              {currentExp && currentExp !== "ENTRY" && (
-                <ActiveChip
-                  label="Entry Level"
-                  onRemove={() => setParams({ experience: null })}
-                />
-              )}
-              {currentJobType && (
-                <ActiveChip
-                  label={JOB_TYPE_LABELS[currentJobType] || currentJobType}
-                  onRemove={() => setParams({ jobType: null })}
-                />
-              )}
-              {activeSkills.map((skill) => (
-                <ActiveChip
-                  key={skill}
-                  label={skill}
-                  onRemove={() => removeSkill(skill)}
-                />
-              ))}
+      {(activeSkills.length > 0 || currentWorkMode || currentJobType) && (
+        <div className="mt-3 flex justify-center gap-2 flex-wrap">
+          {activeSkills.map((s) => (
+            <button
+              key={s}
+              onClick={() =>
+                setParams({
+                  skills: activeSkills.filter((x) => x !== s).join(",") || null,
+                })
+              }
+              className="text-[12px] text-black/50 underline underline-offset-4 hover:text-black transition-colors duration-300"
+            >
+              {s} ×
+            </button>
+          ))}
+          {!isAll && (
+            <button
+              onClick={() => router.push("/")}
+              className="text-[12px] text-black/50 underline underline-offset-4 hover:text-black transition-colors duration-300"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+      )}
+
+      <details className="mt-4 text-left bg-white border border-black/10 rounded-[22px] px-6 py-4">
+        <summary className="cursor-pointer text-[13px] text-black/60 hover:text-black transition-colors duration-300 list-none text-center">
+          More filters ↓
+        </summary>
+        <div className="pt-4 grid sm:grid-cols-2 gap-6">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.12em] text-black/45 mb-3">
+              Skills
             </div>
-          </section>
-        )}
-
-        {/* Department */}
-        <section>
-          <h3 className="text-label font-extrabold uppercase tracking-[0.08em] mb-4">
-            Department
-          </h3>
-          <div className="space-y-3">
-            {DEPARTMENT_OPTIONS.map((skill) => (
-              <label
-                key={skill}
-                className="flex items-center gap-3 cursor-pointer group"
-              >
-                <input
-                  type="checkbox"
-                  className="control-checkbox"
-                  checked={activeSkills.includes(skill)}
-                  onChange={() =>
+            <div className="flex flex-wrap gap-2">
+              {DEPARTMENT_OPTIONS.map((skill) => (
+                <button
+                  key={skill}
+                  onClick={() =>
                     setParams({
                       skills: activeSkills.includes(skill)
                         ? activeSkills.filter((s) => s !== skill).join(",") || null
                         : [...activeSkills, skill].join(","),
                     })
                   }
-                />
-                <span
-                  className={`text-body font-medium transition-[150ms] ${
-                    activeSkills.includes(skill)
-                      ? "text-text font-extrabold"
-                      : "text-text-secondary group-hover:text-text"
-                  }`}
+                  className={pillClass(activeSkills.includes(skill))}
                 >
                   {skill}
-                </span>
-              </label>
-            ))}
+                </button>
+              ))}
+            </div>
           </div>
-        </section>
-
-        {/* Location */}
-        <section>
-          <h3 className="text-label font-extrabold uppercase tracking-[0.08em] mb-4">
-            Location
-          </h3>
-          <div className="space-y-3">
-            {LOCATION_OPTIONS.map((opt) => (
-              <label
-                key={opt.value}
-                className="flex items-center gap-3 cursor-pointer group"
-              >
-                <input
-                  type="radio"
-                  name="location"
-                  className="control-radio"
-                  checked={isLocationSelected(opt.value)}
-                  onChange={() => handleLocation(opt.value)}
-                />
-                <span
-                  className={`text-body font-medium transition-[150ms] ${
-                    isLocationSelected(opt.value)
-                      ? "text-text font-extrabold"
-                      : "text-text-secondary group-hover:text-text"
-                  }`}
-                >
-                  {opt.label}
-                </span>
-              </label>
-            ))}
+          <div className="space-y-4">
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.12em] text-black/45 mb-2">
+                Location
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {["REMOTE", "HYBRID", "ONSITE"].map((m) => (
+                  <button
+                    key={m}
+                    onClick={() =>
+                      m === "REMOTE"
+                        ? setParams({ workMode: "REMOTE", location: null })
+                        : setParams({ workMode: m, location: "Bangalore" })
+                    }
+                    className={pillClass(currentWorkMode === m)}
+                  >
+                    {m === "REMOTE" ? "Remote" : m === "HYBRID" ? "Hybrid" : "On-site"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.12em] text-black/45 mb-2">
+                Type
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {["FULL_TIME", "CONTRACT", "INTERNSHIP"].map((t) => (
+                  <button
+                    key={t}
+                    onClick={() =>
+                      setParams({ jobType: currentJobType === t ? null : t })
+                    }
+                    className={pillClass(currentJobType === t)}
+                  >
+                    {t === "FULL_TIME" ? "Full-time" : t === "CONTRACT" ? "Contract" : "Internship"}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-        </section>
-
-        {/* Experience */}
-        <section>
-          <h3 className="text-label font-extrabold uppercase tracking-[0.08em] mb-4">
-            Experience
-          </h3>
-          <div className="space-y-3">
-            {EXPERIENCE_OPTIONS.map((opt) => (
-              <label
-                key={opt.value}
-                className="flex items-center gap-3 cursor-pointer group"
-              >
-                <input
-                  type="checkbox"
-                  className="control-checkbox"
-                  checked={currentExp === opt.value}
-                  onChange={() =>
-                    setParams({ experience: currentExp === opt.value ? null : opt.value })
-                  }
-                />
-                <span
-                  className={`text-body font-medium transition-[150ms] ${
-                    currentExp === opt.value
-                      ? "text-text font-extrabold"
-                      : "text-text-secondary group-hover:text-text"
-                  }`}
-                >
-                  {opt.label}
-                </span>
-              </label>
-            ))}
-          </div>
-        </section>
-
-        {/* Employment Type */}
-        <section>
-          <h3 className="text-label font-extrabold uppercase tracking-[0.08em] mb-4">
-            Type
-          </h3>
-          <div className="space-y-3">
-            {EMPLOYMENT_OPTIONS.map((opt) => (
-              <label
-                key={opt.value}
-                className="flex items-center gap-3 cursor-pointer group"
-              >
-                <input
-                  type="checkbox"
-                  className="control-checkbox"
-                  checked={currentJobType === opt.value}
-                  onChange={() =>
-                    setParams({ jobType: currentJobType === opt.value ? null : opt.value })
-                  }
-                />
-                <span
-                  className={`text-body font-medium transition-[150ms] ${
-                    currentJobType === opt.value
-                      ? "text-text font-extrabold"
-                      : "text-text-secondary group-hover:text-text"
-                  }`}
-                >
-                  {opt.label}
-                </span>
-              </label>
-            ))}
-          </div>
-        </section>
-
-        {/* Reset */}
-        <button
-          onClick={() => router.push("/")}
-          className="w-full py-2.5 border-3 border-black rounded-full text-label font-extrabold uppercase tracking-[0.08em] hover:bg-black hover:text-white transition-[150ms]"
-        >
-          Reset Filters
-        </button>
+        </div>
+      </details>
     </div>
   );
 }

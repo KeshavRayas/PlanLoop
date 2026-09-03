@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -7,10 +7,16 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-serif-calm",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 export const metadata: Metadata = {
-  title: "Elevated Career OS",
+  title: "Job Search — Calm Focus",
   description:
-    "Executive-level career intelligence platform. Discover opportunities at startups and MNCs.",
+    "A quiet, minimal job board. What do you want next?",
 };
 
 export default function RootLayout({
@@ -19,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full`}>
-      <body className="flex min-h-screen flex-col bg-bg text-text">
+    <html lang="en" className={`${inter.variable} ${instrumentSerif.variable} h-full`}>
+      <body className="flex min-h-screen flex-col bg-[#FAFAF7] text-[#111111]">
         <main className="flex-1 flex flex-col">{children}</main>
       </body>
     </html>

@@ -1,176 +1,218 @@
 @import "tailwindcss";
 
+/* ─── Calm Focus tokens (LOCKED — see DESIGN_CALM_FOCUS.md) ─── */
 @theme {
-  --color-bg: #EAEAEA;
-  --color-surface: #FFFFFF;
-  --color-surface-secondary: #F7F7F7;
-  --color-text: #000000;
-  --color-text-secondary: #666666;
-  --color-border: #000000;
-  --color-yellow: #FFE01B;
-  --color-green: #00D39B;
-  --color-purple: #B85BFF;
-  --color-red: #FF5A5A;
+  --color-paper: #FAFAF7;
+  --color-ink: #111111;
+  --color-muted: rgba(17, 17, 17, 0.55);
+  --color-line: rgba(17, 17, 17, 0.08);
+  --color-card: #FFFFFF;
+  --color-search: #F4F4F1;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", Georgia, serif;
 
   --text-display: 40px;
-  --text-display--line-height: 1.1;
-  --text-display--font-weight: 900;
+  --text-display--line-height: 1.05;
+  --text-display--font-weight: 400;
 
   --text-headline: 24px;
-  --text-headline--line-height: 1.2;
-  --text-headline--font-weight: 800;
+  --text-headline--line-height: 1.25;
+  --text-headline--font-weight: 400;
 
   --text-title: 18px;
   --text-title--line-height: 1.3;
-  --text-title--font-weight: 800;
+  --text-title--font-weight: 600;
 
   --text-body: 14px;
-  --text-body--line-height: 1.5;
-  --text-body--font-weight: 500;
+  --text-body--line-height: 1.6;
+  --text-body--font-weight: 400;
 
-  --text-label: 11px;
-  --text-label--font-weight: 800;
-  --text-label--letter-spacing: 0.08em;
+  --ease-calm: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-slow: 900ms;
+  --duration-med: 600ms;
+}
 
-  --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-xl: 32px;
-  --radius-full: 9999px;
-
-  --spacing-container-max: 1440px;
+:root {
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body {
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: #FAFAF7;
+  color: #111111;
 }
 
-/* Utility borders */
-.brutal-border {
-  border: 3px solid #000;
+.font-serif-calm {
+  font-family: "Instrument Serif", Georgia, serif;
+  letter-spacing: -0.02em;
 }
 
-.brutal-border-thick {
-  border: 4px solid #000;
+/* ─── Calm card ─── */
+.calm-card {
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  border-radius: 22px;
+  transition:
+    transform 900ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 900ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.calm-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.18);
 }
 
-/* Shadow system */
-.brutal-shadow-sm {
-  box-shadow: 4px 4px 0 #000;
+/* Focus-dim: hovering one card softens siblings */
+.calm-wrap.focus .calm-card {
+  opacity: 0.35;
+  filter: blur(0.5px);
+}
+.calm-wrap.focus .calm-card:hover {
+  opacity: 1;
+  filter: none;
+}
+/* Pure-CSS focus-dim (no JS needed) */
+.calm-wrap:has(.calm-card:hover) .calm-card:not(:hover) {
+  opacity: 0.35;
+  filter: blur(0.5px);
 }
 
-.brutal-shadow-md {
-  box-shadow: 6px 6px 0 #000;
+/* Pills */
+.calm-pill {
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(17, 17, 17, 0.7);
+  transition: all 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+.calm-pill:hover {
+  border-color: #111;
+  color: #111;
+}
+.calm-pill.on {
+  background: #111;
+  border-color: #111;
+  color: #fff;
 }
 
-.brutal-shadow-lg {
-  box-shadow: 8px 8px 0 #000;
+/* Entrance */
+@keyframes calm-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.calm-enter {
+  animation: calm-fade-up 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.brutal-hover {
-  transition: transform 150ms ease, box-shadow 150ms ease;
+/* Skeleton shimmer for streaming list */
+@keyframes calm-shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+.calm-skeleton {
+  background: linear-gradient(90deg, #eee 25%, #f7f7f7 50%, #eee 75%);
+  background-size: 800px 100%;
+  animation: calm-shimmer 1.6s linear infinite;
 }
 
-.brutal-hover:hover {
-  transform: translate(-2px, -2px);
-}
-
-/* Scrollbar */
+/* Minimal scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #000 transparent;
-  scrollbar-gutter: stable;
+  scrollbar-color: rgba(17, 17, 17, 0.2) transparent;
 }
-
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
-
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #000;
+  background: rgba(17, 17, 17, 0.2);
   border-radius: 3px;
 }
 
-/* Prevent scrollbar from overlapping borders */
-.custom-scrollbar {
-  padding-right: 4px;
+/* Legacy brutalist classes — neutered so old components can't regress.
+   Keep selectors (avoid breakage) but render calm. Remove in cleanup. */
+.brutal-border,
+.brutal-border-thick {
+  border: 1px solid rgba(17, 17, 17, 0.08);
 }
-
-/* Custom radio */
-.control-radio {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 3px solid #000;
-  border-radius: 50%;
-  cursor: pointer;
-  position: relative;
-  background: #fff;
-  transition: 150ms ease;
-  flex-shrink: 0;
+.brutal-shadow-sm,
+.brutal-shadow-md,
+.brutal-shadow-lg {
+  box-shadow: none;
 }
-
-.control-radio:checked {
-  background: #000;
+.brutal-hover {
+  transition:
+    transform 900ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 900ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.control-radio:checked::after {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  background: #fff;
-  border-radius: 50%;
+.brutal-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.18);
 }
-
-/* Custom checkbox */
+.control-radio,
 .control-checkbox {
   appearance: none;
   width: 18px;
   height: 18px;
-  border: 3px solid #000;
-  border-radius: 4px;
+  border: 1px solid rgba(17, 17, 17, 0.25);
+  border-radius: 50%;
   cursor: pointer;
-  position: relative;
   background: #fff;
-  transition: 150ms ease;
+  transition: 350ms cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
 }
-
-.control-checkbox:checked {
-  background: #000;
+.control-checkbox {
+  border-radius: 6px;
 }
-
-.control-checkbox:checked::after {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 0;
-  width: 5px;
-  height: 10px;
-  border: solid #fff;
-  border-width: 0 3px 3px 0;
-  transform: rotate(45deg);
+.control-radio:checked,
+.control-checkbox:checked {
+  background: #111;
+  border-color: #111;
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translate(-50%, 10px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 .animate-fade-in {
-  animation: fade-in 0.2s ease-out;
+  animation: fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ─── LaTeX Preview styles ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ─── LaTeX Preview styles (unchanged) ───────────────────────── */
 
 .latex-preview {
   font-size: 12px;
@@ -207,11 +249,12 @@ body {
 }
 
 .latex-preview .latex-link {
-  color: #0000EE;
+  color: #0000ee;
   text-decoration: underline;
 }
 
-.latex-preview ul, .latex-preview ol {
+.latex-preview ul,
+.latex-preview ol {
   margin: 2px 0 4px 0;
   padding-left: 20px;
 }

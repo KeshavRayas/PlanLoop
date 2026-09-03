@@ -267,9 +267,9 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
     : "On-site";
 
   return (
-    <div className="brutal-border-thick rounded-[24px] brutal-shadow-lg bg-surface overflow-hidden flex flex-col h-full">
+    <div className="bg-white border border-black/10 rounded-[22px] overflow-hidden flex flex-col h-full calm-card">
       {/* Yellow header */}
-      <div className="bg-yellow border-b-4 border-black px-6 py-4 flex items-center justify-between shrink-0">
+      <div className="bg-[#FAFAF7] border-b border-black/10 px-6 py-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center">
             <Briefcase className="w-4 h-4 text-yellow" />
@@ -278,7 +278,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
         </div>
         <button
           onClick={close}
-          className="w-9 h-9 rounded-full border-3 border-black flex items-center justify-center hover:bg-black hover:text-white transition-[150ms]"
+          className="w-9 h-9 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500"
         >
           <X className="w-4 h-4" />
         </button>
@@ -307,7 +307,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
           <div className="p-6 space-y-6">
             {/* Header Section */}
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full border-3 border-black flex items-center justify-center bg-surface-secondary shrink-0">
+              <div className="w-12 h-12 rounded-full border border-black/10 flex items-center justify-center bg-black/[0.03] shrink-0">
                 <span className="text-title font-black">
                   {job.company.name.charAt(0)}
                 </span>
@@ -329,7 +329,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
               </p>
             </div>
 
-            <hr className="border-t-3 border-black" />
+            <hr className="border-t border-black/10" />
 
             {/* Meta Section */}
             <div className="space-y-3">
@@ -350,7 +350,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
             </div>
 
             {/* Salary Section */}
-            <div className="flex items-center gap-3 p-4 border-3 border-black rounded-[14px] bg-surface-secondary">
+            <div className="flex items-center gap-3 p-4 border border-black/10 rounded-[14px] bg-black/[0.03]">
               <span className="text-title font-extrabold">
                 {formatSalary(job.salaryMin, job.salaryMax, job.salaryCurr)}
               </span>
@@ -382,7 +382,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
             </div>
 
             {/* AI Analysis Section */}
-            <div className="p-4 border-3 border-black rounded-[14px] bg-surface-secondary space-y-3">
+            <div className="p-4 border border-black/10 rounded-[14px] bg-black/[0.03] space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="text-title font-extrabold flex items-center gap-2">
                   <Sparkles className="w-4 h-4" />
@@ -390,7 +390,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                 </h3>
                 {analysis && (
                   <span
-                    className={`px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border-3 border-black ${
+                    className={`px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border border-black/10 ${
                       analysis.verdict === "STRONG"
                         ? "bg-green"
                         : analysis.verdict === "POSSIBLE"
@@ -437,7 +437,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
               <button
                 onClick={() => runAnalysis(!!analysis)}
                 disabled={analyzing}
-                className="w-full flex items-center justify-center gap-2 bg-black text-white font-extrabold px-4 py-3 rounded-full text-label uppercase tracking-widest brutal-hover disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 bg-black text-white font-extrabold px-4 py-3 rounded-full text-label uppercase tracking-widest transition-all duration-700 disabled:opacity-50"
               >
                 <Sparkles className="w-4 h-4" />
                 {analyzing
@@ -453,14 +453,14 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
             </div>
 
             {/* Tailored Resume Section */}
-            <div className="p-4 border-3 border-black rounded-[14px] bg-surface-secondary space-y-3">
+            <div className="p-4 border border-black/10 rounded-[14px] bg-black/[0.03] space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="text-title font-extrabold flex items-center gap-2">
                   <FileText className="w-4 h-4" />
                   Tailored Resume
                 </h3>
                 {tailored && (
-                  <span className="px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border-3 border-black bg-green">
+                  <span className="px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border border-black/10 bg-green">
                     {tailored.sections.reduce((n, s) => n + s.items.length, 0)} items
                     {tailored.version ? ` · v${tailored.version}` : ""}
                     {tailored.versionCount && tailored.versionCount > 1 ? ` of ${tailored.versionCount}` : ""}
@@ -499,13 +499,13 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
               )}
 
               {tailored && (
-                <div className="p-3 border-3 border-black rounded-[12px] bg-surface space-y-2">
+                <div className="p-3 border border-black/10 rounded-[12px] bg-white space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-label font-extrabold uppercase tracking-widest">
                       Evidence check
                     </span>
                     <span
-                      className={`px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border-3 border-black ${
+                      className={`px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border border-black/10 ${
                         tailored.validationStatus === "SEMANTIC_VALID"
                           ? "bg-green"
                           : tailored.validationStatus === "SEMANTIC_INVALID"
@@ -542,7 +542,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                   <button
                     onClick={runValidation}
                     disabled={validating}
-                    className="w-full flex items-center justify-center gap-2 bg-surface text-black font-extrabold px-4 py-2.5 rounded-full border-3 border-black text-label uppercase tracking-widest hover:bg-black hover:text-white transition-[150ms] disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2 bg-white text-black font-extrabold px-4 py-2.5 rounded-full border border-black/10 text-label uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-500 disabled:opacity-50"
                   >
                     {validating ? "Checking…" : "Check Evidence"}
                   </button>
@@ -552,7 +552,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
               <button
                 onClick={() => runTailor(!!tailored)}
                 disabled={tailoring || !analysis}
-                className="w-full flex items-center justify-center gap-2 bg-black text-white font-extrabold px-4 py-3 rounded-full text-label uppercase tracking-widest brutal-hover disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 bg-black text-white font-extrabold px-4 py-3 rounded-full text-label uppercase tracking-widest transition-all duration-700 disabled:opacity-50"
               >
                 <FileText className="w-4 h-4" />
                 {tailoring
@@ -568,7 +568,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
               </p>
 
               {tailored && tailored.validationStatus === "SEMANTIC_VALID" && (
-                <div className="p-3 border-3 border-black rounded-[12px] bg-surface space-y-2">
+                <div className="p-3 border border-black/10 rounded-[12px] bg-white space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-label font-extrabold uppercase tracking-widest">
                       PDF + ATS check
@@ -576,7 +576,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                     {tailored.renderStatus === "SUCCESS" && (
                       <a
                         href={`/api/jobs/${selectedId}/pdf/download`}
-                        className="px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border-3 border-black bg-green"
+                        className="px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border border-black/10 bg-green"
                       >
                         Download
                       </a>
@@ -613,7 +613,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                   <button
                     onClick={() => runRender(tailored.renderStatus === "SUCCESS")}
                     disabled={rendering}
-                    className="w-full flex items-center justify-center gap-2 bg-surface text-black font-extrabold px-4 py-2.5 rounded-full border-3 border-black text-label uppercase tracking-widest hover:bg-black hover:text-white transition-[150ms] disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2 bg-white text-black font-extrabold px-4 py-2.5 rounded-full border border-black/10 text-label uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-500 disabled:opacity-50"
                   >
                     {rendering
                       ? "Rendering…"
@@ -630,17 +630,17 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
 
       {/* Sticky Footer — application lifecycle (2.5.3/2.5.4) */}
       {job && (
-        <div className="sticky bottom-0 bg-surface border-t-3 border-black px-6 py-5 shrink-0 z-10 space-y-3">
+        <div className="sticky bottom-0 bg-white border-t border-black/10 px-6 py-5 shrink-0 z-10 space-y-3">
           {(decision || liveness) && (
             <div className="flex flex-wrap items-center gap-2">
               {decision && (
-                <span className="px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border-3 border-black bg-purple text-white">
+                <span className="px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border border-black/10 bg-purple text-white">
                   {decision}
                 </span>
               )}
               {liveness && (
                 <span
-                  className={`px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border-3 border-black ${liveness.alive ? "bg-green" : "bg-red text-white"}`}
+                  className={`px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border border-black/10 ${liveness.alive ? "bg-green" : "bg-red text-white"}`}
                   title={liveness.evidence ?? undefined}
                 >
                   {liveness.alive ? "● Live" : "● Closed?"}
@@ -652,7 +652,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
             <button
               onClick={() => setJobDecision("OPENED", true)}
               disabled={deciding}
-              className="flex-1 flex items-center justify-center gap-2 bg-green text-black font-extrabold px-4 py-3 rounded-full border-3 border-black brutal-shadow-sm brutal-hover text-label uppercase tracking-widest disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 bg-[#111] text-white font-semibold px-4 py-3 rounded-full text-[12px] uppercase tracking-widest transition-all duration-700 disabled:opacity-50"
             >
               Open Application
               <ArrowUpRight className="w-4 h-4" />
@@ -660,7 +660,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
             <button
               onClick={() => setJobDecision("APPLIED")}
               disabled={deciding}
-              className="flex-1 flex items-center justify-center gap-2 bg-black text-white font-extrabold px-4 py-3 rounded-full border-3 border-black text-label uppercase tracking-widest brutal-hover disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 bg-black text-white font-extrabold px-4 py-3 rounded-full border border-black/10 text-label uppercase tracking-widest transition-all duration-700 disabled:opacity-50"
             >
               I&apos;ve Applied
             </button>
@@ -669,21 +669,21 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
             <button
               onClick={() => setJobDecision("SAVED")}
               disabled={deciding}
-              className="flex-1 text-label font-extrabold uppercase tracking-widest px-3 py-2 rounded-full border-3 border-black hover:bg-black hover:text-white transition-[150ms] disabled:opacity-50"
+              className="flex-1 text-label font-extrabold uppercase tracking-widest px-3 py-2 rounded-full border border-black/10 hover:bg-black hover:text-white transition-all duration-500 disabled:opacity-50"
             >
               Save
             </button>
             <button
               onClick={() => setJobDecision("SKIPPED")}
               disabled={deciding}
-              className="flex-1 text-label font-extrabold uppercase tracking-widest px-3 py-2 rounded-full border-3 border-black hover:bg-black hover:text-white transition-[150ms] disabled:opacity-50"
+              className="flex-1 text-label font-extrabold uppercase tracking-widest px-3 py-2 rounded-full border border-black/10 hover:bg-black hover:text-white transition-all duration-500 disabled:opacity-50"
             >
               Skip
             </button>
             <button
               onClick={checkLiveness}
               disabled={checkingLive}
-              className="flex-1 text-label font-extrabold uppercase tracking-widest px-3 py-2 rounded-full border-3 border-black hover:bg-black hover:text-white transition-[150ms] disabled:opacity-50"
+              className="flex-1 text-label font-extrabold uppercase tracking-widest px-3 py-2 rounded-full border border-black/10 hover:bg-black hover:text-white transition-all duration-500 disabled:opacity-50"
             >
               {checkingLive ? "Checking…" : "Check live"}
             </button>

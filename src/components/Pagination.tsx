@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function Pagination({
   currentPage,
@@ -21,49 +20,24 @@ export function Pagination({
     router.push(`/?${params.toString()}`);
   }
 
-  const pages: (number | string)[] = [];
-  for (let i = 1; i <= totalPages; i++) {
-    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-      pages.push(i);
-    } else if (pages[pages.length - 1] !== "...") {
-      pages.push("...");
-    }
-  }
-
   return (
-    <div className="mt-8 flex justify-center items-center gap-2">
+    <div className="mt-10 flex justify-center items-center gap-2 text-[13px]">
       <button
         disabled={currentPage <= 1}
         onClick={() => goToPage(currentPage - 1)}
-        className="w-10 h-10 flex items-center justify-center rounded-full border-3 border-black text-text hover:bg-black hover:text-white transition-[150ms] disabled:opacity-30 disabled:pointer-events-none"
+        className="calm-pill disabled:opacity-30"
       >
-        <ChevronLeft className="w-5 h-5" />
+        ← Prev
       </button>
-      {pages.map((p, i) =>
-        p === "..." ? (
-          <span key={`ellipsis-${i}`} className="text-text-secondary mx-1 font-bold">
-            ...
-          </span>
-        ) : (
-          <button
-            key={p}
-            onClick={() => goToPage(p as number)}
-            className={`w-10 h-10 flex items-center justify-center rounded-full font-extrabold text-label transition-[150ms] ${
-              p === currentPage
-                ? "bg-black text-white"
-                : "border-3 border-black text-text hover:bg-black hover:text-white"
-            }`}
-          >
-            {p}
-          </button>
-        )
-      )}
+      <span className="text-black/45 px-2">
+        {currentPage} / {totalPages}
+      </span>
       <button
         disabled={currentPage >= totalPages}
         onClick={() => goToPage(currentPage + 1)}
-        className="w-10 h-10 flex items-center justify-center rounded-full border-3 border-black text-text hover:bg-black hover:text-white transition-[150ms] disabled:opacity-30 disabled:pointer-events-none"
+        className="calm-pill disabled:opacity-30"
       >
-        <ChevronRight className="w-5 h-5" />
+        Next →
       </button>
     </div>
   );
