@@ -77,3 +77,8 @@ export type JobAnalysis = Prisma.JobAnalysisModel
  * 
  */
 export type TailoredResume = Prisma.TailoredResumeModel
+/**
+ * Model CoverLetter
+ * 
+ */
+export type CoverLetter = Prisma.CoverLetterModel
