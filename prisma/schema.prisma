@@ -1,0 +1,301 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum JobSource {
+  ADZUNA
+  JOOBLE
+  REMOTIVE
+  GREENHOUSE
+  LEVER
+  ASHBY
+}
+
+enum CompanyType {
+  STARTUP
+  MNC
+}
+
+enum ExperienceLevel {
+  ENTRY
+  MID
+  SENIOR
+  LEAD
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+enum WorkMode {
+  REMOTE
+  HYBRID
+  ONSITE
+}
+
+enum JobStatus {
+  ACTIVE
+  REJECTED
+}
+
+enum RejectionReason {
+  NON_CS
+  NON_ENTRY_LEVEL
+  UNKNOWN_EXPERIENCE
+  INVALID_LOCATION
+  DUPLICATE
+}
+
+enum SalaryFit {
+  MATCH
+  BELOW
+  UNKNOWN
+}
+
+enum AnalysisVerdict {
+  STRONG
+  POSSIBLE
+  WEAK
+}
+
+model Company {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  logo        String?
+  website     String?
+  companyType CompanyType
+  atsType     String?
+  atsBoard    String?
+  jobs        Job[]
+  createdAt   DateTime    @default(now())
+}
+
+model Job {
+  id                  String          @id @default(cuid())
+  externalId          String
+  source              JobSource
+  title               String
+  description         String          @db.Text
+  applyUrl            String
+  companyId           String
+  company             Company         @relation(fields: [companyId], references: [id])
+  location            String?
+  workMode            WorkMode        @default(ONSITE)
+  salaryMin           Int?
+  salaryMax           Int?
+  salaryCurr          String?
+  jobType             JobType?
+  experience          ExperienceLevel?
+  skills              String[]
+  postedAt            DateTime?
+  searchVector        String?
+  scrapedAt           DateTime        @default(now())
+  createdAt           DateTime        @default(now())
+  status              JobStatus       @default(ACTIVE)
+  classificationScore Float?
+  rejectionReason     RejectionReason?
+  sourceScore         Int             @default(0)
+  match JobMatch?
+  analysis JobAnalysis?
+  tailoredResumes TailoredResume[]
+  decision ApplicationDecision?
+
+  @@unique([externalId, source])
+  @@index([source])
+  @@index([postedAt])
+  @@index([companyId])
+  @@index([workMode])
+  @@index([location])
+  @@index([status])
+  @@index([jobType])
+  @@index([experience])
+  @@index([createdAt])
+  @@index([sourceScore])
+  @@index([skills], type: Gin)
+}
+
+model SearchEvent {
+  id        String   @id @default(cuid())
+  query     String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model SourceSync {
+  id          String    @id @default(cuid())
+  source      JobSource
+  startedAt   DateTime
+  finishedAt  DateTime?
+  jobsFetched Int       @default(0)
+  jobsCreated Int       @default(0)
+  jobsUpdated Int       @default(0)
+  success     Boolean   @default(false)
+  error       String?
+}
+
+model JobIngestionLog {
+  id         String    @id @default(cuid())
+  source     JobSource
+  externalId String
+  rawPayload Json
+  processed  Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+
+  @@index([source, createdAt])
+}
+
+model Resume {
+  id        String   @id @default(cuid())
+  title     String   @default("My Resume")
+  content   Json
+  skills    String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Profile {
+  id String @id @default(cuid())
+  label String @default("default")
+  skills String[]
+  minSalary Int?
+  locations String[] @default([])
+  workModes WorkMode[] @default([])
+  dealbreakers String[] @default([])
+  name String?
+  email String?
+  phone String?
+  linkedin String?
+  github String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NightlyRun {
+  id         String     @id @default(cuid())
+  startedAt  DateTime   @default(now())
+  finishedAt DateTime?
+  fetched    Int        @default(0)
+  scored     Int        @default(0)
+  matched    Int        @default(0)
+  success    Boolean    @default(false)
+  error      String?
+  matches    JobMatch[]
+}
+
+model JobMatch {
+  id             String     @id @default(cuid())
+  jobId          String     @unique
+  job            Job        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  score          Float
+  matchedSkills  String[]
+  missingSkills  String[]
+  skillOverlap   Float
+  salaryFit      SalaryFit
+  salaryScore    Float
+  recencyDecay   Float
+  sourceTrust    Float
+  levelFit Float
+  reasons String[]
+  humanVerdict String?
+  judgedAt DateTime?
+  nightlyRunId String?
+  nightlyRun     NightlyRun? @relation(fields: [nightlyRunId], references: [id], onDelete: SetNull)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([score])
+  @@index([nightlyRunId])
+}
+
+enum DecisionStatus {
+  QUEUED
+  OPENED
+  APPLIED
+  SAVED
+  SKIPPED
+}
+
+model ApplicationDecision {
+  id String @id @default(cuid())
+  jobId String @unique
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  status DecisionStatus @default(QUEUED)
+  reason String?
+  decidedAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model JobAnalysis {
+  id                     String          @id @default(cuid())
+  jobId                  String          @unique
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  summary String @db.Text
+  responsibilities       String[]
+  requiredSkills         String[]
+  preferredSkills        String[]
+  matchedSkills          String[]
+  missingSkills          String[]
+  experienceRequirements String[]
+  potentialConcerns      String[]
+  workAuthorization      String?
+  workMode               String?
+  verdict                AnalysisVerdict
+  verdictReasons String[]
+  rawJson Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TailoredResume {
+  id String @id @default(cuid())
+  jobId String
+  version Int @default(1)
+  isCurrent Boolean @default(true)
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  baseResumeId String
+  content Json
+  evidenceIds String[]
+  validationStatus TailorValidationStatus @default(STRUCTURAL_VALID)
+  validationResult Json?
+  validatedAt DateTime?
+  renderStatus RenderStatus @default(PENDING)
+  renderedAt DateTime?
+  pdfPath String?
+  atsStatus AtsStatus @default(PENDING)
+  atsResult Json?
+  atsCheckedAt DateTime?
+  rawJson Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([jobId, version])
+  @@index([jobId, isCurrent])
+}
+
+enum RenderStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum AtsStatus {
+  PENDING
+  CHECKED
+}
+
+enum TailorValidationStatus {
+  STRUCTURAL_VALID
+  SEMANTIC_VALID
+  SEMANTIC_INVALID
+}

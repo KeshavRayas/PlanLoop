@@ -1,0 +1,170 @@
+import { prisma } from "@/lib/prisma";
+import {
+  TAILOR_SYSTEM_PROMPT,
+  buildTailorPrompt,
+  tailoredResumeSchema,
+  type TailoredResumeData,
+} from "@/lib/tailor/contract";
+import { collectEvidence, evidenceMap } from "@/lib/tailor/evidence";
+import { validateTailoredResume } from "@/lib/tailor/validate";
+import { canonicalizeTailored } from "@/lib/tailor/canonical";
+import type { ResumeData } from "@/lib/resume.types";
+import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
+import type { LlmProvider } from "@/lib/llm/types";
+
+export class NeedsAnalysisError extends Error {
+  constructor() {
+    super("analyze the job before tailoring — no JobAnalysis found");
+    this.name = "NeedsAnalysisError";
+  }
+}
+
+export class EmptyResumeError extends Error {
+  constructor() {
+    super("base resume has no sections — add resume content before tailoring");
+    this.name = "EmptyResumeError";
+  }
+}
+
+export class TailorValidationError extends Error {
+  constructor(detail: string) {
+    super(`tailored resume failed validation: ${detail}`);
+    this.name = "TailorValidationError";
+  }
+}
+
+export { setDefaultProvider };
+
+export async function getTailoredResume(jobId: string) {
+  const [current, versionCount] = await Promise.all([
+    prisma.tailoredResume.findFirst({
+      where: { jobId, isCurrent: true },
+      orderBy: { version: "desc" },
+    }),
+    prisma.tailoredResume.count({ where: { jobId } }),
+  ]);
+  if (!current) return null;
+  return { ...current, versionCount };
+}
+
+/** All versions, newest first — for the history UI. */
+export async function getTailoredVersions(jobId: string) {
+  return prisma.tailoredResume.findMany({
+    where: { jobId },
+    orderBy: { version: "desc" },
+    select: {
+      id: true,
+      version: true,
+      isCurrent: true,
+      validationStatus: true,
+      renderStatus: true,
+      createdAt: true,
+    },
+  });
+}
+
+function isNonEmpty(data: ResumeData): boolean {
+  return (data.sections ?? []).some((s) => (s.items ?? []).length > 0);
+}
+
+/**
+ * Tailor the base resume for a job (Phase 2.2). Requires an existing
+ * JobAnalysis — tailor builds on actual analysis, never raw postings alone.
+ * Only validated output persists; JobMatch.score is never touched.
+ */
+export async function tailorResume(
+  jobId: string,
+  provider: LlmProvider = getDefaultProvider()
+): Promise<{ tailored: TailoredResumeData & { id: string }; cached: false }> {
+  const job = await prisma.job.findUnique({
+    where: { id: jobId },
+    include: { company: true, analysis: true },
+  });
+  if (!job) throw new Error(`job not found: ${jobId}`);
+  if (!job.analysis) throw new NeedsAnalysisError();
+
+  const base = await prisma.resume.findFirst({ orderBy: { updatedAt: "desc" } });
+  const content = base?.content as ResumeData | null;
+  if (!base || !content || !isNonEmpty(content)) throw new EmptyResumeError();
+
+  const evidence = collectEvidence(content);
+  const evidenceById = evidenceMap(content);
+
+  const prompt = buildTailorPrompt({
+    jobTitle: job.title,
+    companyName: job.company.name,
+    location: job.location,
+    analysisSummary: job.analysis.summary,
+    requiredSkills: job.analysis.requiredSkills,
+    missingSkills: job.analysis.missingSkills,
+    verdict: job.analysis.verdict,
+    evidence,
+  });
+
+  const raw = await provider.generateJson(TAILOR_SYSTEM_PROMPT, prompt);
+  let parsed = tailoredResumeSchema.safeParse(raw);
+  if (!parsed.success) {
+    const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
+    console.error(`[tailor] schema invalid for job ${jobId}: ${issues}`);
+    const retry = await provider.generateJson(
+      TAILOR_SYSTEM_PROMPT,
+      `Your previous output failed validation: ${issues}\nReturn ONLY the corrected JSON in exactly the requested shape.\n\n---\n\n${prompt}`
+    );
+    parsed = tailoredResumeSchema.safeParse(retry);
+    if (!parsed.success) {
+      throw new TailorValidationError(
+        parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")
+      );
+    }
+    return persistValidated(jobId, base.id, parsed.data, evidenceById, retry);
+  }
+
+  return persistValidated(jobId, base.id, parsed.data, evidenceById, raw);
+}
+
+async function persistValidated(
+  jobId: string,
+  baseResumeId: string,
+  data: TailoredResumeData,
+  evidenceById: Map<string, string>,
+  raw: unknown
+): Promise<{ tailored: TailoredResumeData & { id: string }; cached: false }> {
+  // Canonical boundary: validate + persist the canonical shape so the
+  // renderer never sees model field-name variants. Raw output kept for audit.
+  const canonical = canonicalizeTailored(data);
+  const problems = validateTailoredResume(
+    { sections: canonical.sections } as TailoredResumeData,
+    evidenceById
+  );
+  if (problems.length > 0) {
+    console.error(`[tailor] provenance invalid for job ${jobId}: ${JSON.stringify(problems).slice(0, 1000)}`);
+    throw new TailorValidationError(problems.map((p) => p.text).join("; "));
+  }
+  const saved = await prisma.$transaction(async (tx) => {
+    const max = await tx.tailoredResume.aggregate({
+      where: { jobId },
+      _max: { version: true },
+    });
+    const version = (max._max.version ?? 0) + 1;
+    // Demote first, then create — exactly one isCurrent per job.
+    await tx.tailoredResume.updateMany({
+      where: { jobId, isCurrent: true },
+      data: { isCurrent: false },
+    });
+    return tx.tailoredResume.create({
+      data: {
+        jobId,
+        version,
+        isCurrent: true,
+        baseResumeId,
+        content: canonical as object,
+        evidenceIds: [...evidenceById.keys()],
+        rawJson: raw as object,
+      },
+    });
+  });
+  return {
+    tailored: { sections: canonical.sections, id: saved.id, version: saved.version } as TailoredResumeData & { id: string; version: number },
+    cached: false as const,
+  };
+}

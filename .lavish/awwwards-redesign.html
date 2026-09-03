@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Job Search — Awwwards Directions</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@5.5.19/daisyui.css">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  :root{ --paper:#FAFAF7; --ink:#111111; --line:rgba(17,17,17,.12); --muted:rgba(17,17,17,.55); }
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400;letter-spacing:-.02em}
+  .grotesk{font-family:"Space Grotesk",Inter,sans-serif}
+  .grid > *,.flex > *{min-width:0}
+  p,h1,h2,h3,li{overflow-wrap:anywhere}
+  img{max-width:100%}
+  /* reveal */
+  .rv{opacity:0;transform:translateY(28px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+  .rv.in{opacity:1;transform:none}
+  /* Concept A rows */
+  .job-row{border-top:1px solid var(--line);transition:background .45s ease,color .45s ease,padding .45s cubic-bezier(.16,1,.3,1);cursor:pointer;position:relative}
+  .job-row:last-child{border-bottom:1px solid var(--line)}
+  .job-row:hover,.job-row.active{background:#111;color:#FAFAF7;border-top-color:#111}
+  .job-row:hover .muted,.job-row.active .muted{color:rgba(250,250,247,.6)}
+  .job-row:hover .pill,.job-row.active .pill{border-color:rgba(250,250,247,.25);color:#FAFAF7}
+  .job-row .title{transition:transform .5s cubic-bezier(.16,1,.3,1)}
+  .job-row:hover .title{transform:translateX(14px)}
+  .pill{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+  .muted{color:var(--muted)}
+  #cursor-img{position:fixed;top:0;left:0;width:240px;height:300px;object-fit:cover;border-radius:16px;pointer-events:none;opacity:0;scale:.85;transition:opacity .35s ease,scale .45s cubic-bezier(.16,1,.3,1);z-index:60;transform:translate(-50%,-60%) rotate(-4deg)}
+  #cursor-img.show{opacity:1;scale:1}
+  .detail{max-height:0;overflow:hidden;transition:max-height .6s cubic-bezier(.16,1,.3,1),opacity .5s}
+  .job-row.active .detail{max-height:220px;opacity:1}
+  /* Concept B */
+  .dark-sec{background:#0B0B0C;color:#F5F4F0;border-radius:28px}
+  .hscroll{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;scrollbar-width:none}
+  .hscroll::-webkit-scrollbar{display:none}
+  .hcard{scroll-snap-align:start;flex:0 0 300px;border-radius:20px;overflow:hidden;background:#161617;position:relative;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+  .hcard:hover{transform:translateY(-8px)}
+  .hcard img{height:340px;width:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.16,1,.3,1),filter .6s;filter:saturate(.85)}
+  .hcard:hover img{transform:scale(1.07);filter:saturate(1.1)}
+  .marquee{white-space:nowrap;overflow:hidden}
+  .marquee span{display:inline-block;animation:mq 18s linear infinite}
+  @keyframes mq{to{transform:translateX(-50%)}}
+  /* Concept C */
+  .calm-card{background:#fff;border:1px solid rgba(17,17,17,.08);border-radius:22px;transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .5s,opacity .5s}
+  .calm-card:hover{transform:translateY(-4px);box-shadow:0 20px 50px -20px rgba(0,0,0,.18)}
+  .calm-wrap.focus .calm-card{opacity:.35;filter:blur(.5px)}
+  .calm-wrap.focus .calm-card:hover{opacity:1;filter:none}
+  .chip{transition:all .3s}
+  .chip.on{background:#111;color:#fff;border-color:#111}
+  .fade-item{animation:fadeUp .8s cubic-bezier(.16,1,.3,1) both}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body class="min-h-screen">
+
+<img id="cursor-img" src="https://picsum.photos/seed/awww1/480/600" alt="" />
+
+<!-- TOP -->
+<header class="max-w-6xl mx-auto px-6 pt-14 pb-8">
+  <div class="flex items-center justify-between text-[11px] uppercase tracking-[.14em] muted">
+    <span>Job Search — Redesign</span>
+    <span>Inspired by awwwards.com/jobs</span>
+    <span class="hidden sm:inline">3 directions · minimal text · motion-led</span>
+  </div>
+  <h1 class="serif leading-[.95] mt-8" style="font-size:clamp(56px,10vw,132px)">The Jobs<br/><em class="serif italic font-normal">board</em> <sup class="grotesk text-sm align-super tracking-widest muted">21 OPEN</sup></h1>
+  <p class="mt-6 max-w-xl text-[15px] leading-relaxed muted">You asked to kill the heavy OS UI — thick borders, hard shadows, dense panels. Below are 3 calm, Awwwards-grade replacements. Hover, scroll, click. Then pick one.</p>
+  <div class="mt-6 flex flex-wrap gap-2 text-[12px]">
+    <span class="pill">✕ no brutalist borders</span>
+    <span class="pill">✕ no hard shadows</span>
+    <span class="pill">✓ smooth motion</span>
+    <span class="pill">✓ minimal text</span>
+  </div>
+  <div class="mt-8 grid sm:grid-cols-3 gap-3 text-[13px]">
+    <a href="#a" class="rounded-2xl bg-black text-white px-5 py-4 flex justify-between items-center hover:opacity-85 transition">A — Editorial List <span>→</span></a>
+    <a href="#b" class="rounded-2xl bg-white border border-black/10 px-5 py-4 flex justify-between items-center hover:bg-black hover:text-white transition">B — Dark Canvas <span>→</span></a>
+    <a href="#c" class="rounded-2xl bg-white border border-black/10 px-5 py-4 flex justify-between items-center hover:bg-black hover:text-white transition">C — Calm Focus <span>→</span></a>
+  </div>
+</header>
+
+<!-- BEFORE / AFTER strip -->
+<section class="max-w-6xl mx-auto px-6 pb-4">
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="rounded-3xl p-6 bg-[#EAEAEA] border-[3px] border-black" style="box-shadow:6px 6px 0 #000">
+      <div class="text-[11px] uppercase tracking-widest font-semibold">Before — current</div>
+      <div class="mt-2 font-extrabold text-xl">Neo-Brutalist OS</div>
+      <p class="text-sm mt-1 text-black/60">3 columns · thick borders · hard shadows · labels everywhere · 150ms snaps.</p>
+    </div>
+    <div class="rounded-3xl p-6 bg-white border border-black/10">
+      <div class="text-[11px] uppercase tracking-widest muted">After — proposed</div>
+      <div class="serif text-2xl mt-2">Quiet, editorial, fluid.</div>
+      <p class="text-sm mt-1 muted">1 column list · whitespace · serif titles · 600–900ms eases · 3 fields per row.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONCEPT A -->
+<section id="a" class="max-w-6xl mx-auto px-6 py-14">
+  <div class="rv flex items-end justify-between flex-wrap gap-4">
+    <div>
+      <div class="text-[11px] uppercase tracking-[.15em] muted">Concept A — Recommended</div>
+      <h2 class="serif" style="font-size:clamp(36px,5vw,64px)">Editorial List</h2>
+      <p class="muted text-sm mt-2 max-w-md">Closest to Awwwards Jobs. Title + company + location. Image only on hover. Zero clutter.</p>
+    </div>
+    <div class="text-[12px] muted">Motion: hover invert · cursor preview · expand<br/>Text: 3 items / row</div>
+  </div>
+
+  <div class="rv mt-8 rounded-[24px] bg-white/60 border border-black/10 p-2 sm:p-6">
+    <div class="flex items-center justify-between px-4 py-3 text-[11px] uppercase tracking-widest muted">
+      <span>Latest — Design & Creative Dev</span><span>Hover a row ↘</span>
+    </div>
+    <div id="joblist">
+      <!-- rows injected by JS for brevity, but static fallback below -->
+      <div class="job-row px-4 sm:px-6 py-6 grid grid-cols-[auto_1fr_auto] gap-4 items-center" data-img="https://picsum.photos/seed/awww1/480/600">
+        <span class="text-xs muted grotesk">01</span>
+        <div><div class="serif text-2xl sm:text-4xl title">Senior Creative Engineer</div><div class="muted text-[13px] mt-1">Powster — London · Full-time</div>
+          <div class="detail"><div class="pt-4 flex flex-wrap gap-2 items-center text-[13px]"><span class="pill">£85k+</span><span class="pill">React / WebGL</span><span class="underline underline-offset-4">View →</span></div></div>
+        </div><span class="pill hidden sm:inline">2d</span>
+      </div>
+      <div class="job-row px-4 sm:px-6 py-6 grid grid-cols-[auto_1fr_auto] gap-4 items-center" data-img="https://picsum.photos/seed/awww2/480/600">
+        <span class="text-xs muted grotesk">02</span>
+        <div><div class="serif text-2xl sm:text-4xl title">Associate Creative Director</div><div class="muted text-[13px] mt-1">Active Theory — Remote · Full-time</div>
+          <div class="detail"><div class="pt-4 flex flex-wrap gap-2 items-center text-[13px]"><span class="pill">Remote US</span><span class="pill">WebGL / Team</span><span class="underline underline-offset-4">View →</span></div></div>
+        </div><span class="pill hidden sm:inline">4d</span>
+      </div>
+      <div class="job-row px-4 sm:px-6 py-6 grid grid-cols-[auto_1fr_auto] gap-4 items-center" data-img="https://picsum.photos/seed/awww3/480/600">
+        <span class="text-xs muted grotesk">03</span>
+        <div><div class="serif text-2xl sm:text-4xl title">Premium Web Designer</div><div class="muted text-[13px] mt-1">Webwavers — Germany · Freelance</div>
+          <div class="detail"><div class="pt-4 flex flex-wrap gap-2 items-center text-[13px]"><span class="pill">Figma</span><span class="pill">SaaS</span><span class="underline underline-offset-4">View →</span></div></div>
+        </div><span class="pill hidden sm:inline">1w</span>
+      </div>
+      <div class="job-row px-4 sm:px-6 py-6 grid grid-cols-[auto_1fr_auto] gap-4 items-center" data-img="https://picsum.photos/seed/awww4/480/600">
+        <span class="text-xs muted grotesk">04</span>
+        <div><div class="serif text-2xl sm:text-4xl title">Digital Art Director</div><div class="muted text-[13px] mt-1">Demodern — Hamburg · Hybrid</div>
+          <div class="detail"><div class="pt-4 flex flex-wrap gap-2 items-center text-[13px]"><span class="pill">Motion</span><span class="pill">3D</span><span class="underline underline-offset-4">View →</span></div></div>
+        </div><span class="pill hidden sm:inline">2w</span>
+      </div>
+    </div>
+    <p class="px-4 py-4 text-[12px] muted">Click a row to expand — only 2 extra pills appear. Everything else stays hidden until needed.</p>
+  </div>
+</section>
+
+<!-- CONCEPT B -->
+<section id="b" class="max-w-6xl mx-auto px-6 pb-14">
+  <div class="rv dark-sec p-8 sm:p-12 overflow-hidden">
+    <div class="flex justify-between flex-wrap gap-4 items-end">
+      <div><div class="text-[11px] uppercase tracking-[.15em] text-white/50">Concept B — Bold</div>
+      <h2 class="serif text-white" style="font-size:clamp(36px,5vw,64px)">Dark Canvas</h2>
+      <p class="text-white/55 text-sm mt-2 max-w-md">Full-bleed, gallery feel. Best if you want wow. More image, same minimal text.</p></div>
+      <div class="text-[12px] text-white/50">Motion: drag scroll · slow zoom<br/>Text: title + 1 tag</div>
+    </div>
+    <div class="marquee mt-8 text-white/25 grotesk text-[13px] uppercase tracking-[.2em]"><span>Drag → &nbsp; ● &nbsp; Senior Roles &nbsp; ● &nbsp; Remote &nbsp; ● &nbsp; Creative Dev &nbsp; ● &nbsp; Drag → &nbsp; ● &nbsp; Senior Roles &nbsp; ● &nbsp; Remote &nbsp; ● &nbsp; Creative Dev &nbsp; ● &nbsp;</span></div>
+    <div class="hscroll mt-6" id="hscroll">
+      <div class="hcard"><img src="https://picsum.photos/seed/dark1/600/700" alt=""/><div class="p-5"><div class="serif text-2xl text-white">Creative Engineer</div><div class="text-white/50 text-[13px] mt-1">Powster · London</div></div></div>
+      <div class="hcard"><img src="https://picsum.photos/seed/dark2/600/700" alt=""/><div class="p-5"><div class="serif text-2xl text-white">Art Director</div><div class="text-white/50 text-[13px] mt-1">HLabs · Hybrid</div></div></div>
+      <div class="hcard"><img src="https://picsum.photos/seed/dark3/600/700" alt=""/><div class="p-5"><div class="serif text-2xl text-white">Web Designer</div><div class="text-white/50 text-[13px] mt-1">BGN · Remote</div></div></div>
+      <div class="hcard"><img src="https://picsum.photos/seed/dark4/600/700" alt=""/><div class="p-5"><div class="serif text-2xl text-white">Full-Stack Dev</div><div class="text-white/50 text-[13px] mt-1">DixonBaxi · London</div></div></div>
+      <div class="hcard"><img src="https://picsum.photos/seed/dark5/600/700" alt=""/><div class="p-5"><div class="serif text-2xl text-white">UI Engineer</div><div class="text-white/50 text-[13px] mt-1">Lemon.io · Remote</div></div></div>
+    </div>
+    <div class="mt-6 h-[2px] bg-white/10 rounded-full overflow-hidden"><div id="hprog" class="h-full bg-white/80 w-1/4 transition-all duration-300"></div></div>
+  </div>
+</section>
+
+<!-- CONCEPT C -->
+<section id="c" class="max-w-6xl mx-auto px-6 pb-14">
+  <div class="rv rounded-[28px] border border-black/10 bg-white p-8 sm:p-12">
+    <div class="text-[11px] uppercase tracking-[.15em] muted">Concept C — Calmest</div>
+    <h2 class="serif" style="font-size:clamp(36px,5vw,64px)">Calm Focus</h2>
+    <p class="muted text-sm mt-2 max-w-md">Centered, airy, one thing at a time. Search + 3 pills. Cards fade in softly, others dim on focus.</p>
+
+    <div class="mt-8 max-w-xl mx-auto text-center">
+      <div class="grotesk serif text-3xl">What do you want next?</div>
+      <div class="mt-4 flex items-center gap-2 bg-[#F4F4F1] border border-black/10 rounded-full px-5 py-3">
+        <span class="muted">⌕</span><input id="calm-q" placeholder="Try ‘WebGL London’…" class="bg-transparent outline-none flex-1 text-[15px] placeholder:text-black/35" />
+        <span class="text-[11px] uppercase tracking-widest muted hidden sm:inline">↵</span>
+      </div>
+      <div class="mt-4 flex justify-center gap-2 flex-wrap">
+        <button class="chip pill on">All</button><button class="chip pill">Remote</button><button class="chip pill">Full-time</button><button class="chip pill">Senior</button>
+      </div>
+    </div>
+
+    <div class="calm-wrap mt-8 grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto" id="calm-wrap">
+      <div class="calm-card fade-item p-6" style="animation-delay:.05s"><div class="text-[11px] uppercase tracking-widest muted">Powster</div><div class="serif text-2xl mt-2 leading-tight">Creative Engineer</div><div class="muted text-[13px] mt-2">London · £85k</div><div class="mt-4 text-[13px] underline underline-offset-4">Save →</div></div>
+      <div class="calm-card fade-item p-6" style="animation-delay:.15s"><div class="text-[11px] uppercase tracking-widest muted">Active Theory</div><div class="serif text-2xl mt-2 leading-tight">Assoc. Director</div><div class="muted text-[13px] mt-2">Remote · PST</div><div class="mt-4 text-[13px] underline underline-offset-4">Save →</div></div>
+      <div class="calm-card fade-item p-6" style="animation-delay:.25s"><div class="text-[11px] uppercase tracking-widest muted">Demodern</div><div class="serif text-2xl mt-2 leading-tight">Art Director</div><div class="muted text-[13px] mt-2">Hamburg · Hybrid</div><div class="mt-4 text-[13px] underline underline-offset-4">Save →</div></div>
+    </div>
+    <p class="text-center text-[12px] muted mt-6">Hover any card — the others fade back. Focus mode is automatic.</p>
+  </div>
+</section>
+
+<!-- VERDICT + INPUT -->
+<section class="max-w-6xl mx-auto px-6 pb-20">
+  <div class="grid md:grid-cols-[1fr_380px] gap-4">
+    <div class="rounded-3xl bg-black text-white p-8">
+      <div class="text-[11px] uppercase tracking-[.15em] text-white/50">Recommendation — You picked C ✓</div>
+      <div class="serif text-3xl mt-2">Building C — Calm Focus, 900ms buttery.</div>
+      <p class="text-white/60 text-sm mt-3 leading-relaxed">Locked in from your vote: centered search + 3 pills, airy cards, focus-dim, slow 900ms eases. A被淘汰, B kept only as optional featured strip. Tell me in Lavish if you want me to now rebuild the real app.</p>
+      <div class="mt-5 grid sm:grid-cols-3 gap-2 text-[12px]">
+        <div class="rounded-2xl bg-white/10 p-4"><b>A Editorial</b><br/><span class="text-white/60">Fastest · most minimal · matches ref</span></div>
+        <div class="rounded-2xl bg-white/10 p-4"><b>B Dark</b><br/><span class="text-white/60">Highest wow · heaviest · image-dependent</span></div>
+        <div class="rounded-2xl bg-white/10 p-4"><b>C Calm</b><br/><span class="text-white/60">Softest · best for focus · least dense</span></div>
+      </div>
+    </div>
+    <form data-lavish-question="ui-direction" id="pick-form" class="rounded-3xl border border-black/10 bg-white p-8">
+      <div class="text-[11px] uppercase tracking-[.15em] muted">Pick a direction</div>
+      <h3 class="serif text-2xl mt-2">Which should I build?</h3>
+      <label class="mt-4 flex gap-3 items-start text-[14px] cursor-pointer"><input type="radio" name="dir" value="A - Editorial List" checked class="mt-1 accent-black" /><span><b>A — Editorial List</b><br/><span class="muted">Awwwards-faithful, minimal text</span></span></label>
+      <label class="mt-3 flex gap-3 items-start text-[14px] cursor-pointer"><input type="radio" name="dir" value="B - Dark Canvas" class="mt-1 accent-black" /><span><b>B — Dark Canvas</b><br/><span class="muted">Immersive gallery scroll</span></span></label>
+      <label class="mt-3 flex gap-3 items-start text-[14px] cursor-pointer"><input type="radio" name="dir" value="C - Calm Focus" class="mt-1 accent-black" /><span><b>C — Calm Focus</b><br/><span class="muted">Soft centered focus mode</span></span></label>
+      <label class="mt-4 block text-[14px]">Motion speed
+        <select name="motion" class="mt-2 w-full border border-black/15 rounded-full px-4 py-2 text-[14px] bg-[#FAFAF7]"><option>Slow & buttery (900ms)</option><option>Balanced (600ms)</option><option>Snappy (350ms)</option></select>
+      </label>
+      <button type="submit" class="mt-5 w-full rounded-full bg-black text-white py-3 text-[14px] hover:opacity-85 transition">Queue this answer →</button>
+      <div id="pick-state" class="mt-3 text-[12px] muted">Selected locally — not sent yet. Press above, then Send to Agent.</div>
+    </form>
+  </div>
+  <p class="text-center text-[12px] muted mt-8">Annotate anything directly — select text or click an element to leave feedback.</p>
+</section>
+
+<script>
+  // reveal on scroll
+  const io = new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+  // Concept A: cursor preview + expand
+  const cimg = document.getElementById('cursor-img');
+  const rows = [...document.querySelectorAll('.job-row')];
+  let mx=0,my=0,cx=0,cy=0;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+  (function loop(){cx+=(mx-cx)*.12;cy+=(my-cy)*.12;cimg.style.left=cx+'px';cimg.style.top=cy+'px';requestAnimationFrame(loop)})();
+  rows.forEach(r=>{
+    r.addEventListener('mouseenter',()=>{cimg.src=r.dataset.img;cimg.classList.add('show')});
+    r.addEventListener('mouseleave',()=>cimg.classList.remove('show'));
+    r.addEventListener('click',()=>{rows.forEach(x=>{if(x!==r)x.classList.remove('active')});r.classList.toggle('active')});
+  });
+
+  // Concept B: drag + progress
+  const hs=document.getElementById('hscroll'), hp=document.getElementById('hprog');
+  let down=false,sx=0,sl=0;
+  hs.addEventListener('pointerdown',e=>{down=true;sx=e.clientX;sl=hs.scrollLeft;hs.setPointerCapture(e.pointerId)});
+  hs.addEventListener('pointermove',e=>{if(!down)return;hs.scrollLeft=sl-(e.clientX-sx)});
+  addEventListener('pointerup',()=>down=false);
+  hs.addEventListener('scroll',()=>{const m=hs.scrollWidth-hs.clientWidth;hp.style.width=(m>0?(hs.scrollLeft/m*75+25):100)+'%'});
+
+  // Concept C: chips + focus dim + filter
+  const chips=[...document.querySelectorAll('.chip')];
+  const wrap=document.getElementById('calm-wrap');
+  chips.forEach(c=>c.addEventListener('click',()=>{chips.forEach(x=>x.classList.remove('on'));c.classList.add('on')}));
+  wrap.querySelectorAll('.calm-card').forEach(card=>{
+    card.addEventListener('mouseenter',()=>wrap.classList.add('focus'));
+    card.addEventListener('mouseleave',()=>wrap.classList.remove('focus'));
+  });
+  document.getElementById('calm-q').addEventListener('input',e=>{
+    const q=e.target.value.toLowerCase();
+    wrap.querySelectorAll('.calm-card').forEach(card=>{
+      card.style.display = card.textContent.toLowerCase().includes(q)?'':'none';
+    });
+  });
+
+  // Input playbook: queue once on submit
+  document.getElementById('pick-form').addEventListener('submit',e=>{
+    e.preventDefault();
+    const fd=new FormData(e.currentTarget);
+    const dir=fd.get('dir'), motion=fd.get('motion');
+    const msg='Build UI direction: '+dir+' with motion '+motion;
+    document.getElementById('pick-state').textContent='Queued: '+msg+' — press Send to Agent.';
+    if(window.lavish&&window.lavish.queuePrompt){window.lavish.queuePrompt(msg,{tag:'choice',text:msg,element:e.currentTarget,data:{question:'ui-direction',answer:dir,motion}})}
+  });
+</script>
+</body>
+</html>
