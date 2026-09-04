@@ -12,6 +12,7 @@ import { EmptyResumeError, requireBaseResumeContent } from "@/lib/tailor/service
 import { extractTailoredHighlights } from "@/lib/cover/service";
 import type { LlmProvider } from "@/lib/llm/types";
 import { generateJsonSanitized } from "@/lib/llm/sanitize";
+import { parseWithSingleRetry } from "@/lib/llm/retry";
 
 export class NeedsAnalysisError extends Error {
   constructor() {
@@ -119,24 +120,18 @@ export async function generateInterviewPrep(
   });
 
   const raw = await generateJsonSanitized(provider, INTERVIEW_SYSTEM_PROMPT, prompt);
-  let parsed = interviewPrepSchema.safeParse(raw);
-  if (!parsed.success) {
-    const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
-    console.error(`[interview] schema invalid for job ${jobId}: ${issues}`);
-    const retry = await generateJsonSanitized(provider, 
-      INTERVIEW_SYSTEM_PROMPT,
-      `Your previous output failed validation: ${issues}\nReturn ONLY the corrected JSON in exactly the requested shape.\n\n---\n\n${prompt}`
-    );
-    parsed = interviewPrepSchema.safeParse(retry);
-    if (!parsed.success) {
-      throw new InterviewValidationError(
-        parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")
-      );
-    }
-    return persistValidated(jobId, base.id, parsed.data, evidenceById, retry);
-  }
+  const { data, raw: validRaw } = await parseWithSingleRetry({
+    schema: interviewPrepSchema,
+    raw,
+    jobId,
+    logTag: "interview",
+    provider,
+    systemPrompt: INTERVIEW_SYSTEM_PROMPT,
+    prompt,
+    makeError: (detail) => new InterviewValidationError(detail),
+  });
 
-  return persistValidated(jobId, base.id, parsed.data, evidenceById, raw);
+  return persistValidated(jobId, base.id, data, evidenceById, validRaw);
 }
 
 async function persistValidated(

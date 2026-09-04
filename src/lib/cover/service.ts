@@ -11,6 +11,7 @@ import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
 import { EmptyResumeError, requireBaseResumeContent } from "@/lib/tailor/service";
 import type { LlmProvider } from "@/lib/llm/types";
 import { generateJsonSanitized } from "@/lib/llm/sanitize";
+import { parseWithSingleRetry } from "@/lib/llm/retry";
 
 export class NeedsAnalysisError extends Error {
   constructor() {
@@ -115,24 +116,18 @@ export async function generateCoverLetter(
   });
 
   const raw = await generateJsonSanitized(provider, COVER_SYSTEM_PROMPT, prompt);
-  let parsed = coverLetterSchema.safeParse(raw);
-  if (!parsed.success) {
-    const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
-    console.error(`[cover] schema invalid for job ${jobId}: ${issues}`);
-    const retry = await generateJsonSanitized(provider, 
-      COVER_SYSTEM_PROMPT,
-      `Your previous output failed validation: ${issues}\nReturn ONLY the corrected JSON in exactly the requested shape.\n\n---\n\n${prompt}`
-    );
-    parsed = coverLetterSchema.safeParse(retry);
-    if (!parsed.success) {
-      throw new CoverValidationError(
-        parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")
-      );
-    }
-    return persistValidated(jobId, base.id, parsed.data, evidenceById, retry);
-  }
+  const { data, raw: validRaw } = await parseWithSingleRetry({
+    schema: coverLetterSchema,
+    raw,
+    jobId,
+    logTag: "cover",
+    provider,
+    systemPrompt: COVER_SYSTEM_PROMPT,
+    prompt,
+    makeError: (detail) => new CoverValidationError(detail),
+  });
 
-  return persistValidated(jobId, base.id, parsed.data, evidenceById, raw);
+  return persistValidated(jobId, base.id, data, evidenceById, validRaw);
 }
 
 async function persistValidated(

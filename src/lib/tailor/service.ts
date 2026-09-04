@@ -13,6 +13,7 @@ import { hasResumeContent } from "@/lib/resume.utils";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
 import type { LlmProvider } from "@/lib/llm/types";
 import { generateJsonSanitized } from "@/lib/llm/sanitize";
+import { parseWithSingleRetry } from "@/lib/llm/retry";
 
 export class NeedsAnalysisError extends Error {
   constructor() {
@@ -119,24 +120,18 @@ export async function tailorResume(
   });
 
   const raw = await generateJsonSanitized(provider, TAILOR_SYSTEM_PROMPT, prompt);
-  let parsed = tailoredResumeSchema.safeParse(raw);
-  if (!parsed.success) {
-    const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
-    console.error(`[tailor] schema invalid for job ${jobId}: ${issues}`);
-    const retry = await generateJsonSanitized(provider, 
-      TAILOR_SYSTEM_PROMPT,
-      `Your previous output failed validation: ${issues}\nReturn ONLY the corrected JSON in exactly the requested shape.\n\n---\n\n${prompt}`
-    );
-    parsed = tailoredResumeSchema.safeParse(retry);
-    if (!parsed.success) {
-      throw new TailorValidationError(
-        parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")
-      );
-    }
-    return persistValidated(jobId, base.id, parsed.data, evidenceById, retry);
-  }
+  const { data, raw: validRaw } = await parseWithSingleRetry({
+    schema: tailoredResumeSchema,
+    raw,
+    jobId,
+    logTag: "tailor",
+    provider,
+    systemPrompt: TAILOR_SYSTEM_PROMPT,
+    prompt,
+    makeError: (detail) => new TailorValidationError(detail),
+  });
 
-  return persistValidated(jobId, base.id, parsed.data, evidenceById, raw);
+  return persistValidated(jobId, base.id, data, evidenceById, validRaw);
 }
 
 async function persistValidated(
