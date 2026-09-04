@@ -5,6 +5,7 @@ import {
   COVER_SYSTEM_PROMPT,
 } from "@/lib/cover/contract";
 import { validateCoverLetter } from "@/lib/cover/validate";
+import { extractTailoredHighlights } from "@/lib/cover/service";
 
 function validOutput() {
   return {
@@ -111,5 +112,55 @@ describe("cover prompt", () => {
 
   it("system prompt forbids invention", () => {
     expect(COVER_SYSTEM_PROMPT).toContain("never invent");
+  });
+});
+
+describe("extractTailoredHighlights", () => {
+  const canonical = {
+    sections: [
+      {
+        id: "sec_summary",
+        type: "summary",
+        title: "Summary",
+        items: [
+          {
+            id: "summary_01",
+            kind: "summary",
+            fields: { content: "Backend engineer with Go and PostgreSQL." },
+            provenance: { sourceIds: ["summary_01"], change: "REWRITE" },
+          },
+        ],
+      },
+      {
+        id: "sec_experience",
+        type: "experience",
+        title: "Experience",
+        items: [
+          {
+            id: "exp_erp",
+            kind: "experience",
+            fields: { title: "Intern", bullets: ["Built APIs with Go.", "Cut latency 20%."] },
+            provenance: { sourceIds: ["bullet_erp_01"], change: "REORDER" },
+          },
+        ],
+      },
+    ],
+  };
+
+  it("flattens canonical tailored content into highlight strings", () => {
+    const highlights = extractTailoredHighlights(canonical);
+    expect(highlights).toHaveLength(2);
+    expect(highlights[0]).toContain("Backend engineer with Go");
+    expect(highlights[1]).toContain("Built APIs with Go.");
+  });
+
+  it("respects the limit", () => {
+    expect(extractTailoredHighlights(canonical, 1)).toHaveLength(1);
+  });
+
+  it("returns [] for unknown shapes instead of throwing", () => {
+    expect(extractTailoredHighlights(null)).toEqual([]);
+    expect(extractTailoredHighlights({})).toEqual([]);
+    expect(extractTailoredHighlights({ sections: "nope" })).toEqual([]);
   });
 });
