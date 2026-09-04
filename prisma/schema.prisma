@@ -218,6 +218,7 @@ model JobMatch {
   reasons String[]
   humanVerdict String?
   judgedAt DateTime?
+  judgmentContext String? @default("LOCATION_VISIBLE")
   nightlyRunId String?
   nightlyRun     NightlyRun? @relation(fields: [nightlyRunId], references: [id], onDelete: SetNull)
   createdAt      DateTime   @default(now())

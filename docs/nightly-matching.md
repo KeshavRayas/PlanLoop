@@ -59,6 +59,24 @@ Key rules:
 - `Profile.baseResumeId` pins the tailoring base resume (seeded from the
   transcribed resume); tailoring never depends on timestamp ordering.
 
+## Calibration
+
+Batch metrics (`npx tsx scripts/calibrate.ts`, scoped to one run):
+
+```text
+BAD/EXCELLENT in top 5/10, pairwise inversions, mean rank by verdict,
+role-family distribution, location errors, location UNKNOWN-rate
+```
+
+`judgmentContext` (`LOCATION_VISIBLE` default, `LOCATION_HIDDEN` for
+judgments made without seeing locations) excludes blind rows from
+location-specific cuts only. Batch snapshots with reason context:
+`npx tsx scripts/judge-queue.ts --export <path>` (see
+`scripts/calibration/batch1.json`). Class-level ranking invariants live in
+`src/__tests__/rankingInvariants.test.ts` — assert relationships between
+job classes (annotation < backend, ineligible never outranks eligible),
+never exact floats.
+
 ## Flow
 
 ```text

@@ -116,6 +116,45 @@ describe("locationEligibility", () => {
     ).toBe("INELIGIBLE");
   });
 
+  it("structured-remote city codes are eligible without explicit restriction", () => {
+    expect(
+      locationEligibility({ location: "PL-Warsaw", workMode: "REMOTE" }).fit
+    ).toBe("ELIGIBLE");
+    expect(
+      locationEligibility({ location: "DE-Berlin-Trion Building", workMode: "REMOTE" }).fit
+    ).toBe("ELIGIBLE");
+  });
+
+  it("explicit restrictions disqualify remote postings", () => {
+    expect(
+      locationEligibility({ location: "Remote", description: "US Only candidates." }).fit
+    ).toBe("INELIGIBLE");
+    expect(
+      locationEligibility({
+        location: "Remote",
+        description: "Candidates must be authorized to work in the US.",
+      }).fit
+    ).toBe("INELIGIBLE");
+    expect(
+      locationEligibility({ location: "Remote", description: "No sponsorship available." }).fit
+    ).toBe("INELIGIBLE");
+  });
+
+  it("positive sponsorship language is not a restriction", () => {
+    expect(
+      locationEligibility({ location: "Remote", description: "We sponsor visas for the right candidate." }).fit
+    ).toBe("ELIGIBLE");
+  });
+
+  it("distributed-systems boilerplate does not force a remote signal", () => {
+    expect(
+      locationEligibility({
+        location: "Berlin, Germany",
+        description: "Distributed systems role, on-site in Berlin.",
+      }).fit
+    ).toBe("INELIGIBLE");
+  });
+
   it("remote role with remote closed is UNKNOWN", () => {
     expect(
       locationEligibility({ location: "Remote" }, { openToRemote: false }).fit

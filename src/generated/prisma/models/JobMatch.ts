@@ -60,6 +60,7 @@ export type JobMatchMinAggregateOutputType = {
   recencySource: string | null
   humanVerdict: string | null
   judgedAt: Date | null
+  judgmentContext: string | null
   nightlyRunId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -81,6 +82,7 @@ export type JobMatchMaxAggregateOutputType = {
   recencySource: string | null
   humanVerdict: string | null
   judgedAt: Date | null
+  judgmentContext: string | null
   nightlyRunId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -105,6 +107,7 @@ export type JobMatchCountAggregateOutputType = {
   reasons: number
   humanVerdict: number
   judgedAt: number
+  judgmentContext: number
   nightlyRunId: number
   createdAt: number
   updatedAt: number
@@ -146,6 +149,7 @@ export type JobMatchMinAggregateInputType = {
   recencySource?: true
   humanVerdict?: true
   judgedAt?: true
+  judgmentContext?: true
   nightlyRunId?: true
   createdAt?: true
   updatedAt?: true
@@ -167,6 +171,7 @@ export type JobMatchMaxAggregateInputType = {
   recencySource?: true
   humanVerdict?: true
   judgedAt?: true
+  judgmentContext?: true
   nightlyRunId?: true
   createdAt?: true
   updatedAt?: true
@@ -191,6 +196,7 @@ export type JobMatchCountAggregateInputType = {
   reasons?: true
   humanVerdict?: true
   judgedAt?: true
+  judgmentContext?: true
   nightlyRunId?: true
   createdAt?: true
   updatedAt?: true
@@ -302,6 +308,7 @@ export type JobMatchGroupByOutputType = {
   reasons: string[]
   humanVerdict: string | null
   judgedAt: Date | null
+  judgmentContext: string | null
   nightlyRunId: string | null
   createdAt: Date
   updatedAt: Date
@@ -349,6 +356,7 @@ export type JobMatchWhereInput = {
   reasons?: Prisma.StringNullableListFilter<"JobMatch">
   humanVerdict?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   judgedAt?: Prisma.DateTimeNullableFilter<"JobMatch"> | Date | string | null
+  judgmentContext?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   nightlyRunId?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   createdAt?: Prisma.DateTimeFilter<"JobMatch"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"JobMatch"> | Date | string
@@ -375,6 +383,7 @@ export type JobMatchOrderByWithRelationInput = {
   reasons?: Prisma.SortOrder
   humanVerdict?: Prisma.SortOrderInput | Prisma.SortOrder
   judgedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  judgmentContext?: Prisma.SortOrderInput | Prisma.SortOrder
   nightlyRunId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -404,6 +413,7 @@ export type JobMatchWhereUniqueInput = Prisma.AtLeast<{
   reasons?: Prisma.StringNullableListFilter<"JobMatch">
   humanVerdict?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   judgedAt?: Prisma.DateTimeNullableFilter<"JobMatch"> | Date | string | null
+  judgmentContext?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   nightlyRunId?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   createdAt?: Prisma.DateTimeFilter<"JobMatch"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"JobMatch"> | Date | string
@@ -430,6 +440,7 @@ export type JobMatchOrderByWithAggregationInput = {
   reasons?: Prisma.SortOrder
   humanVerdict?: Prisma.SortOrderInput | Prisma.SortOrder
   judgedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  judgmentContext?: Prisma.SortOrderInput | Prisma.SortOrder
   nightlyRunId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -462,6 +473,7 @@ export type JobMatchScalarWhereWithAggregatesInput = {
   reasons?: Prisma.StringNullableListFilter<"JobMatch">
   humanVerdict?: Prisma.StringNullableWithAggregatesFilter<"JobMatch"> | string | null
   judgedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"JobMatch"> | Date | string | null
+  judgmentContext?: Prisma.StringNullableWithAggregatesFilter<"JobMatch"> | string | null
   nightlyRunId?: Prisma.StringNullableWithAggregatesFilter<"JobMatch"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"JobMatch"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"JobMatch"> | Date | string
@@ -485,6 +497,7 @@ export type JobMatchCreateInput = {
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
+  judgmentContext?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   job: Prisma.JobCreateNestedOneWithoutMatchInput
@@ -510,6 +523,7 @@ export type JobMatchUncheckedCreateInput = {
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
+  judgmentContext?: string | null
   nightlyRunId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -533,6 +547,7 @@ export type JobMatchUpdateInput = {
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  judgmentContext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   job?: Prisma.JobUpdateOneRequiredWithoutMatchNestedInput
@@ -558,6 +573,7 @@ export type JobMatchUncheckedUpdateInput = {
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  judgmentContext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nightlyRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -582,6 +598,7 @@ export type JobMatchCreateManyInput = {
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
+  judgmentContext?: string | null
   nightlyRunId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -605,6 +622,7 @@ export type JobMatchUpdateManyMutationInput = {
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  judgmentContext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -628,6 +646,7 @@ export type JobMatchUncheckedUpdateManyInput = {
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  judgmentContext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nightlyRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -667,6 +686,7 @@ export type JobMatchCountOrderByAggregateInput = {
   reasons?: Prisma.SortOrder
   humanVerdict?: Prisma.SortOrder
   judgedAt?: Prisma.SortOrder
+  judgmentContext?: Prisma.SortOrder
   nightlyRunId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -697,6 +717,7 @@ export type JobMatchMaxOrderByAggregateInput = {
   recencySource?: Prisma.SortOrder
   humanVerdict?: Prisma.SortOrder
   judgedAt?: Prisma.SortOrder
+  judgmentContext?: Prisma.SortOrder
   nightlyRunId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -718,6 +739,7 @@ export type JobMatchMinOrderByAggregateInput = {
   recencySource?: Prisma.SortOrder
   humanVerdict?: Prisma.SortOrder
   judgedAt?: Prisma.SortOrder
+  judgmentContext?: Prisma.SortOrder
   nightlyRunId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -863,6 +885,7 @@ export type JobMatchCreateWithoutJobInput = {
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
+  judgmentContext?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   nightlyRun?: Prisma.NightlyRunCreateNestedOneWithoutMatchesInput
@@ -886,6 +909,7 @@ export type JobMatchUncheckedCreateWithoutJobInput = {
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
+  judgmentContext?: string | null
   nightlyRunId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -925,6 +949,7 @@ export type JobMatchUpdateWithoutJobInput = {
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  judgmentContext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nightlyRun?: Prisma.NightlyRunUpdateOneWithoutMatchesNestedInput
@@ -948,6 +973,7 @@ export type JobMatchUncheckedUpdateWithoutJobInput = {
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  judgmentContext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nightlyRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -971,6 +997,7 @@ export type JobMatchCreateWithoutNightlyRunInput = {
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
+  judgmentContext?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   job: Prisma.JobCreateNestedOneWithoutMatchInput
@@ -995,6 +1022,7 @@ export type JobMatchUncheckedCreateWithoutNightlyRunInput = {
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
+  judgmentContext?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1047,6 +1075,7 @@ export type JobMatchScalarWhereInput = {
   reasons?: Prisma.StringNullableListFilter<"JobMatch">
   humanVerdict?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   judgedAt?: Prisma.DateTimeNullableFilter<"JobMatch"> | Date | string | null
+  judgmentContext?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   nightlyRunId?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   createdAt?: Prisma.DateTimeFilter<"JobMatch"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"JobMatch"> | Date | string
@@ -1071,6 +1100,7 @@ export type JobMatchCreateManyNightlyRunInput = {
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
+  judgmentContext?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1093,6 +1123,7 @@ export type JobMatchUpdateWithoutNightlyRunInput = {
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  judgmentContext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   job?: Prisma.JobUpdateOneRequiredWithoutMatchNestedInput
@@ -1117,6 +1148,7 @@ export type JobMatchUncheckedUpdateWithoutNightlyRunInput = {
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  judgmentContext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1140,6 +1172,7 @@ export type JobMatchUncheckedUpdateManyWithoutNightlyRunInput = {
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  judgmentContext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1165,6 +1198,7 @@ export type JobMatchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   reasons?: boolean
   humanVerdict?: boolean
   judgedAt?: boolean
+  judgmentContext?: boolean
   nightlyRunId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1191,6 +1225,7 @@ export type JobMatchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   reasons?: boolean
   humanVerdict?: boolean
   judgedAt?: boolean
+  judgmentContext?: boolean
   nightlyRunId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1217,6 +1252,7 @@ export type JobMatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   reasons?: boolean
   humanVerdict?: boolean
   judgedAt?: boolean
+  judgmentContext?: boolean
   nightlyRunId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1243,12 +1279,13 @@ export type JobMatchSelectScalar = {
   reasons?: boolean
   humanVerdict?: boolean
   judgedAt?: boolean
+  judgmentContext?: boolean
   nightlyRunId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type JobMatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobId" | "score" | "matchedSkills" | "missingSkills" | "skillOverlap" | "salaryFit" | "salaryScore" | "recencyDecay" | "sourceTrust" | "levelFit" | "roleFamily" | "roleFit" | "locationFit" | "recencySource" | "reasons" | "humanVerdict" | "judgedAt" | "nightlyRunId" | "createdAt" | "updatedAt", ExtArgs["result"]["jobMatch"]>
+export type JobMatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobId" | "score" | "matchedSkills" | "missingSkills" | "skillOverlap" | "salaryFit" | "salaryScore" | "recencyDecay" | "sourceTrust" | "levelFit" | "roleFamily" | "roleFit" | "locationFit" | "recencySource" | "reasons" | "humanVerdict" | "judgedAt" | "judgmentContext" | "nightlyRunId" | "createdAt" | "updatedAt", ExtArgs["result"]["jobMatch"]>
 export type JobMatchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   job?: boolean | Prisma.JobDefaultArgs<ExtArgs>
   nightlyRun?: boolean | Prisma.JobMatch$nightlyRunArgs<ExtArgs>
@@ -1287,6 +1324,7 @@ export type $JobMatchPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     reasons: string[]
     humanVerdict: string | null
     judgedAt: Date | null
+    judgmentContext: string | null
     nightlyRunId: string | null
     createdAt: Date
     updatedAt: Date
@@ -1733,6 +1771,7 @@ export interface JobMatchFieldRefs {
   readonly reasons: Prisma.FieldRef<"JobMatch", 'String[]'>
   readonly humanVerdict: Prisma.FieldRef<"JobMatch", 'String'>
   readonly judgedAt: Prisma.FieldRef<"JobMatch", 'DateTime'>
+  readonly judgmentContext: Prisma.FieldRef<"JobMatch", 'String'>
   readonly nightlyRunId: Prisma.FieldRef<"JobMatch", 'String'>
   readonly createdAt: Prisma.FieldRef<"JobMatch", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"JobMatch", 'DateTime'>

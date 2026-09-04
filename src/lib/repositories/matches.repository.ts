@@ -18,6 +18,7 @@ export interface TopMatch {
   nightlyRunId: string | null;
   humanVerdict: string | null;
   judgedAt: Date | null;
+  judgmentContext: string | null;
   job: {
     id: string;
     title: string;
@@ -86,6 +87,7 @@ export async function getTopMatches(
     nightlyRunId: m.nightlyRunId,
     humanVerdict: m.humanVerdict,
     judgedAt: m.judgedAt,
+    judgmentContext: m.judgmentContext,
     job: {
       id: m.job.id,
       title: m.job.title,

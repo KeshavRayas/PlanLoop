@@ -42,12 +42,42 @@ const REMOTE_MARKERS = [
   "remote",
   "work from home",
   "work-from-home",
-  "worldwide",
-  "distributed",
   "fully remote",
   "remote-first",
   "remote first",
 ];
+// NOTE: "distributed" and "worldwide" are deliberately absent — they appear
+// in boilerplate ("distributed systems", "operating worldwide") and would
+// mark nearly every backend posting remote.
+
+// Explicit work-authorization/location restrictions. Tight negative-only
+// list: positive sponsorship language ("we sponsor visas") must NOT match.
+const RESTRICTION_MARKERS = [
+  "us only",
+  "u.s. only",
+  "must be based in",
+  "must reside in",
+  "required to be based",
+  "required to reside",
+  "no sponsorship",
+  "without sponsorship",
+  "not sponsor",
+  "unable to sponsor",
+  "do not sponsor",
+  "does not sponsor",
+  "no visa",
+  "authorized to work",
+  "work authorized",
+  "authorization to work",
+  "us citizen",
+  "u.s. citizen",
+  "eu citizen",
+];
+
+export function findRestriction(text: string): string | null {
+  const lower = text.toLowerCase();
+  return RESTRICTION_MARKERS.find((m) => lower.includes(m)) ?? null;
+}
 
 // Named Indian cities outside the home market. Remote roles based here stay
 // eligible (remote India-wide hiring is common); on-site ones do not.
@@ -135,14 +165,15 @@ export function locationEligibility(
   const homeSignal = homeInLoc || homeInDesc;
 
   if (remoteSignal && openToRemote) {
+    // Structured or textual remote is trusted: city codes on remote
+    // postings are requisition metadata, not work sites. Only an explicit
+    // stated restriction disqualifies.
+    const restriction = findRestriction(text);
+    if (restriction) {
+      return { fit: "INELIGIBLE", reason: `remote but restricted ("${restriction}")` };
+    }
     if (homeSignal) return { fit: "ELIGIBLE", reason: "remote, India/APAC-inclusive" };
-    if (includesAny(loc, INDIA_OTHER)) {
-      return { fit: "ELIGIBLE", reason: "remote, India-based" };
-    }
-    if (includesAny(loc, FOREIGN_MARKERS)) {
-      return { fit: "INELIGIBLE", reason: `remote but restricted (${job.location})` };
-    }
-    return { fit: "ELIGIBLE", reason: "remote, no geo restriction stated" };
+    return { fit: "ELIGIBLE", reason: "remote, no restriction stated" };
   }
 
   if (!openToRemote && remoteSignal) {

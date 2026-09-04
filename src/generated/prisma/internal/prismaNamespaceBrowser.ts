@@ -232,6 +232,7 @@ export const JobMatchScalarFieldEnum = {
   reasons: 'reasons',
   humanVerdict: 'humanVerdict',
   judgedAt: 'judgedAt',
+  judgmentContext: 'judgmentContext',
   nightlyRunId: 'nightlyRunId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
