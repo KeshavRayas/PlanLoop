@@ -8,6 +8,7 @@ import {
 import { validateCoverLetter } from "@/lib/cover/validate";
 import { collectEvidence, evidenceMap } from "@/lib/tailor/evidence";
 import type { ResumeData } from "@/lib/resume.types";
+import { hasResumeContent } from "@/lib/resume.utils";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
 import { EmptyResumeError, getBaseResume } from "@/lib/tailor/service";
 import type { LlmProvider } from "@/lib/llm/types";
@@ -38,10 +39,6 @@ export { setDefaultProvider, EmptyResumeError };
 
 export async function getCoverLetter(jobId: string) {
   return prisma.coverLetter.findUnique({ where: { jobId } });
-}
-
-function isNonEmpty(data: ResumeData): boolean {
-  return (data.sections ?? []).some((s) => (s.items ?? []).length > 0);
 }
 
 /**
@@ -105,7 +102,7 @@ export async function generateCoverLetter(
 
   const base = await getBaseResume();
   const content = base?.content as ResumeData | null;
-  if (!base || !content || !isNonEmpty(content)) throw new EmptyResumeError();
+  if (!base || !content || !hasResumeContent(content)) throw new EmptyResumeError();
 
   const evidence = collectEvidence(content);
   const evidenceById = evidenceMap(content);

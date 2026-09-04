@@ -9,6 +9,7 @@ import { collectEvidence, evidenceMap } from "@/lib/tailor/evidence";
 import { validateTailoredResume } from "@/lib/tailor/validate";
 import { canonicalizeTailored } from "@/lib/tailor/canonical";
 import type { ResumeData } from "@/lib/resume.types";
+import { hasResumeContent } from "@/lib/resume.utils";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
 import type { LlmProvider } from "@/lib/llm/types";
 import { generateJsonSanitized } from "@/lib/llm/sanitize";
@@ -78,10 +79,6 @@ export async function getTailoredVersions(jobId: string) {
   });
 }
 
-function isNonEmpty(data: ResumeData): boolean {
-  return (data.sections ?? []).some((s) => (s.items ?? []).length > 0);
-}
-
 /**
  * Tailor the base resume for a job (Phase 2.2). Requires an existing
  * JobAnalysis — tailor builds on actual analysis, never raw postings alone.
@@ -100,7 +97,7 @@ export async function tailorResume(
 
   const base = await getBaseResume();
   const content = base?.content as ResumeData | null;
-  if (!base || !content || !isNonEmpty(content)) throw new EmptyResumeError();
+  if (!base || !content || !hasResumeContent(content)) throw new EmptyResumeError();
 
   const evidence = collectEvidence(content);
   const evidenceById = evidenceMap(content);

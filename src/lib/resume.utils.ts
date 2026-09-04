@@ -208,6 +208,12 @@ export function defaultResumeData(): ResumeData {
   return { sections: [] };
 }
 
+/** True when the resume has at least one item in any section. */
+export function hasResumeContent(data: ResumeData | null | undefined): boolean {
+  if (!data) return false;
+  return (data.sections ?? []).some((s) => (s.items ?? []).length > 0);
+}
+
 export function extractSkills(data: ResumeData): string[] {
   const skillSet = new Set<string>();
   for (const section of data.sections) {

@@ -8,6 +8,7 @@ import {
 import { validateInterviewPrep } from "@/lib/interview/validate";
 import { collectEvidence, evidenceMap } from "@/lib/tailor/evidence";
 import type { ResumeData } from "@/lib/resume.types";
+import { hasResumeContent } from "@/lib/resume.utils";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
 import { EmptyResumeError, getBaseResume } from "@/lib/tailor/service";
 import { extractTailoredHighlights } from "@/lib/cover/service";
@@ -39,10 +40,6 @@ export { setDefaultProvider, EmptyResumeError };
 
 export async function getInterviewPrep(jobId: string) {
   return prisma.interviewPrep.findUnique({ where: { jobId } });
-}
-
-function isNonEmpty(data: ResumeData): boolean {
-  return (data.sections ?? []).some((s) => (s.items ?? []).length > 0);
 }
 
 /**
@@ -108,7 +105,7 @@ export async function generateInterviewPrep(
 
   const base = await getBaseResume();
   const content = base?.content as ResumeData | null;
-  if (!base || !content || !isNonEmpty(content)) throw new EmptyResumeError();
+  if (!base || !content || !hasResumeContent(content)) throw new EmptyResumeError();
 
   const evidence = relevantEvidence(collectEvidence(content), tailored.content);
   const evidenceById = evidenceMap(content);
