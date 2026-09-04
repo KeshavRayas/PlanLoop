@@ -54,6 +54,10 @@ export type JobMatchMinAggregateOutputType = {
   recencyDecay: number | null
   sourceTrust: number | null
   levelFit: number | null
+  roleFamily: string | null
+  roleFit: string | null
+  locationFit: string | null
+  recencySource: string | null
   humanVerdict: string | null
   judgedAt: Date | null
   nightlyRunId: string | null
@@ -71,6 +75,10 @@ export type JobMatchMaxAggregateOutputType = {
   recencyDecay: number | null
   sourceTrust: number | null
   levelFit: number | null
+  roleFamily: string | null
+  roleFit: string | null
+  locationFit: string | null
+  recencySource: string | null
   humanVerdict: string | null
   judgedAt: Date | null
   nightlyRunId: string | null
@@ -90,6 +98,10 @@ export type JobMatchCountAggregateOutputType = {
   recencyDecay: number
   sourceTrust: number
   levelFit: number
+  roleFamily: number
+  roleFit: number
+  locationFit: number
+  recencySource: number
   reasons: number
   humanVerdict: number
   judgedAt: number
@@ -128,6 +140,10 @@ export type JobMatchMinAggregateInputType = {
   recencyDecay?: true
   sourceTrust?: true
   levelFit?: true
+  roleFamily?: true
+  roleFit?: true
+  locationFit?: true
+  recencySource?: true
   humanVerdict?: true
   judgedAt?: true
   nightlyRunId?: true
@@ -145,6 +161,10 @@ export type JobMatchMaxAggregateInputType = {
   recencyDecay?: true
   sourceTrust?: true
   levelFit?: true
+  roleFamily?: true
+  roleFit?: true
+  locationFit?: true
+  recencySource?: true
   humanVerdict?: true
   judgedAt?: true
   nightlyRunId?: true
@@ -164,6 +184,10 @@ export type JobMatchCountAggregateInputType = {
   recencyDecay?: true
   sourceTrust?: true
   levelFit?: true
+  roleFamily?: true
+  roleFit?: true
+  locationFit?: true
+  recencySource?: true
   reasons?: true
   humanVerdict?: true
   judgedAt?: true
@@ -271,6 +295,10 @@ export type JobMatchGroupByOutputType = {
   recencyDecay: number
   sourceTrust: number
   levelFit: number
+  roleFamily: string | null
+  roleFit: string | null
+  locationFit: string | null
+  recencySource: string | null
   reasons: string[]
   humanVerdict: string | null
   judgedAt: Date | null
@@ -314,6 +342,10 @@ export type JobMatchWhereInput = {
   recencyDecay?: Prisma.FloatFilter<"JobMatch"> | number
   sourceTrust?: Prisma.FloatFilter<"JobMatch"> | number
   levelFit?: Prisma.FloatFilter<"JobMatch"> | number
+  roleFamily?: Prisma.StringNullableFilter<"JobMatch"> | string | null
+  roleFit?: Prisma.StringNullableFilter<"JobMatch"> | string | null
+  locationFit?: Prisma.StringNullableFilter<"JobMatch"> | string | null
+  recencySource?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   reasons?: Prisma.StringNullableListFilter<"JobMatch">
   humanVerdict?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   judgedAt?: Prisma.DateTimeNullableFilter<"JobMatch"> | Date | string | null
@@ -336,6 +368,10 @@ export type JobMatchOrderByWithRelationInput = {
   recencyDecay?: Prisma.SortOrder
   sourceTrust?: Prisma.SortOrder
   levelFit?: Prisma.SortOrder
+  roleFamily?: Prisma.SortOrderInput | Prisma.SortOrder
+  roleFit?: Prisma.SortOrderInput | Prisma.SortOrder
+  locationFit?: Prisma.SortOrderInput | Prisma.SortOrder
+  recencySource?: Prisma.SortOrderInput | Prisma.SortOrder
   reasons?: Prisma.SortOrder
   humanVerdict?: Prisma.SortOrderInput | Prisma.SortOrder
   judgedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -361,6 +397,10 @@ export type JobMatchWhereUniqueInput = Prisma.AtLeast<{
   recencyDecay?: Prisma.FloatFilter<"JobMatch"> | number
   sourceTrust?: Prisma.FloatFilter<"JobMatch"> | number
   levelFit?: Prisma.FloatFilter<"JobMatch"> | number
+  roleFamily?: Prisma.StringNullableFilter<"JobMatch"> | string | null
+  roleFit?: Prisma.StringNullableFilter<"JobMatch"> | string | null
+  locationFit?: Prisma.StringNullableFilter<"JobMatch"> | string | null
+  recencySource?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   reasons?: Prisma.StringNullableListFilter<"JobMatch">
   humanVerdict?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   judgedAt?: Prisma.DateTimeNullableFilter<"JobMatch"> | Date | string | null
@@ -383,6 +423,10 @@ export type JobMatchOrderByWithAggregationInput = {
   recencyDecay?: Prisma.SortOrder
   sourceTrust?: Prisma.SortOrder
   levelFit?: Prisma.SortOrder
+  roleFamily?: Prisma.SortOrderInput | Prisma.SortOrder
+  roleFit?: Prisma.SortOrderInput | Prisma.SortOrder
+  locationFit?: Prisma.SortOrderInput | Prisma.SortOrder
+  recencySource?: Prisma.SortOrderInput | Prisma.SortOrder
   reasons?: Prisma.SortOrder
   humanVerdict?: Prisma.SortOrderInput | Prisma.SortOrder
   judgedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -411,6 +455,10 @@ export type JobMatchScalarWhereWithAggregatesInput = {
   recencyDecay?: Prisma.FloatWithAggregatesFilter<"JobMatch"> | number
   sourceTrust?: Prisma.FloatWithAggregatesFilter<"JobMatch"> | number
   levelFit?: Prisma.FloatWithAggregatesFilter<"JobMatch"> | number
+  roleFamily?: Prisma.StringNullableWithAggregatesFilter<"JobMatch"> | string | null
+  roleFit?: Prisma.StringNullableWithAggregatesFilter<"JobMatch"> | string | null
+  locationFit?: Prisma.StringNullableWithAggregatesFilter<"JobMatch"> | string | null
+  recencySource?: Prisma.StringNullableWithAggregatesFilter<"JobMatch"> | string | null
   reasons?: Prisma.StringNullableListFilter<"JobMatch">
   humanVerdict?: Prisma.StringNullableWithAggregatesFilter<"JobMatch"> | string | null
   judgedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"JobMatch"> | Date | string | null
@@ -430,6 +478,10 @@ export type JobMatchCreateInput = {
   recencyDecay: number
   sourceTrust: number
   levelFit: number
+  roleFamily?: string | null
+  roleFit?: string | null
+  locationFit?: string | null
+  recencySource?: string | null
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
@@ -451,6 +503,10 @@ export type JobMatchUncheckedCreateInput = {
   recencyDecay: number
   sourceTrust: number
   levelFit: number
+  roleFamily?: string | null
+  roleFit?: string | null
+  locationFit?: string | null
+  recencySource?: string | null
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
@@ -470,6 +526,10 @@ export type JobMatchUpdateInput = {
   recencyDecay?: Prisma.FloatFieldUpdateOperationsInput | number
   sourceTrust?: Prisma.FloatFieldUpdateOperationsInput | number
   levelFit?: Prisma.FloatFieldUpdateOperationsInput | number
+  roleFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recencySource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -491,6 +551,10 @@ export type JobMatchUncheckedUpdateInput = {
   recencyDecay?: Prisma.FloatFieldUpdateOperationsInput | number
   sourceTrust?: Prisma.FloatFieldUpdateOperationsInput | number
   levelFit?: Prisma.FloatFieldUpdateOperationsInput | number
+  roleFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recencySource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -511,6 +575,10 @@ export type JobMatchCreateManyInput = {
   recencyDecay: number
   sourceTrust: number
   levelFit: number
+  roleFamily?: string | null
+  roleFit?: string | null
+  locationFit?: string | null
+  recencySource?: string | null
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
@@ -530,6 +598,10 @@ export type JobMatchUpdateManyMutationInput = {
   recencyDecay?: Prisma.FloatFieldUpdateOperationsInput | number
   sourceTrust?: Prisma.FloatFieldUpdateOperationsInput | number
   levelFit?: Prisma.FloatFieldUpdateOperationsInput | number
+  roleFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recencySource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -549,6 +621,10 @@ export type JobMatchUncheckedUpdateManyInput = {
   recencyDecay?: Prisma.FloatFieldUpdateOperationsInput | number
   sourceTrust?: Prisma.FloatFieldUpdateOperationsInput | number
   levelFit?: Prisma.FloatFieldUpdateOperationsInput | number
+  roleFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recencySource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -584,6 +660,10 @@ export type JobMatchCountOrderByAggregateInput = {
   recencyDecay?: Prisma.SortOrder
   sourceTrust?: Prisma.SortOrder
   levelFit?: Prisma.SortOrder
+  roleFamily?: Prisma.SortOrder
+  roleFit?: Prisma.SortOrder
+  locationFit?: Prisma.SortOrder
+  recencySource?: Prisma.SortOrder
   reasons?: Prisma.SortOrder
   humanVerdict?: Prisma.SortOrder
   judgedAt?: Prisma.SortOrder
@@ -611,6 +691,10 @@ export type JobMatchMaxOrderByAggregateInput = {
   recencyDecay?: Prisma.SortOrder
   sourceTrust?: Prisma.SortOrder
   levelFit?: Prisma.SortOrder
+  roleFamily?: Prisma.SortOrder
+  roleFit?: Prisma.SortOrder
+  locationFit?: Prisma.SortOrder
+  recencySource?: Prisma.SortOrder
   humanVerdict?: Prisma.SortOrder
   judgedAt?: Prisma.SortOrder
   nightlyRunId?: Prisma.SortOrder
@@ -628,6 +712,10 @@ export type JobMatchMinOrderByAggregateInput = {
   recencyDecay?: Prisma.SortOrder
   sourceTrust?: Prisma.SortOrder
   levelFit?: Prisma.SortOrder
+  roleFamily?: Prisma.SortOrder
+  roleFit?: Prisma.SortOrder
+  locationFit?: Prisma.SortOrder
+  recencySource?: Prisma.SortOrder
   humanVerdict?: Prisma.SortOrder
   judgedAt?: Prisma.SortOrder
   nightlyRunId?: Prisma.SortOrder
@@ -768,6 +856,10 @@ export type JobMatchCreateWithoutJobInput = {
   recencyDecay: number
   sourceTrust: number
   levelFit: number
+  roleFamily?: string | null
+  roleFit?: string | null
+  locationFit?: string | null
+  recencySource?: string | null
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
@@ -787,6 +879,10 @@ export type JobMatchUncheckedCreateWithoutJobInput = {
   recencyDecay: number
   sourceTrust: number
   levelFit: number
+  roleFamily?: string | null
+  roleFit?: string | null
+  locationFit?: string | null
+  recencySource?: string | null
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
@@ -822,6 +918,10 @@ export type JobMatchUpdateWithoutJobInput = {
   recencyDecay?: Prisma.FloatFieldUpdateOperationsInput | number
   sourceTrust?: Prisma.FloatFieldUpdateOperationsInput | number
   levelFit?: Prisma.FloatFieldUpdateOperationsInput | number
+  roleFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recencySource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -841,6 +941,10 @@ export type JobMatchUncheckedUpdateWithoutJobInput = {
   recencyDecay?: Prisma.FloatFieldUpdateOperationsInput | number
   sourceTrust?: Prisma.FloatFieldUpdateOperationsInput | number
   levelFit?: Prisma.FloatFieldUpdateOperationsInput | number
+  roleFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recencySource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -860,6 +964,10 @@ export type JobMatchCreateWithoutNightlyRunInput = {
   recencyDecay: number
   sourceTrust: number
   levelFit: number
+  roleFamily?: string | null
+  roleFit?: string | null
+  locationFit?: string | null
+  recencySource?: string | null
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
@@ -880,6 +988,10 @@ export type JobMatchUncheckedCreateWithoutNightlyRunInput = {
   recencyDecay: number
   sourceTrust: number
   levelFit: number
+  roleFamily?: string | null
+  roleFit?: string | null
+  locationFit?: string | null
+  recencySource?: string | null
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
@@ -928,6 +1040,10 @@ export type JobMatchScalarWhereInput = {
   recencyDecay?: Prisma.FloatFilter<"JobMatch"> | number
   sourceTrust?: Prisma.FloatFilter<"JobMatch"> | number
   levelFit?: Prisma.FloatFilter<"JobMatch"> | number
+  roleFamily?: Prisma.StringNullableFilter<"JobMatch"> | string | null
+  roleFit?: Prisma.StringNullableFilter<"JobMatch"> | string | null
+  locationFit?: Prisma.StringNullableFilter<"JobMatch"> | string | null
+  recencySource?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   reasons?: Prisma.StringNullableListFilter<"JobMatch">
   humanVerdict?: Prisma.StringNullableFilter<"JobMatch"> | string | null
   judgedAt?: Prisma.DateTimeNullableFilter<"JobMatch"> | Date | string | null
@@ -948,6 +1064,10 @@ export type JobMatchCreateManyNightlyRunInput = {
   recencyDecay: number
   sourceTrust: number
   levelFit: number
+  roleFamily?: string | null
+  roleFit?: string | null
+  locationFit?: string | null
+  recencySource?: string | null
   reasons?: Prisma.JobMatchCreatereasonsInput | string[]
   humanVerdict?: string | null
   judgedAt?: Date | string | null
@@ -966,6 +1086,10 @@ export type JobMatchUpdateWithoutNightlyRunInput = {
   recencyDecay?: Prisma.FloatFieldUpdateOperationsInput | number
   sourceTrust?: Prisma.FloatFieldUpdateOperationsInput | number
   levelFit?: Prisma.FloatFieldUpdateOperationsInput | number
+  roleFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recencySource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -986,6 +1110,10 @@ export type JobMatchUncheckedUpdateWithoutNightlyRunInput = {
   recencyDecay?: Prisma.FloatFieldUpdateOperationsInput | number
   sourceTrust?: Prisma.FloatFieldUpdateOperationsInput | number
   levelFit?: Prisma.FloatFieldUpdateOperationsInput | number
+  roleFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recencySource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1005,6 +1133,10 @@ export type JobMatchUncheckedUpdateManyWithoutNightlyRunInput = {
   recencyDecay?: Prisma.FloatFieldUpdateOperationsInput | number
   sourceTrust?: Prisma.FloatFieldUpdateOperationsInput | number
   levelFit?: Prisma.FloatFieldUpdateOperationsInput | number
+  roleFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recencySource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reasons?: Prisma.JobMatchUpdatereasonsInput | string[]
   humanVerdict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   judgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1026,6 +1158,10 @@ export type JobMatchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   recencyDecay?: boolean
   sourceTrust?: boolean
   levelFit?: boolean
+  roleFamily?: boolean
+  roleFit?: boolean
+  locationFit?: boolean
+  recencySource?: boolean
   reasons?: boolean
   humanVerdict?: boolean
   judgedAt?: boolean
@@ -1048,6 +1184,10 @@ export type JobMatchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   recencyDecay?: boolean
   sourceTrust?: boolean
   levelFit?: boolean
+  roleFamily?: boolean
+  roleFit?: boolean
+  locationFit?: boolean
+  recencySource?: boolean
   reasons?: boolean
   humanVerdict?: boolean
   judgedAt?: boolean
@@ -1070,6 +1210,10 @@ export type JobMatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   recencyDecay?: boolean
   sourceTrust?: boolean
   levelFit?: boolean
+  roleFamily?: boolean
+  roleFit?: boolean
+  locationFit?: boolean
+  recencySource?: boolean
   reasons?: boolean
   humanVerdict?: boolean
   judgedAt?: boolean
@@ -1092,6 +1236,10 @@ export type JobMatchSelectScalar = {
   recencyDecay?: boolean
   sourceTrust?: boolean
   levelFit?: boolean
+  roleFamily?: boolean
+  roleFit?: boolean
+  locationFit?: boolean
+  recencySource?: boolean
   reasons?: boolean
   humanVerdict?: boolean
   judgedAt?: boolean
@@ -1100,7 +1248,7 @@ export type JobMatchSelectScalar = {
   updatedAt?: boolean
 }
 
-export type JobMatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobId" | "score" | "matchedSkills" | "missingSkills" | "skillOverlap" | "salaryFit" | "salaryScore" | "recencyDecay" | "sourceTrust" | "levelFit" | "reasons" | "humanVerdict" | "judgedAt" | "nightlyRunId" | "createdAt" | "updatedAt", ExtArgs["result"]["jobMatch"]>
+export type JobMatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobId" | "score" | "matchedSkills" | "missingSkills" | "skillOverlap" | "salaryFit" | "salaryScore" | "recencyDecay" | "sourceTrust" | "levelFit" | "roleFamily" | "roleFit" | "locationFit" | "recencySource" | "reasons" | "humanVerdict" | "judgedAt" | "nightlyRunId" | "createdAt" | "updatedAt", ExtArgs["result"]["jobMatch"]>
 export type JobMatchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   job?: boolean | Prisma.JobDefaultArgs<ExtArgs>
   nightlyRun?: boolean | Prisma.JobMatch$nightlyRunArgs<ExtArgs>
@@ -1132,6 +1280,10 @@ export type $JobMatchPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     recencyDecay: number
     sourceTrust: number
     levelFit: number
+    roleFamily: string | null
+    roleFit: string | null
+    locationFit: string | null
+    recencySource: string | null
     reasons: string[]
     humanVerdict: string | null
     judgedAt: Date | null
@@ -1574,6 +1726,10 @@ export interface JobMatchFieldRefs {
   readonly recencyDecay: Prisma.FieldRef<"JobMatch", 'Float'>
   readonly sourceTrust: Prisma.FieldRef<"JobMatch", 'Float'>
   readonly levelFit: Prisma.FieldRef<"JobMatch", 'Float'>
+  readonly roleFamily: Prisma.FieldRef<"JobMatch", 'String'>
+  readonly roleFit: Prisma.FieldRef<"JobMatch", 'String'>
+  readonly locationFit: Prisma.FieldRef<"JobMatch", 'String'>
+  readonly recencySource: Prisma.FieldRef<"JobMatch", 'String'>
   readonly reasons: Prisma.FieldRef<"JobMatch", 'String[]'>
   readonly humanVerdict: Prisma.FieldRef<"JobMatch", 'String'>
   readonly judgedAt: Prisma.FieldRef<"JobMatch", 'DateTime'>

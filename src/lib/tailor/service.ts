@@ -11,6 +11,7 @@ import { canonicalizeTailored } from "@/lib/tailor/canonical";
 import type { ResumeData } from "@/lib/resume.types";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
 import type { LlmProvider } from "@/lib/llm/types";
+import { generateJsonSanitized } from "@/lib/llm/sanitize";
 
 export class NeedsAnalysisError extends Error {
   constructor() {
@@ -34,6 +35,20 @@ export class TailorValidationError extends Error {
 }
 
 export { setDefaultProvider };
+
+/**
+ * Explicit base resume via Profile.baseResumeId, falling back to the most
+ * recently updated resume. The pin removes timestamp-tie nondeterminism
+ * between multiple resumes (production) and keeps tests hermetic.
+ */
+export async function getBaseResume() {
+  const profile = await prisma.profile.findFirst({ orderBy: { updatedAt: "desc" } });
+  if (profile?.baseResumeId) {
+    const pinned = await prisma.resume.findUnique({ where: { id: profile.baseResumeId } });
+    if (pinned) return pinned;
+  }
+  return prisma.resume.findFirst({ orderBy: { updatedAt: "desc" } });
+}
 
 export async function getTailoredResume(jobId: string) {
   const [current, versionCount] = await Promise.all([
@@ -83,7 +98,7 @@ export async function tailorResume(
   if (!job) throw new Error(`job not found: ${jobId}`);
   if (!job.analysis) throw new NeedsAnalysisError();
 
-  const base = await prisma.resume.findFirst({ orderBy: { updatedAt: "desc" } });
+  const base = await getBaseResume();
   const content = base?.content as ResumeData | null;
   if (!base || !content || !isNonEmpty(content)) throw new EmptyResumeError();
 
@@ -101,12 +116,12 @@ export async function tailorResume(
     evidence,
   });
 
-  const raw = await provider.generateJson(TAILOR_SYSTEM_PROMPT, prompt);
+  const raw = await generateJsonSanitized(provider, TAILOR_SYSTEM_PROMPT, prompt);
   let parsed = tailoredResumeSchema.safeParse(raw);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
     console.error(`[tailor] schema invalid for job ${jobId}: ${issues}`);
-    const retry = await provider.generateJson(
+    const retry = await generateJsonSanitized(provider, 
       TAILOR_SYSTEM_PROMPT,
       `Your previous output failed validation: ${issues}\nReturn ONLY the corrected JSON in exactly the requested shape.\n\n---\n\n${prompt}`
     );

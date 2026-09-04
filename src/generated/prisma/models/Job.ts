@@ -374,6 +374,7 @@ export type JobWhereInput = {
   tailoredResumes?: Prisma.TailoredResumeListRelationFilter
   decision?: Prisma.XOR<Prisma.ApplicationDecisionNullableScalarRelationFilter, Prisma.ApplicationDecisionWhereInput> | null
   coverLetter?: Prisma.XOR<Prisma.CoverLetterNullableScalarRelationFilter, Prisma.CoverLetterWhereInput> | null
+  interviewPrep?: Prisma.XOR<Prisma.InterviewPrepNullableScalarRelationFilter, Prisma.InterviewPrepWhereInput> | null
 }
 
 export type JobOrderByWithRelationInput = {
@@ -406,6 +407,7 @@ export type JobOrderByWithRelationInput = {
   tailoredResumes?: Prisma.TailoredResumeOrderByRelationAggregateInput
   decision?: Prisma.ApplicationDecisionOrderByWithRelationInput
   coverLetter?: Prisma.CoverLetterOrderByWithRelationInput
+  interviewPrep?: Prisma.InterviewPrepOrderByWithRelationInput
 }
 
 export type JobWhereUniqueInput = Prisma.AtLeast<{
@@ -442,6 +444,7 @@ export type JobWhereUniqueInput = Prisma.AtLeast<{
   tailoredResumes?: Prisma.TailoredResumeListRelationFilter
   decision?: Prisma.XOR<Prisma.ApplicationDecisionNullableScalarRelationFilter, Prisma.ApplicationDecisionWhereInput> | null
   coverLetter?: Prisma.XOR<Prisma.CoverLetterNullableScalarRelationFilter, Prisma.CoverLetterWhereInput> | null
+  interviewPrep?: Prisma.XOR<Prisma.InterviewPrepNullableScalarRelationFilter, Prisma.InterviewPrepWhereInput> | null
 }, "id" | "externalId_source">
 
 export type JobOrderByWithAggregationInput = {
@@ -533,6 +536,7 @@ export type JobCreateInput = {
   tailoredResumes?: Prisma.TailoredResumeCreateNestedManyWithoutJobInput
   decision?: Prisma.ApplicationDecisionCreateNestedOneWithoutJobInput
   coverLetter?: Prisma.CoverLetterCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepCreateNestedOneWithoutJobInput
 }
 
 export type JobUncheckedCreateInput = {
@@ -564,6 +568,7 @@ export type JobUncheckedCreateInput = {
   tailoredResumes?: Prisma.TailoredResumeUncheckedCreateNestedManyWithoutJobInput
   decision?: Prisma.ApplicationDecisionUncheckedCreateNestedOneWithoutJobInput
   coverLetter?: Prisma.CoverLetterUncheckedCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedCreateNestedOneWithoutJobInput
 }
 
 export type JobUpdateInput = {
@@ -595,6 +600,7 @@ export type JobUpdateInput = {
   tailoredResumes?: Prisma.TailoredResumeUpdateManyWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUpdateOneWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateInput = {
@@ -626,6 +632,7 @@ export type JobUncheckedUpdateInput = {
   tailoredResumes?: Prisma.TailoredResumeUncheckedUpdateManyWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUncheckedUpdateOneWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUncheckedUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedUpdateOneWithoutJobNestedInput
 }
 
 export type JobCreateManyInput = {
@@ -996,6 +1003,20 @@ export type JobUpdateOneRequiredWithoutCoverLetterNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.JobUpdateToOneWithWhereWithoutCoverLetterInput, Prisma.JobUpdateWithoutCoverLetterInput>, Prisma.JobUncheckedUpdateWithoutCoverLetterInput>
 }
 
+export type JobCreateNestedOneWithoutInterviewPrepInput = {
+  create?: Prisma.XOR<Prisma.JobCreateWithoutInterviewPrepInput, Prisma.JobUncheckedCreateWithoutInterviewPrepInput>
+  connectOrCreate?: Prisma.JobCreateOrConnectWithoutInterviewPrepInput
+  connect?: Prisma.JobWhereUniqueInput
+}
+
+export type JobUpdateOneRequiredWithoutInterviewPrepNestedInput = {
+  create?: Prisma.XOR<Prisma.JobCreateWithoutInterviewPrepInput, Prisma.JobUncheckedCreateWithoutInterviewPrepInput>
+  connectOrCreate?: Prisma.JobCreateOrConnectWithoutInterviewPrepInput
+  upsert?: Prisma.JobUpsertWithoutInterviewPrepInput
+  connect?: Prisma.JobWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.JobUpdateToOneWithWhereWithoutInterviewPrepInput, Prisma.JobUpdateWithoutInterviewPrepInput>, Prisma.JobUncheckedUpdateWithoutInterviewPrepInput>
+}
+
 export type JobCreateWithoutCompanyInput = {
   id?: string
   externalId: string
@@ -1024,6 +1045,7 @@ export type JobCreateWithoutCompanyInput = {
   tailoredResumes?: Prisma.TailoredResumeCreateNestedManyWithoutJobInput
   decision?: Prisma.ApplicationDecisionCreateNestedOneWithoutJobInput
   coverLetter?: Prisma.CoverLetterCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepCreateNestedOneWithoutJobInput
 }
 
 export type JobUncheckedCreateWithoutCompanyInput = {
@@ -1054,6 +1076,7 @@ export type JobUncheckedCreateWithoutCompanyInput = {
   tailoredResumes?: Prisma.TailoredResumeUncheckedCreateNestedManyWithoutJobInput
   decision?: Prisma.ApplicationDecisionUncheckedCreateNestedOneWithoutJobInput
   coverLetter?: Prisma.CoverLetterUncheckedCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedCreateNestedOneWithoutJobInput
 }
 
 export type JobCreateOrConnectWithoutCompanyInput = {
@@ -1139,6 +1162,7 @@ export type JobCreateWithoutMatchInput = {
   tailoredResumes?: Prisma.TailoredResumeCreateNestedManyWithoutJobInput
   decision?: Prisma.ApplicationDecisionCreateNestedOneWithoutJobInput
   coverLetter?: Prisma.CoverLetterCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepCreateNestedOneWithoutJobInput
 }
 
 export type JobUncheckedCreateWithoutMatchInput = {
@@ -1169,6 +1193,7 @@ export type JobUncheckedCreateWithoutMatchInput = {
   tailoredResumes?: Prisma.TailoredResumeUncheckedCreateNestedManyWithoutJobInput
   decision?: Prisma.ApplicationDecisionUncheckedCreateNestedOneWithoutJobInput
   coverLetter?: Prisma.CoverLetterUncheckedCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedCreateNestedOneWithoutJobInput
 }
 
 export type JobCreateOrConnectWithoutMatchInput = {
@@ -1215,6 +1240,7 @@ export type JobUpdateWithoutMatchInput = {
   tailoredResumes?: Prisma.TailoredResumeUpdateManyWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUpdateOneWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateWithoutMatchInput = {
@@ -1245,6 +1271,7 @@ export type JobUncheckedUpdateWithoutMatchInput = {
   tailoredResumes?: Prisma.TailoredResumeUncheckedUpdateManyWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUncheckedUpdateOneWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUncheckedUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedUpdateOneWithoutJobNestedInput
 }
 
 export type JobCreateWithoutDecisionInput = {
@@ -1275,6 +1302,7 @@ export type JobCreateWithoutDecisionInput = {
   analysis?: Prisma.JobAnalysisCreateNestedOneWithoutJobInput
   tailoredResumes?: Prisma.TailoredResumeCreateNestedManyWithoutJobInput
   coverLetter?: Prisma.CoverLetterCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepCreateNestedOneWithoutJobInput
 }
 
 export type JobUncheckedCreateWithoutDecisionInput = {
@@ -1305,6 +1333,7 @@ export type JobUncheckedCreateWithoutDecisionInput = {
   analysis?: Prisma.JobAnalysisUncheckedCreateNestedOneWithoutJobInput
   tailoredResumes?: Prisma.TailoredResumeUncheckedCreateNestedManyWithoutJobInput
   coverLetter?: Prisma.CoverLetterUncheckedCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedCreateNestedOneWithoutJobInput
 }
 
 export type JobCreateOrConnectWithoutDecisionInput = {
@@ -1351,6 +1380,7 @@ export type JobUpdateWithoutDecisionInput = {
   analysis?: Prisma.JobAnalysisUpdateOneWithoutJobNestedInput
   tailoredResumes?: Prisma.TailoredResumeUpdateManyWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateWithoutDecisionInput = {
@@ -1381,6 +1411,7 @@ export type JobUncheckedUpdateWithoutDecisionInput = {
   analysis?: Prisma.JobAnalysisUncheckedUpdateOneWithoutJobNestedInput
   tailoredResumes?: Prisma.TailoredResumeUncheckedUpdateManyWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUncheckedUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedUpdateOneWithoutJobNestedInput
 }
 
 export type JobCreateWithoutAnalysisInput = {
@@ -1411,6 +1442,7 @@ export type JobCreateWithoutAnalysisInput = {
   tailoredResumes?: Prisma.TailoredResumeCreateNestedManyWithoutJobInput
   decision?: Prisma.ApplicationDecisionCreateNestedOneWithoutJobInput
   coverLetter?: Prisma.CoverLetterCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepCreateNestedOneWithoutJobInput
 }
 
 export type JobUncheckedCreateWithoutAnalysisInput = {
@@ -1441,6 +1473,7 @@ export type JobUncheckedCreateWithoutAnalysisInput = {
   tailoredResumes?: Prisma.TailoredResumeUncheckedCreateNestedManyWithoutJobInput
   decision?: Prisma.ApplicationDecisionUncheckedCreateNestedOneWithoutJobInput
   coverLetter?: Prisma.CoverLetterUncheckedCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedCreateNestedOneWithoutJobInput
 }
 
 export type JobCreateOrConnectWithoutAnalysisInput = {
@@ -1487,6 +1520,7 @@ export type JobUpdateWithoutAnalysisInput = {
   tailoredResumes?: Prisma.TailoredResumeUpdateManyWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUpdateOneWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateWithoutAnalysisInput = {
@@ -1517,6 +1551,7 @@ export type JobUncheckedUpdateWithoutAnalysisInput = {
   tailoredResumes?: Prisma.TailoredResumeUncheckedUpdateManyWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUncheckedUpdateOneWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUncheckedUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedUpdateOneWithoutJobNestedInput
 }
 
 export type JobCreateWithoutTailoredResumesInput = {
@@ -1547,6 +1582,7 @@ export type JobCreateWithoutTailoredResumesInput = {
   analysis?: Prisma.JobAnalysisCreateNestedOneWithoutJobInput
   decision?: Prisma.ApplicationDecisionCreateNestedOneWithoutJobInput
   coverLetter?: Prisma.CoverLetterCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepCreateNestedOneWithoutJobInput
 }
 
 export type JobUncheckedCreateWithoutTailoredResumesInput = {
@@ -1577,6 +1613,7 @@ export type JobUncheckedCreateWithoutTailoredResumesInput = {
   analysis?: Prisma.JobAnalysisUncheckedCreateNestedOneWithoutJobInput
   decision?: Prisma.ApplicationDecisionUncheckedCreateNestedOneWithoutJobInput
   coverLetter?: Prisma.CoverLetterUncheckedCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedCreateNestedOneWithoutJobInput
 }
 
 export type JobCreateOrConnectWithoutTailoredResumesInput = {
@@ -1623,6 +1660,7 @@ export type JobUpdateWithoutTailoredResumesInput = {
   analysis?: Prisma.JobAnalysisUpdateOneWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUpdateOneWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateWithoutTailoredResumesInput = {
@@ -1653,6 +1691,7 @@ export type JobUncheckedUpdateWithoutTailoredResumesInput = {
   analysis?: Prisma.JobAnalysisUncheckedUpdateOneWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUncheckedUpdateOneWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUncheckedUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedUpdateOneWithoutJobNestedInput
 }
 
 export type JobCreateWithoutCoverLetterInput = {
@@ -1683,6 +1722,7 @@ export type JobCreateWithoutCoverLetterInput = {
   analysis?: Prisma.JobAnalysisCreateNestedOneWithoutJobInput
   tailoredResumes?: Prisma.TailoredResumeCreateNestedManyWithoutJobInput
   decision?: Prisma.ApplicationDecisionCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepCreateNestedOneWithoutJobInput
 }
 
 export type JobUncheckedCreateWithoutCoverLetterInput = {
@@ -1713,6 +1753,7 @@ export type JobUncheckedCreateWithoutCoverLetterInput = {
   analysis?: Prisma.JobAnalysisUncheckedCreateNestedOneWithoutJobInput
   tailoredResumes?: Prisma.TailoredResumeUncheckedCreateNestedManyWithoutJobInput
   decision?: Prisma.ApplicationDecisionUncheckedCreateNestedOneWithoutJobInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedCreateNestedOneWithoutJobInput
 }
 
 export type JobCreateOrConnectWithoutCoverLetterInput = {
@@ -1759,6 +1800,7 @@ export type JobUpdateWithoutCoverLetterInput = {
   analysis?: Prisma.JobAnalysisUpdateOneWithoutJobNestedInput
   tailoredResumes?: Prisma.TailoredResumeUpdateManyWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateWithoutCoverLetterInput = {
@@ -1789,6 +1831,147 @@ export type JobUncheckedUpdateWithoutCoverLetterInput = {
   analysis?: Prisma.JobAnalysisUncheckedUpdateOneWithoutJobNestedInput
   tailoredResumes?: Prisma.TailoredResumeUncheckedUpdateManyWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUncheckedUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedUpdateOneWithoutJobNestedInput
+}
+
+export type JobCreateWithoutInterviewPrepInput = {
+  id?: string
+  externalId: string
+  source: $Enums.JobSource
+  title: string
+  description: string
+  applyUrl: string
+  location?: string | null
+  workMode?: $Enums.WorkMode
+  salaryMin?: number | null
+  salaryMax?: number | null
+  salaryCurr?: string | null
+  jobType?: $Enums.JobType | null
+  experience?: $Enums.ExperienceLevel | null
+  skills?: Prisma.JobCreateskillsInput | string[]
+  postedAt?: Date | string | null
+  searchVector?: string | null
+  scrapedAt?: Date | string
+  createdAt?: Date | string
+  status?: $Enums.JobStatus
+  classificationScore?: number | null
+  rejectionReason?: $Enums.RejectionReason | null
+  sourceScore?: number
+  company: Prisma.CompanyCreateNestedOneWithoutJobsInput
+  match?: Prisma.JobMatchCreateNestedOneWithoutJobInput
+  analysis?: Prisma.JobAnalysisCreateNestedOneWithoutJobInput
+  tailoredResumes?: Prisma.TailoredResumeCreateNestedManyWithoutJobInput
+  decision?: Prisma.ApplicationDecisionCreateNestedOneWithoutJobInput
+  coverLetter?: Prisma.CoverLetterCreateNestedOneWithoutJobInput
+}
+
+export type JobUncheckedCreateWithoutInterviewPrepInput = {
+  id?: string
+  externalId: string
+  source: $Enums.JobSource
+  title: string
+  description: string
+  applyUrl: string
+  companyId: string
+  location?: string | null
+  workMode?: $Enums.WorkMode
+  salaryMin?: number | null
+  salaryMax?: number | null
+  salaryCurr?: string | null
+  jobType?: $Enums.JobType | null
+  experience?: $Enums.ExperienceLevel | null
+  skills?: Prisma.JobCreateskillsInput | string[]
+  postedAt?: Date | string | null
+  searchVector?: string | null
+  scrapedAt?: Date | string
+  createdAt?: Date | string
+  status?: $Enums.JobStatus
+  classificationScore?: number | null
+  rejectionReason?: $Enums.RejectionReason | null
+  sourceScore?: number
+  match?: Prisma.JobMatchUncheckedCreateNestedOneWithoutJobInput
+  analysis?: Prisma.JobAnalysisUncheckedCreateNestedOneWithoutJobInput
+  tailoredResumes?: Prisma.TailoredResumeUncheckedCreateNestedManyWithoutJobInput
+  decision?: Prisma.ApplicationDecisionUncheckedCreateNestedOneWithoutJobInput
+  coverLetter?: Prisma.CoverLetterUncheckedCreateNestedOneWithoutJobInput
+}
+
+export type JobCreateOrConnectWithoutInterviewPrepInput = {
+  where: Prisma.JobWhereUniqueInput
+  create: Prisma.XOR<Prisma.JobCreateWithoutInterviewPrepInput, Prisma.JobUncheckedCreateWithoutInterviewPrepInput>
+}
+
+export type JobUpsertWithoutInterviewPrepInput = {
+  update: Prisma.XOR<Prisma.JobUpdateWithoutInterviewPrepInput, Prisma.JobUncheckedUpdateWithoutInterviewPrepInput>
+  create: Prisma.XOR<Prisma.JobCreateWithoutInterviewPrepInput, Prisma.JobUncheckedCreateWithoutInterviewPrepInput>
+  where?: Prisma.JobWhereInput
+}
+
+export type JobUpdateToOneWithWhereWithoutInterviewPrepInput = {
+  where?: Prisma.JobWhereInput
+  data: Prisma.XOR<Prisma.JobUpdateWithoutInterviewPrepInput, Prisma.JobUncheckedUpdateWithoutInterviewPrepInput>
+}
+
+export type JobUpdateWithoutInterviewPrepInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  externalId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumJobSourceFieldUpdateOperationsInput | $Enums.JobSource
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  applyUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workMode?: Prisma.EnumWorkModeFieldUpdateOperationsInput | $Enums.WorkMode
+  salaryMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  salaryMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  salaryCurr?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobType?: Prisma.NullableEnumJobTypeFieldUpdateOperationsInput | $Enums.JobType | null
+  experience?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  skills?: Prisma.JobUpdateskillsInput | string[]
+  postedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  searchVector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scrapedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
+  classificationScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rejectionReason?: Prisma.NullableEnumRejectionReasonFieldUpdateOperationsInput | $Enums.RejectionReason | null
+  sourceScore?: Prisma.IntFieldUpdateOperationsInput | number
+  company?: Prisma.CompanyUpdateOneRequiredWithoutJobsNestedInput
+  match?: Prisma.JobMatchUpdateOneWithoutJobNestedInput
+  analysis?: Prisma.JobAnalysisUpdateOneWithoutJobNestedInput
+  tailoredResumes?: Prisma.TailoredResumeUpdateManyWithoutJobNestedInput
+  decision?: Prisma.ApplicationDecisionUpdateOneWithoutJobNestedInput
+  coverLetter?: Prisma.CoverLetterUpdateOneWithoutJobNestedInput
+}
+
+export type JobUncheckedUpdateWithoutInterviewPrepInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  externalId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumJobSourceFieldUpdateOperationsInput | $Enums.JobSource
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  applyUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workMode?: Prisma.EnumWorkModeFieldUpdateOperationsInput | $Enums.WorkMode
+  salaryMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  salaryMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  salaryCurr?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobType?: Prisma.NullableEnumJobTypeFieldUpdateOperationsInput | $Enums.JobType | null
+  experience?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  skills?: Prisma.JobUpdateskillsInput | string[]
+  postedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  searchVector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scrapedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
+  classificationScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rejectionReason?: Prisma.NullableEnumRejectionReasonFieldUpdateOperationsInput | $Enums.RejectionReason | null
+  sourceScore?: Prisma.IntFieldUpdateOperationsInput | number
+  match?: Prisma.JobMatchUncheckedUpdateOneWithoutJobNestedInput
+  analysis?: Prisma.JobAnalysisUncheckedUpdateOneWithoutJobNestedInput
+  tailoredResumes?: Prisma.TailoredResumeUncheckedUpdateManyWithoutJobNestedInput
+  decision?: Prisma.ApplicationDecisionUncheckedUpdateOneWithoutJobNestedInput
+  coverLetter?: Prisma.CoverLetterUncheckedUpdateOneWithoutJobNestedInput
 }
 
 export type JobCreateManyCompanyInput = {
@@ -1844,6 +2027,7 @@ export type JobUpdateWithoutCompanyInput = {
   tailoredResumes?: Prisma.TailoredResumeUpdateManyWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUpdateOneWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateWithoutCompanyInput = {
@@ -1874,6 +2058,7 @@ export type JobUncheckedUpdateWithoutCompanyInput = {
   tailoredResumes?: Prisma.TailoredResumeUncheckedUpdateManyWithoutJobNestedInput
   decision?: Prisma.ApplicationDecisionUncheckedUpdateOneWithoutJobNestedInput
   coverLetter?: Prisma.CoverLetterUncheckedUpdateOneWithoutJobNestedInput
+  interviewPrep?: Prisma.InterviewPrepUncheckedUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateManyWithoutCompanyInput = {
@@ -1962,6 +2147,7 @@ export type JobSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   tailoredResumes?: boolean | Prisma.Job$tailoredResumesArgs<ExtArgs>
   decision?: boolean | Prisma.Job$decisionArgs<ExtArgs>
   coverLetter?: boolean | Prisma.Job$coverLetterArgs<ExtArgs>
+  interviewPrep?: boolean | Prisma.Job$interviewPrepArgs<ExtArgs>
   _count?: boolean | Prisma.JobCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["job"]>
 
@@ -2053,6 +2239,7 @@ export type JobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   tailoredResumes?: boolean | Prisma.Job$tailoredResumesArgs<ExtArgs>
   decision?: boolean | Prisma.Job$decisionArgs<ExtArgs>
   coverLetter?: boolean | Prisma.Job$coverLetterArgs<ExtArgs>
+  interviewPrep?: boolean | Prisma.Job$interviewPrepArgs<ExtArgs>
   _count?: boolean | Prisma.JobCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type JobIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2071,6 +2258,7 @@ export type $JobPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     tailoredResumes: Prisma.$TailoredResumePayload<ExtArgs>[]
     decision: Prisma.$ApplicationDecisionPayload<ExtArgs> | null
     coverLetter: Prisma.$CoverLetterPayload<ExtArgs> | null
+    interviewPrep: Prisma.$InterviewPrepPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2496,6 +2684,7 @@ export interface Prisma__JobClient<T, Null = never, ExtArgs extends runtime.Type
   tailoredResumes<T extends Prisma.Job$tailoredResumesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Job$tailoredResumesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TailoredResumePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   decision<T extends Prisma.Job$decisionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Job$decisionArgs<ExtArgs>>): Prisma.Prisma__ApplicationDecisionClient<runtime.Types.Result.GetResult<Prisma.$ApplicationDecisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   coverLetter<T extends Prisma.Job$coverLetterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Job$coverLetterArgs<ExtArgs>>): Prisma.Prisma__CoverLetterClient<runtime.Types.Result.GetResult<Prisma.$CoverLetterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  interviewPrep<T extends Prisma.Job$interviewPrepArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Job$interviewPrepArgs<ExtArgs>>): Prisma.Prisma__InterviewPrepClient<runtime.Types.Result.GetResult<Prisma.$InterviewPrepPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3046,6 +3235,25 @@ export type Job$coverLetterArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.CoverLetterInclude<ExtArgs> | null
   where?: Prisma.CoverLetterWhereInput
+}
+
+/**
+ * Job.interviewPrep
+ */
+export type Job$interviewPrepArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InterviewPrep
+   */
+  select?: Prisma.InterviewPrepSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InterviewPrep
+   */
+  omit?: Prisma.InterviewPrepOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InterviewPrepInclude<ExtArgs> | null
+  where?: Prisma.InterviewPrepWhereInput
 }
 
 /**

@@ -76,6 +76,33 @@ interface CoverLetterView {
   cached?: boolean;
 }
 
+interface PrepQuestionView {
+  question: string;
+  whyAsked: string;
+  evidenceIds: string[];
+  answerStructure: string[];
+  followUps: string[];
+  starStory?: {
+    situation: string;
+    task: string;
+    action: string;
+    result: string;
+    evidenceIds: string[];
+  } | null;
+}
+
+interface InterviewPrepView {
+  id: string;
+  content: {
+    technical: PrepQuestionView[];
+    resumeBased: PrepQuestionView[];
+    behavioral: PrepQuestionView[];
+    toAsk: string[];
+    gaps: { skill: string; bridgeAnswer: string }[];
+  };
+  cached?: boolean;
+}
+
 function renderTailoredFields(fields: TailoredItemView["fields"]): string {
   const parts: string[] = [];
   for (const [key, value] of Object.entries(fields)) {
@@ -116,6 +143,10 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
   const [covering, setCovering] = useState(false);
   const [coverError, setCoverError] = useState<string | null>(null);
 
+  const [prep, setPrep] = useState<InterviewPrepView | null>(null);
+  const [preparing, setPreparing] = useState(false);
+  const [prepError, setPrepError] = useState<string | null>(null);
+
   const [decision, setDecision] = useState<string | null>(null);
   const [deciding, setDeciding] = useState(false);
   const [liveness, setLiveness] = useState<{ alive: boolean; evidence: string | null } | null>(null);
@@ -128,6 +159,8 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
     setTailorError(null);
     setCover(null);
     setCoverError(null);
+    setPrep(null);
+    setPrepError(null);
     setDecision(null);
     setLiveness(null);
     if (!selectedId) return;
@@ -154,6 +187,12 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!cancelled && data?.content) setCover(data);
+      })
+      .catch(() => {});
+    fetch(`/api/jobs/${selectedId}/interview`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.content) setPrep(data);
       })
       .catch(() => {});
     return () => {
@@ -256,6 +295,25 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
       setCoverError(err instanceof Error ? err.message : "Cover letter failed");
     } finally {
       setCovering(false);
+    }
+  }
+
+  async function runInterview(refresh: boolean) {
+    if (!selectedId || preparing || !analysis || !tailored) return;
+    setPreparing(true);
+    setPrepError(null);
+    try {
+      const res = await fetch(
+        `/api/jobs/${selectedId}/interview${refresh ? "?refresh=1" : ""}`,
+        { method: "POST" }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Interview prep failed");
+      setPrep(data);
+    } catch (err) {
+      setPrepError(err instanceof Error ? err.message : "Interview prep failed");
+    } finally {
+      setPreparing(false);
     }
   }
 
@@ -722,6 +780,133 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                 {analysis && tailored
                   ? "Built from the analysis + tailored resume above. Every claim cites base-resume evidence."
                   : "Analyze the job and tailor a resume first — the letter builds on both."}
+              </p>
+            </div>
+
+            {/* Interview Prep Section */}
+            <div className="p-4 border border-black/10 rounded-[14px] bg-black/[0.03] space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-title font-extrabold flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Interview prep
+                </h3>
+                {prep && (
+                  <span className="px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border border-black/10 bg-white">
+                    Saved
+                  </span>
+                )}
+              </div>
+
+              {prep && (
+                <div className="space-y-4">
+                  {(
+                    [
+                      ["Technical", prep.content.technical],
+                      ["Resume-based", prep.content.resumeBased],
+                      ["Behavioral", prep.content.behavioral],
+                    ] as const
+                  ).map(([title, questions]) => (
+                    <div key={title}>
+                      <p className="text-label font-extrabold uppercase tracking-widest mb-1.5">
+                        {title}
+                      </p>
+                      <div className="space-y-2.5">
+                        {questions.map((q) => (
+                          <div
+                            key={q.question.slice(0, 48)}
+                            className="p-3 border border-black/10 rounded-[12px] bg-white space-y-1.5"
+                          >
+                            <p className="text-body font-extrabold leading-relaxed">
+                              {q.question}
+                            </p>
+                            <p className="text-body font-medium text-text-secondary leading-relaxed">
+                              Why asked: {q.whyAsked}
+                            </p>
+                            <ul className="text-body font-medium text-text-secondary leading-relaxed list-disc pl-5">
+                              {q.answerStructure.map((s) => (
+                                <li key={s.slice(0, 40)}>{s}</li>
+                              ))}
+                            </ul>
+                            {q.followUps.length > 0 && (
+                              <p className="text-body font-medium text-text-secondary leading-relaxed">
+                                Follow-ups: {q.followUps.join(" · ")}
+                              </p>
+                            )}
+                            {q.starStory && (
+                              <div className="p-2.5 border border-black/10 rounded-[10px] bg-black/[0.03] space-y-1">
+                                <p className="text-label font-extrabold uppercase tracking-widest">
+                                  STAR story
+                                </p>
+                                <p className="text-body font-medium leading-relaxed">
+                                  <span className="font-extrabold">Situation:</span> {q.starStory.situation}
+                                </p>
+                                <p className="text-body font-medium leading-relaxed">
+                                  <span className="font-extrabold">Task:</span> {q.starStory.task}
+                                </p>
+                                <p className="text-body font-medium leading-relaxed">
+                                  <span className="font-extrabold">Action:</span> {q.starStory.action}
+                                </p>
+                                <p className="text-body font-medium leading-relaxed">
+                                  <span className="font-extrabold">Result:</span> {q.starStory.result}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                  {prep.content.toAsk.length > 0 && (
+                    <div>
+                      <p className="text-label font-extrabold uppercase tracking-widest mb-1.5">
+                        Ask them
+                      </p>
+                      <ul className="text-body font-medium leading-relaxed list-disc pl-5">
+                        {prep.content.toAsk.map((q) => (
+                          <li key={q.slice(0, 40)}>{q}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {prep.content.gaps.length > 0 && (
+                    <div>
+                      <p className="text-label font-extrabold uppercase tracking-widest mb-1.5">
+                        Honest bridges
+                      </p>
+                      <div className="space-y-1.5">
+                        {prep.content.gaps.map((g) => (
+                          <p key={g.skill} className="text-body font-medium leading-relaxed">
+                            <span className="font-extrabold">{g.skill}:</span> {g.bridgeAnswer}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {prepError && (
+                <p className="text-body font-bold text-red">{prepError}</p>
+              )}
+
+              <button
+                onClick={() => runInterview(!!prep)}
+                disabled={preparing || !analysis || !tailored}
+                className="w-full flex items-center justify-center gap-2 bg-black text-white font-extrabold px-4 py-3 rounded-full text-label uppercase tracking-widest transition-all duration-700 disabled:opacity-50"
+              >
+                <Sparkles className="w-4 h-4" />
+                {preparing
+                  ? "Preparing…"
+                  : prep
+                    ? "Regenerate prep"
+                    : "Prepare interview"}
+              </button>
+              <p className="text-label font-medium text-text-secondary">
+                {analysis && tailored
+                  ? "Grounded in your evidence. Gaps get honest bridges, never invented stories."
+                  : "Analyze the job and tailor a resume first — prep builds on both."}
               </p>
             </div>
           </div>

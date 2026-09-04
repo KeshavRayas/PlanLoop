@@ -9,8 +9,9 @@ import { validateCoverLetter } from "@/lib/cover/validate";
 import { collectEvidence, evidenceMap } from "@/lib/tailor/evidence";
 import type { ResumeData } from "@/lib/resume.types";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
-import { EmptyResumeError } from "@/lib/tailor/service";
+import { EmptyResumeError, getBaseResume } from "@/lib/tailor/service";
 import type { LlmProvider } from "@/lib/llm/types";
+import { generateJsonSanitized } from "@/lib/llm/sanitize";
 
 export class NeedsAnalysisError extends Error {
   constructor() {
@@ -102,7 +103,7 @@ export async function generateCoverLetter(
   });
   if (!tailored) throw new NeedsTailoredResumeError();
 
-  const base = await prisma.resume.findFirst({ orderBy: { updatedAt: "desc" } });
+  const base = await getBaseResume();
   const content = base?.content as ResumeData | null;
   if (!base || !content || !isNonEmpty(content)) throw new EmptyResumeError();
 
@@ -121,12 +122,12 @@ export async function generateCoverLetter(
     evidence,
   });
 
-  const raw = await provider.generateJson(COVER_SYSTEM_PROMPT, prompt);
+  const raw = await generateJsonSanitized(provider, COVER_SYSTEM_PROMPT, prompt);
   let parsed = coverLetterSchema.safeParse(raw);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
     console.error(`[cover] schema invalid for job ${jobId}: ${issues}`);
-    const retry = await provider.generateJson(
+    const retry = await generateJsonSanitized(provider, 
       COVER_SYSTEM_PROMPT,
       `Your previous output failed validation: ${issues}\nReturn ONLY the corrected JSON in exactly the requested shape.\n\n---\n\n${prompt}`
     );

@@ -8,8 +8,12 @@ export interface TopMatch {
   skillOverlap: number;
   salaryFit: string;
   recencyDecay: number;
+  recencySource: string | null;
   sourceTrust: number;
   levelFit: number;
+  roleFamily: string | null;
+  roleFit: string | null;
+  locationFit: string | null;
   reasons: string[];
   nightlyRunId: string | null;
   humanVerdict: string | null;
@@ -72,8 +76,12 @@ export async function getTopMatches(
     skillOverlap: m.skillOverlap,
     salaryFit: m.salaryFit,
     recencyDecay: m.recencyDecay,
+    recencySource: m.recencySource,
     sourceTrust: m.sourceTrust,
     levelFit: m.levelFit,
+    roleFamily: m.roleFamily,
+    roleFit: m.roleFit,
+    locationFit: m.locationFit,
     reasons: m.reasons,
     nightlyRunId: m.nightlyRunId,
     humanVerdict: m.humanVerdict,

@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { runIngestionPipeline } from "@/lib/ingestion/pipeline";
 import { scoreJob, TOP_N_DEFAULT } from "@/lib/matching/score";
+import { classifyRoleFamily, roleFit } from "@/lib/matching/roleFamily";
+import { locationEligibility } from "@/lib/matching/eligibility";
 import { getOrCreateDefaultProfile } from "@/lib/matching/profile";
 import { getTopMatches } from "@/lib/repositories/matches.repository";
 import { sendNightlyDigest } from "@/lib/digest";
@@ -35,34 +37,70 @@ export async function runMatching(
     select: {
       id: true,
       title: true,
+      description: true,
       skills: true,
       salaryMin: true,
       salaryMax: true,
       postedAt: true,
+      scrapedAt: true,
       source: true,
       sourceScore: true,
       experience: true,
+      location: true,
+      workMode: true,
     },
   });
 
   const now = new Date();
-  const scored = candidates.map((job) => ({
-    jobId: job.id,
-    result: scoreJob(
-      profile,
-      {
-        skills: job.skills,
-        salaryMin: job.salaryMin,
-        salaryMax: job.salaryMax,
-        postedAt: job.postedAt,
-        source: job.source,
-        sourceScore: job.sourceScore,
-        experience: job.experience,
-        title: job.title,
-      },
-      now
-    ),
-  }));
+  const goals = {
+    preferred: profile.preferredRoleFamilies,
+    vetoed: profile.vetoedRoleFamilies,
+  };
+  let vetoedRole = 0;
+  let ineligibleLocation = 0;
+
+  const scored = [];
+  for (const job of candidates) {
+    // Hard filters first (logged, like the ingestion cheap filters).
+    const family = classifyRoleFamily(job.title, job.description);
+    if (roleFit(family, goals).fit === "VETO") {
+      vetoedRole++;
+      continue;
+    }
+    const { fit: locFit } = locationEligibility(
+      { location: job.location, workMode: job.workMode, description: job.description },
+      { openToRemote: profile.openToRemote }
+    );
+    if (locFit === "INELIGIBLE") {
+      ineligibleLocation++;
+      continue;
+    }
+    scored.push({
+      jobId: job.id,
+      result: scoreJob(
+        profile,
+        {
+          skills: job.skills,
+          salaryMin: job.salaryMin,
+          salaryMax: job.salaryMax,
+          postedAt: job.postedAt,
+          scrapedAt: job.scrapedAt,
+          source: job.source,
+          sourceScore: job.sourceScore,
+          experience: job.experience,
+          title: job.title,
+          description: job.description,
+          location: job.location,
+          workMode: job.workMode,
+        },
+        now
+      ),
+    });
+  }
+
+  console.log(
+    `[matching] candidates: ${candidates.length} | vetoed role: ${vetoedRole} | ineligible location: ${ineligibleLocation} | scored: ${scored.length}`
+  );
 
   scored.sort((a, b) => b.result.score - a.result.score);
   const top = scored.slice(0, topN);
@@ -79,8 +117,12 @@ export async function runMatching(
           salaryFit: result.salaryFit,
           salaryScore: result.salaryScore,
           recencyDecay: result.recencyDecay,
+          recencySource: result.recencySource,
           sourceTrust: result.sourceTrust,
           levelFit: result.levelFit,
+          roleFamily: result.roleFamily,
+          roleFit: result.roleFit,
+          locationFit: result.locationFit,
           reasons: result.reasons,
           nightlyRunId,
         },
@@ -93,8 +135,12 @@ export async function runMatching(
           salaryFit: result.salaryFit,
           salaryScore: result.salaryScore,
           recencyDecay: result.recencyDecay,
+          recencySource: result.recencySource,
           sourceTrust: result.sourceTrust,
           levelFit: result.levelFit,
+          roleFamily: result.roleFamily,
+          roleFit: result.roleFit,
+          locationFit: result.locationFit,
           reasons: result.reasons,
           nightlyRunId,
         },

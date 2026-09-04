@@ -31,6 +31,7 @@ const garbageProvider: LlmProvider = {
 };
 
 const created = { companies: [] as string[], jobs: [] as string[], resumes: [] as string[], runs: [] as string[] };
+let previousPin: { id: string; baseResumeId: string | null } | null = null;
 
 async function makeCompany() {
   const t = tag();
@@ -85,6 +86,13 @@ async function makeBaseResume() {
     },
   });
   created.resumes.push(r.id);
+  // Pin the profile to the fixture resume so services never depend on
+  // timestamp ordering against real resumes. Restored in afterEach.
+  const profile = await prisma.profile.findFirst({ orderBy: { updatedAt: "desc" } });
+  if (profile) {
+    previousPin = { id: profile.id, baseResumeId: profile.baseResumeId };
+    await prisma.profile.update({ where: { id: profile.id }, data: { baseResumeId: r.id } });
+  }
   return r;
 }
 
@@ -136,10 +144,17 @@ afterEach(async () => {
   await prisma.company.deleteMany({ where: { id: { in: created.companies } } });
   await prisma.resume.deleteMany({ where: { id: { in: created.resumes } } });
   await prisma.nightlyRun.deleteMany({ where: { id: { in: created.runs } } });
+  if (previousPin) {
+    await prisma.profile.update({
+      where: { id: previousPin.id },
+      data: { baseResumeId: previousPin.baseResumeId },
+    });
+  }
   created.jobs = [];
   created.companies = [];
   created.resumes = [];
   created.runs = [];
+  previousPin = null;
 });
 
 beforeEach(async () => {
@@ -280,7 +295,8 @@ describe("judge is observational", () => {
     const ok = await postJson(judgePOST, lo.id, { verdict: "EXCELLENT" });
     expect(ok.status).toBe(201);
 
-    const top = await getTopMatches(25);
+    // Wide limit: real nightly matches must not crowd fixtures out.
+    const top = await getTopMatches(1000);
     const ids = top.map((t) => t.job.id);
     // Lower-scored job judged EXCELLENT still ranks below — verdicts don't rank.
     expect(ids.indexOf(hi.id)).toBeLessThan(ids.indexOf(lo.id));

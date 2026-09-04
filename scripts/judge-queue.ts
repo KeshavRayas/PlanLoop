@@ -17,10 +17,10 @@ async function rate(jobId: string, verdict: string) {
 
 async function table() {
   const top = await getTopMatches(25);
-  console.log("rank | score | human | title @ company | matched/total | id");
+  console.log("rank | score | human | role | loc | title @ company | matched/total | id");
   top.forEach((t, i) => {
     console.log(
-      `${String(i + 1).padStart(2)} | ${t.score.toFixed(2)} | ${(t.humanVerdict ?? "-").padEnd(9)} | ${t.job.title} @ ${t.company.name} | ${t.matchedSkills.length}/${t.job.skills.length} | ${t.job.id}`
+      `${String(i + 1).padStart(2)} | ${t.score.toFixed(2)} | ${(t.humanVerdict ?? "-").padEnd(9)} | ${(t.roleFamily ?? "?").padEnd(14)} | ${(t.locationFit ?? "?").padEnd(8)} | ${(t.job.location ?? "?").slice(0, 24).padEnd(24)} | ${t.job.title} @ ${t.company.name} | ${t.matchedSkills.length}/${t.job.skills.length} | ${t.job.id}`
     );
   });
 }

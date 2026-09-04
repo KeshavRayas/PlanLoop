@@ -38,6 +38,8 @@ export type ProfileMinAggregateOutputType = {
   id: string | null
   label: string | null
   minSalary: number | null
+  openToRemote: boolean | null
+  baseResumeId: string | null
   name: string | null
   email: string | null
   phone: string | null
@@ -51,6 +53,8 @@ export type ProfileMaxAggregateOutputType = {
   id: string | null
   label: string | null
   minSalary: number | null
+  openToRemote: boolean | null
+  baseResumeId: string | null
   name: string | null
   email: string | null
   phone: string | null
@@ -68,6 +72,10 @@ export type ProfileCountAggregateOutputType = {
   locations: number
   workModes: number
   dealbreakers: number
+  preferredRoleFamilies: number
+  vetoedRoleFamilies: number
+  openToRemote: number
+  baseResumeId: number
   name: number
   email: number
   phone: number
@@ -91,6 +99,8 @@ export type ProfileMinAggregateInputType = {
   id?: true
   label?: true
   minSalary?: true
+  openToRemote?: true
+  baseResumeId?: true
   name?: true
   email?: true
   phone?: true
@@ -104,6 +114,8 @@ export type ProfileMaxAggregateInputType = {
   id?: true
   label?: true
   minSalary?: true
+  openToRemote?: true
+  baseResumeId?: true
   name?: true
   email?: true
   phone?: true
@@ -121,6 +133,10 @@ export type ProfileCountAggregateInputType = {
   locations?: true
   workModes?: true
   dealbreakers?: true
+  preferredRoleFamilies?: true
+  vetoedRoleFamilies?: true
+  openToRemote?: true
+  baseResumeId?: true
   name?: true
   email?: true
   phone?: true
@@ -225,6 +241,10 @@ export type ProfileGroupByOutputType = {
   locations: string[]
   workModes: $Enums.WorkMode[]
   dealbreakers: string[]
+  preferredRoleFamilies: string[]
+  vetoedRoleFamilies: string[]
+  openToRemote: boolean
+  baseResumeId: string | null
   name: string | null
   email: string | null
   phone: string | null
@@ -265,6 +285,10 @@ export type ProfileWhereInput = {
   locations?: Prisma.StringNullableListFilter<"Profile">
   workModes?: Prisma.EnumWorkModeNullableListFilter<"Profile">
   dealbreakers?: Prisma.StringNullableListFilter<"Profile">
+  preferredRoleFamilies?: Prisma.StringNullableListFilter<"Profile">
+  vetoedRoleFamilies?: Prisma.StringNullableListFilter<"Profile">
+  openToRemote?: Prisma.BoolFilter<"Profile"> | boolean
+  baseResumeId?: Prisma.StringNullableFilter<"Profile"> | string | null
   name?: Prisma.StringNullableFilter<"Profile"> | string | null
   email?: Prisma.StringNullableFilter<"Profile"> | string | null
   phone?: Prisma.StringNullableFilter<"Profile"> | string | null
@@ -282,6 +306,10 @@ export type ProfileOrderByWithRelationInput = {
   locations?: Prisma.SortOrder
   workModes?: Prisma.SortOrder
   dealbreakers?: Prisma.SortOrder
+  preferredRoleFamilies?: Prisma.SortOrder
+  vetoedRoleFamilies?: Prisma.SortOrder
+  openToRemote?: Prisma.SortOrder
+  baseResumeId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -302,6 +330,10 @@ export type ProfileWhereUniqueInput = Prisma.AtLeast<{
   locations?: Prisma.StringNullableListFilter<"Profile">
   workModes?: Prisma.EnumWorkModeNullableListFilter<"Profile">
   dealbreakers?: Prisma.StringNullableListFilter<"Profile">
+  preferredRoleFamilies?: Prisma.StringNullableListFilter<"Profile">
+  vetoedRoleFamilies?: Prisma.StringNullableListFilter<"Profile">
+  openToRemote?: Prisma.BoolFilter<"Profile"> | boolean
+  baseResumeId?: Prisma.StringNullableFilter<"Profile"> | string | null
   name?: Prisma.StringNullableFilter<"Profile"> | string | null
   email?: Prisma.StringNullableFilter<"Profile"> | string | null
   phone?: Prisma.StringNullableFilter<"Profile"> | string | null
@@ -319,6 +351,10 @@ export type ProfileOrderByWithAggregationInput = {
   locations?: Prisma.SortOrder
   workModes?: Prisma.SortOrder
   dealbreakers?: Prisma.SortOrder
+  preferredRoleFamilies?: Prisma.SortOrder
+  vetoedRoleFamilies?: Prisma.SortOrder
+  openToRemote?: Prisma.SortOrder
+  baseResumeId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -344,6 +380,10 @@ export type ProfileScalarWhereWithAggregatesInput = {
   locations?: Prisma.StringNullableListFilter<"Profile">
   workModes?: Prisma.EnumWorkModeNullableListFilter<"Profile">
   dealbreakers?: Prisma.StringNullableListFilter<"Profile">
+  preferredRoleFamilies?: Prisma.StringNullableListFilter<"Profile">
+  vetoedRoleFamilies?: Prisma.StringNullableListFilter<"Profile">
+  openToRemote?: Prisma.BoolWithAggregatesFilter<"Profile"> | boolean
+  baseResumeId?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
   name?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
@@ -361,6 +401,10 @@ export type ProfileCreateInput = {
   locations?: Prisma.ProfileCreatelocationsInput | string[]
   workModes?: Prisma.ProfileCreateworkModesInput | $Enums.WorkMode[]
   dealbreakers?: Prisma.ProfileCreatedealbreakersInput | string[]
+  preferredRoleFamilies?: Prisma.ProfileCreatepreferredRoleFamiliesInput | string[]
+  vetoedRoleFamilies?: Prisma.ProfileCreatevetoedRoleFamiliesInput | string[]
+  openToRemote?: boolean
+  baseResumeId?: string | null
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -378,6 +422,10 @@ export type ProfileUncheckedCreateInput = {
   locations?: Prisma.ProfileCreatelocationsInput | string[]
   workModes?: Prisma.ProfileCreateworkModesInput | $Enums.WorkMode[]
   dealbreakers?: Prisma.ProfileCreatedealbreakersInput | string[]
+  preferredRoleFamilies?: Prisma.ProfileCreatepreferredRoleFamiliesInput | string[]
+  vetoedRoleFamilies?: Prisma.ProfileCreatevetoedRoleFamiliesInput | string[]
+  openToRemote?: boolean
+  baseResumeId?: string | null
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -395,6 +443,10 @@ export type ProfileUpdateInput = {
   locations?: Prisma.ProfileUpdatelocationsInput | string[]
   workModes?: Prisma.ProfileUpdateworkModesInput | $Enums.WorkMode[]
   dealbreakers?: Prisma.ProfileUpdatedealbreakersInput | string[]
+  preferredRoleFamilies?: Prisma.ProfileUpdatepreferredRoleFamiliesInput | string[]
+  vetoedRoleFamilies?: Prisma.ProfileUpdatevetoedRoleFamiliesInput | string[]
+  openToRemote?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  baseResumeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -412,6 +464,10 @@ export type ProfileUncheckedUpdateInput = {
   locations?: Prisma.ProfileUpdatelocationsInput | string[]
   workModes?: Prisma.ProfileUpdateworkModesInput | $Enums.WorkMode[]
   dealbreakers?: Prisma.ProfileUpdatedealbreakersInput | string[]
+  preferredRoleFamilies?: Prisma.ProfileUpdatepreferredRoleFamiliesInput | string[]
+  vetoedRoleFamilies?: Prisma.ProfileUpdatevetoedRoleFamiliesInput | string[]
+  openToRemote?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  baseResumeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -429,6 +485,10 @@ export type ProfileCreateManyInput = {
   locations?: Prisma.ProfileCreatelocationsInput | string[]
   workModes?: Prisma.ProfileCreateworkModesInput | $Enums.WorkMode[]
   dealbreakers?: Prisma.ProfileCreatedealbreakersInput | string[]
+  preferredRoleFamilies?: Prisma.ProfileCreatepreferredRoleFamiliesInput | string[]
+  vetoedRoleFamilies?: Prisma.ProfileCreatevetoedRoleFamiliesInput | string[]
+  openToRemote?: boolean
+  baseResumeId?: string | null
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -446,6 +506,10 @@ export type ProfileUpdateManyMutationInput = {
   locations?: Prisma.ProfileUpdatelocationsInput | string[]
   workModes?: Prisma.ProfileUpdateworkModesInput | $Enums.WorkMode[]
   dealbreakers?: Prisma.ProfileUpdatedealbreakersInput | string[]
+  preferredRoleFamilies?: Prisma.ProfileUpdatepreferredRoleFamiliesInput | string[]
+  vetoedRoleFamilies?: Prisma.ProfileUpdatevetoedRoleFamiliesInput | string[]
+  openToRemote?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  baseResumeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -463,6 +527,10 @@ export type ProfileUncheckedUpdateManyInput = {
   locations?: Prisma.ProfileUpdatelocationsInput | string[]
   workModes?: Prisma.ProfileUpdateworkModesInput | $Enums.WorkMode[]
   dealbreakers?: Prisma.ProfileUpdatedealbreakersInput | string[]
+  preferredRoleFamilies?: Prisma.ProfileUpdatepreferredRoleFamiliesInput | string[]
+  vetoedRoleFamilies?: Prisma.ProfileUpdatevetoedRoleFamiliesInput | string[]
+  openToRemote?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  baseResumeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -488,6 +556,10 @@ export type ProfileCountOrderByAggregateInput = {
   locations?: Prisma.SortOrder
   workModes?: Prisma.SortOrder
   dealbreakers?: Prisma.SortOrder
+  preferredRoleFamilies?: Prisma.SortOrder
+  vetoedRoleFamilies?: Prisma.SortOrder
+  openToRemote?: Prisma.SortOrder
+  baseResumeId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -505,6 +577,8 @@ export type ProfileMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   label?: Prisma.SortOrder
   minSalary?: Prisma.SortOrder
+  openToRemote?: Prisma.SortOrder
+  baseResumeId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -518,6 +592,8 @@ export type ProfileMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   label?: Prisma.SortOrder
   minSalary?: Prisma.SortOrder
+  openToRemote?: Prisma.SortOrder
+  baseResumeId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -547,6 +623,14 @@ export type ProfileCreatedealbreakersInput = {
   set: string[]
 }
 
+export type ProfileCreatepreferredRoleFamiliesInput = {
+  set: string[]
+}
+
+export type ProfileCreatevetoedRoleFamiliesInput = {
+  set: string[]
+}
+
 export type ProfileUpdateskillsInput = {
   set?: string[]
   push?: string | string[]
@@ -567,6 +651,16 @@ export type ProfileUpdatedealbreakersInput = {
   push?: string | string[]
 }
 
+export type ProfileUpdatepreferredRoleFamiliesInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
+export type ProfileUpdatevetoedRoleFamiliesInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
 
 
 export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -577,6 +671,10 @@ export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   locations?: boolean
   workModes?: boolean
   dealbreakers?: boolean
+  preferredRoleFamilies?: boolean
+  vetoedRoleFamilies?: boolean
+  openToRemote?: boolean
+  baseResumeId?: boolean
   name?: boolean
   email?: boolean
   phone?: boolean
@@ -594,6 +692,10 @@ export type ProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   locations?: boolean
   workModes?: boolean
   dealbreakers?: boolean
+  preferredRoleFamilies?: boolean
+  vetoedRoleFamilies?: boolean
+  openToRemote?: boolean
+  baseResumeId?: boolean
   name?: boolean
   email?: boolean
   phone?: boolean
@@ -611,6 +713,10 @@ export type ProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   locations?: boolean
   workModes?: boolean
   dealbreakers?: boolean
+  preferredRoleFamilies?: boolean
+  vetoedRoleFamilies?: boolean
+  openToRemote?: boolean
+  baseResumeId?: boolean
   name?: boolean
   email?: boolean
   phone?: boolean
@@ -628,6 +734,10 @@ export type ProfileSelectScalar = {
   locations?: boolean
   workModes?: boolean
   dealbreakers?: boolean
+  preferredRoleFamilies?: boolean
+  vetoedRoleFamilies?: boolean
+  openToRemote?: boolean
+  baseResumeId?: boolean
   name?: boolean
   email?: boolean
   phone?: boolean
@@ -637,7 +747,7 @@ export type ProfileSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "label" | "skills" | "minSalary" | "locations" | "workModes" | "dealbreakers" | "name" | "email" | "phone" | "linkedin" | "github" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
+export type ProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "label" | "skills" | "minSalary" | "locations" | "workModes" | "dealbreakers" | "preferredRoleFamilies" | "vetoedRoleFamilies" | "openToRemote" | "baseResumeId" | "name" | "email" | "phone" | "linkedin" | "github" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
 
 export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Profile"
@@ -650,6 +760,10 @@ export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     locations: string[]
     workModes: $Enums.WorkMode[]
     dealbreakers: string[]
+    preferredRoleFamilies: string[]
+    vetoedRoleFamilies: string[]
+    openToRemote: boolean
+    baseResumeId: string | null
     name: string | null
     email: string | null
     phone: string | null
@@ -1087,6 +1201,10 @@ export interface ProfileFieldRefs {
   readonly locations: Prisma.FieldRef<"Profile", 'String[]'>
   readonly workModes: Prisma.FieldRef<"Profile", 'WorkMode[]'>
   readonly dealbreakers: Prisma.FieldRef<"Profile", 'String[]'>
+  readonly preferredRoleFamilies: Prisma.FieldRef<"Profile", 'String[]'>
+  readonly vetoedRoleFamilies: Prisma.FieldRef<"Profile", 'String[]'>
+  readonly openToRemote: Prisma.FieldRef<"Profile", 'Boolean'>
+  readonly baseResumeId: Prisma.FieldRef<"Profile", 'String'>
   readonly name: Prisma.FieldRef<"Profile", 'String'>
   readonly email: Prisma.FieldRef<"Profile", 'String'>
   readonly phone: Prisma.FieldRef<"Profile", 'String'>

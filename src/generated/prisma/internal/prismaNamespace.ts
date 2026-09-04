@@ -396,7 +396,8 @@ export const ModelName = {
   ApplicationDecision: 'ApplicationDecision',
   JobAnalysis: 'JobAnalysis',
   TailoredResume: 'TailoredResume',
-  CoverLetter: 'CoverLetter'
+  CoverLetter: 'CoverLetter',
+  InterviewPrep: 'InterviewPrep'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -412,7 +413,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "job" | "searchEvent" | "sourceSync" | "jobIngestionLog" | "resume" | "profile" | "nightlyRun" | "jobMatch" | "applicationDecision" | "jobAnalysis" | "tailoredResume" | "coverLetter"
+    modelProps: "company" | "job" | "searchEvent" | "sourceSync" | "jobIngestionLog" | "resume" | "profile" | "nightlyRun" | "jobMatch" | "applicationDecision" | "jobAnalysis" | "tailoredResume" | "coverLetter" | "interviewPrep"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1378,6 +1379,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InterviewPrep: {
+      payload: Prisma.$InterviewPrepPayload<ExtArgs>
+      fields: Prisma.InterviewPrepFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InterviewPrepFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InterviewPrepPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InterviewPrepFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InterviewPrepPayload>
+        }
+        findFirst: {
+          args: Prisma.InterviewPrepFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InterviewPrepPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InterviewPrepFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InterviewPrepPayload>
+        }
+        findMany: {
+          args: Prisma.InterviewPrepFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InterviewPrepPayload>[]
+        }
+        create: {
+          args: Prisma.InterviewPrepCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InterviewPrepPayload>
+        }
+        createMany: {
+          args: Prisma.InterviewPrepCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InterviewPrepCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InterviewPrepPayload>[]
+        }
+        delete: {
+          args: Prisma.InterviewPrepDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InterviewPrepPayload>
+        }
+        update: {
+          args: Prisma.InterviewPrepUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InterviewPrepPayload>
+        }
+        deleteMany: {
+          args: Prisma.InterviewPrepDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InterviewPrepUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InterviewPrepUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InterviewPrepPayload>[]
+        }
+        upsert: {
+          args: Prisma.InterviewPrepUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InterviewPrepPayload>
+        }
+        aggregate: {
+          args: Prisma.InterviewPrepAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInterviewPrep>
+        }
+        groupBy: {
+          args: Prisma.InterviewPrepGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InterviewPrepGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InterviewPrepCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InterviewPrepCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1517,6 +1592,10 @@ export const ProfileScalarFieldEnum = {
   locations: 'locations',
   workModes: 'workModes',
   dealbreakers: 'dealbreakers',
+  preferredRoleFamilies: 'preferredRoleFamilies',
+  vetoedRoleFamilies: 'vetoedRoleFamilies',
+  openToRemote: 'openToRemote',
+  baseResumeId: 'baseResumeId',
   name: 'name',
   email: 'email',
   phone: 'phone',
@@ -1555,6 +1634,10 @@ export const JobMatchScalarFieldEnum = {
   recencyDecay: 'recencyDecay',
   sourceTrust: 'sourceTrust',
   levelFit: 'levelFit',
+  roleFamily: 'roleFamily',
+  roleFit: 'roleFit',
+  locationFit: 'locationFit',
+  recencySource: 'recencySource',
   reasons: 'reasons',
   humanVerdict: 'humanVerdict',
   judgedAt: 'judgedAt',
@@ -1639,6 +1722,20 @@ export const CoverLetterScalarFieldEnum = {
 } as const
 
 export type CoverLetterScalarFieldEnum = (typeof CoverLetterScalarFieldEnum)[keyof typeof CoverLetterScalarFieldEnum]
+
+
+export const InterviewPrepScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  baseResumeId: 'baseResumeId',
+  content: 'content',
+  evidenceIds: 'evidenceIds',
+  rawJson: 'rawJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InterviewPrepScalarFieldEnum = (typeof InterviewPrepScalarFieldEnum)[keyof typeof InterviewPrepScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2076,6 +2173,7 @@ export type GlobalOmitConfig = {
   jobAnalysis?: Prisma.JobAnalysisOmit
   tailoredResume?: Prisma.TailoredResumeOmit
   coverLetter?: Prisma.CoverLetterOmit
+  interviewPrep?: Prisma.InterviewPrepOmit
 }
 
 /* Types for Logging */

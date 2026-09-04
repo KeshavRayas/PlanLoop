@@ -12,10 +12,14 @@ import {
 const PROFILE: MatcherProfile = {
   skills: ["TypeScript", "React", "PostgreSQL", "Docker", "AWS", "Go"],
   minSalary: 1200000,
+  preferredRoleFamilies: ["BACKEND", "INFRASTRUCTURE", "DEVOPS_SRE", "FULL_STACK", "ML_AI", "DATA", "FORWARD_DEPLOYED"],
+  vetoedRoleFamilies: ["DATA_ANNOTATION"],
+  openToRemote: true,
 };
 
 function makeJob(overrides: Partial<ScorableJob> = {}): ScorableJob {
   return {
+    title: "Software Engineer",
     skills: ["TypeScript", "React", "PostgreSQL"],
     salaryMin: 1500000,
     salaryMax: 2000000,
@@ -23,6 +27,7 @@ function makeJob(overrides: Partial<ScorableJob> = {}): ScorableJob {
     source: "GREENHOUSE",
     sourceScore: 3,
     experience: "ENTRY",
+    location: "Remote",
     ...overrides,
   };
 }

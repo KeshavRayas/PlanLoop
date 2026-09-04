@@ -63,7 +63,8 @@ export const ModelName = {
   ApplicationDecision: 'ApplicationDecision',
   JobAnalysis: 'JobAnalysis',
   TailoredResume: 'TailoredResume',
-  CoverLetter: 'CoverLetter'
+  CoverLetter: 'CoverLetter',
+  InterviewPrep: 'InterviewPrep'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -182,6 +183,10 @@ export const ProfileScalarFieldEnum = {
   locations: 'locations',
   workModes: 'workModes',
   dealbreakers: 'dealbreakers',
+  preferredRoleFamilies: 'preferredRoleFamilies',
+  vetoedRoleFamilies: 'vetoedRoleFamilies',
+  openToRemote: 'openToRemote',
+  baseResumeId: 'baseResumeId',
   name: 'name',
   email: 'email',
   phone: 'phone',
@@ -220,6 +225,10 @@ export const JobMatchScalarFieldEnum = {
   recencyDecay: 'recencyDecay',
   sourceTrust: 'sourceTrust',
   levelFit: 'levelFit',
+  roleFamily: 'roleFamily',
+  roleFit: 'roleFit',
+  locationFit: 'locationFit',
+  recencySource: 'recencySource',
   reasons: 'reasons',
   humanVerdict: 'humanVerdict',
   judgedAt: 'judgedAt',
@@ -304,6 +313,20 @@ export const CoverLetterScalarFieldEnum = {
 } as const
 
 export type CoverLetterScalarFieldEnum = (typeof CoverLetterScalarFieldEnum)[keyof typeof CoverLetterScalarFieldEnum]
+
+
+export const InterviewPrepScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  baseResumeId: 'baseResumeId',
+  content: 'content',
+  evidenceIds: 'evidenceIds',
+  rawJson: 'rawJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InterviewPrepScalarFieldEnum = (typeof InterviewPrepScalarFieldEnum)[keyof typeof InterviewPrepScalarFieldEnum]
 
 
 export const SortOrder = {

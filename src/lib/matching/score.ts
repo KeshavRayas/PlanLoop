@@ -1,14 +1,20 @@
 import { SKILL_ALIASES } from "@/lib/constants";
+import { classifyRoleFamily, roleFit, type RoleFamily, type RoleFit } from "@/lib/matching/roleFamily";
+import { locationEligibility, LOCATION_FIT_SCORE, type LocationFit } from "@/lib/matching/eligibility";
 
-// ─── Phase 1 matcher: fully deterministic, model-free ──────────────────────
-// Pure module: zero Prisma / API / LLM dependencies. Safe to unit test and
-// safe to run for thousands of jobs inside the 02:00 nightly pipeline.
+// ─── Matcher v2: fully deterministic, model-free ─────────────────────────────
+// Pure module: zero Prisma / API / LLM dependencies. v2 adds role-family fit
+// and location eligibility alongside the v1 components; vetoed families and
+// ineligible locations are filtered by the caller (nightly), not scored.
 
 export type SalaryFit = "MATCH" | "BELOW" | "UNKNOWN";
 
 export interface MatcherProfile {
   skills: string[];
   minSalary?: number | null;
+  preferredRoleFamilies?: string[] | null;
+  vetoedRoleFamilies?: string[] | null;
+  openToRemote?: boolean | null;
 }
 
 export interface ScorableJob {
@@ -16,6 +22,7 @@ export interface ScorableJob {
   salaryMin?: number | null;
   salaryMax?: number | null;
   postedAt?: Date | string | null;
+  scrapedAt?: Date | string | null;
   /** Prisma JobSource enum name, e.g. "GREENHOUSE". */
   source?: string | null;
   /** 0..3, mirrors SOURCE_SCORES in the ingestion pipeline. */
@@ -23,7 +30,14 @@ export interface ScorableJob {
   /** Prisma ExperienceLevel enum name, e.g. "ENTRY". */
   experience?: string | null;
   title?: string;
+  description?: string;
+  location?: string | null;
+  remote?: boolean;
+  /** Prisma WorkMode enum name, e.g. "REMOTE". */
+  workMode?: string | null;
 }
+
+export type RecencySource = "posted" | "scraped" | "none";
 
 export interface MatchResult {
   score: number;
@@ -33,18 +47,30 @@ export interface MatchResult {
   salaryFit: SalaryFit;
   salaryScore: number;
   recencyDecay: number;
+  recencySource: RecencySource;
   sourceTrust: number;
   levelFit: number;
+  roleFamily: RoleFamily;
+  roleFit: RoleFit;
+  roleScore: number;
+  locationFit: LocationFit;
+  locationScore: number;
   reasons: string[];
 }
 
-/** Component weights. Skills dominate; everything else is a tie-breaker. */
+/**
+ * Component weights (v2). Old components keep their relative order
+ * (skills > level > recency = source > salary); role fit joins near the
+ * top, location contributes a small scored term on top of its filter role.
+ */
 export const MATCH_WEIGHTS = {
-  skills: 0.55,
-  level: 0.15,
-  recency: 0.1,
-  source: 0.1,
-  salary: 0.1,
+  skills: 0.4,
+  role: 0.15,
+  level: 0.12,
+  recency: 0.08,
+  source: 0.08,
+  salary: 0.07,
+  location: 0.1,
 } as const;
 
 /** Nightly candidate-set size. Ranked shortlist, not a final answer. */
@@ -136,16 +162,42 @@ export function scoreJob(
     job.salaryMax,
     profile.minSalary
   );
-  const recency = recencyDecay(job.postedAt, now);
+  // Recency fallback: posting date when present, otherwise first-seen date.
+  // The source is recorded so explanations stay honest.
+  const effectiveDate = job.postedAt ?? job.scrapedAt ?? null;
+  const recencySource: RecencySource = job.postedAt
+    ? "posted"
+    : job.scrapedAt
+      ? "scraped"
+      : "none";
+  const recency = recencyDecay(effectiveDate, now);
   const trust = sourceTrustScore(job.source, job.sourceScore);
   const level = levelFitScore(job.experience);
 
+  const family = classifyRoleFamily(job.title ?? "", job.description ?? "");
+  const { fit: roleFitResult, score: roleScore } = roleFit(family, {
+    preferred: profile.preferredRoleFamilies,
+    vetoed: profile.vetoedRoleFamilies,
+  });
+  const { fit: locationFitResult, reason: locationReason } = locationEligibility(
+    {
+      location: job.location,
+      remote: job.remote,
+      workMode: job.workMode,
+      description: job.description,
+    },
+    { openToRemote: profile.openToRemote }
+  );
+  const locationScore = LOCATION_FIT_SCORE[locationFitResult];
+
   const score =
     MATCH_WEIGHTS.skills * skillOverlap +
+    MATCH_WEIGHTS.role * roleScore +
     MATCH_WEIGHTS.level * level +
     MATCH_WEIGHTS.recency * recency +
     MATCH_WEIGHTS.source * trust +
-    MATCH_WEIGHTS.salary * salaryScore;
+    MATCH_WEIGHTS.salary * salaryScore +
+    MATCH_WEIGHTS.location * locationScore;
 
   const reasons: string[] = [];
   if (jobSkills.length === 0) {
@@ -177,6 +229,11 @@ export function scoreJob(
       trust >= 1 ? `${job.source} (high-trust source)` : `${job.source} source`
     );
   }
+  reasons.push(`role: ${family} (${roleFitResult.toLowerCase().replace("_", " ")})`);
+  reasons.push(`location: ${locationReason}`);
+  if (recencySource === "scraped") {
+    reasons.push("recency based on scraped date; posting date unavailable");
+  }
 
   return {
     score: Math.round(score * 10000) / 10000,
@@ -186,8 +243,14 @@ export function scoreJob(
     salaryFit,
     salaryScore,
     recencyDecay: Math.round(recency * 10000) / 10000,
+    recencySource,
     sourceTrust: trust,
     levelFit: level,
+    roleFamily: family,
+    roleFit: roleFitResult,
+    roleScore,
+    locationFit: locationFitResult,
+    locationScore,
     reasons,
   };
 }

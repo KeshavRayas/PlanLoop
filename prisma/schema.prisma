@@ -109,6 +109,7 @@ model Job {
   tailoredResumes TailoredResume[]
   decision ApplicationDecision?
   coverLetter CoverLetter?
+  interviewPrep InterviewPrep?
 
   @@unique([externalId, source])
   @@index([source])
@@ -172,6 +173,10 @@ model Profile {
   locations String[] @default([])
   workModes WorkMode[] @default([])
   dealbreakers String[] @default([])
+  preferredRoleFamilies String[] @default([])
+  vetoedRoleFamilies String[] @default([])
+  openToRemote Boolean @default(true)
+  baseResumeId String?
   name String?
   email String?
   phone String?
@@ -206,6 +211,10 @@ model JobMatch {
   recencyDecay   Float
   sourceTrust    Float
   levelFit Float
+  roleFamily String?
+  roleFit String?
+  locationFit String?
+  recencySource String?
   reasons String[]
   humanVerdict String?
   judgedAt DateTime?
@@ -302,6 +311,18 @@ enum TailorValidationStatus {
 }
 
 model CoverLetter {
+  id String @id @default(cuid())
+  jobId String @unique
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  baseResumeId String
+  content Json
+  evidenceIds String[]
+  rawJson Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InterviewPrep {
   id String @id @default(cuid())
   jobId String @unique
   job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)

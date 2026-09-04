@@ -9,6 +9,7 @@ import { getOrCreateDefaultProfile } from "@/lib/matching/profile";
 import { scoreJob } from "@/lib/matching/score";
 import { OpencodeCliProvider } from "@/lib/llm/opencode";
 import type { LlmProvider } from "@/lib/llm/types";
+import { generateJsonSanitized } from "@/lib/llm/sanitize";
 
 export class JobNotFoundError extends Error {
   constructor(jobId: string) {
@@ -107,7 +108,7 @@ export async function analyzeJob(
     profileMinSalary: profile.minSalary,
   });
 
-  const raw = await provider.generateJson(ANALYZE_SYSTEM_PROMPT, prompt);
+  const raw = await generateJsonSanitized(provider, ANALYZE_SYSTEM_PROMPT, prompt);
   let parsed = jobAnalysisSchema.safeParse(raw);
   if (!parsed.success) {
     // One repair retry: show the model its validation errors and ask for
@@ -117,7 +118,7 @@ export async function analyzeJob(
       .join("; ");
     console.error(`[analyze] first attempt invalid for job ${jobId}: ${issues}`);
     console.error(`[analyze] rejected payload: ${JSON.stringify(raw).slice(0, 1000)}`);
-    const retry = await provider.generateJson(
+    const retry = await generateJsonSanitized(provider, 
       ANALYZE_SYSTEM_PROMPT,
       `Your previous output failed validation with these errors: ${issues}\nReturn ONLY the corrected JSON object in exactly the requested shape, no other text.\n\n---\n\n${prompt}`
     );

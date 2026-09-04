@@ -47,6 +47,9 @@ const SKILLS = [
 ];
 
 async function main() {
+  const baseResume = await prisma.resume.findFirst({
+    where: { title: "Keshav Rayas — Base Resume" },
+  });
   const existing = await prisma.profile.findFirst({
     orderBy: { updatedAt: "desc" },
   });
@@ -58,6 +61,20 @@ async function main() {
           minSalary: null,
           locations: ["Bangalore", "Bengaluru"],
           workModes: ["REMOTE", "HYBRID", "ONSITE"],
+          preferredRoleFamilies: [
+            "BACKEND",
+            "INFRASTRUCTURE",
+            "DEVOPS_SRE",
+            "FULL_STACK",
+            "ML_AI",
+            "DATA",
+            "FORWARD_DEPLOYED",
+          ],
+          vetoedRoleFamilies: ["DATA_ANNOTATION"],
+          openToRemote: true,
+          // Pin the transcribed base resume so tailoring never depends on
+          // timestamp ordering between resumes.
+          baseResumeId: baseResume?.id ?? null,
           // Transcribed from ResumeLatex.tex header (same provenance as skills).
           name: "Keshav Girish Rayas",
           email: "keshav.rayas@gmail.com",
