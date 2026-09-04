@@ -1,9 +1,6 @@
 import type { ExperienceLevel } from "@/generated/prisma/enums";
 import type { RawJob, EntryLevelResult } from "@/lib/types";
-
-function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+import { escapeRegex } from "@/lib/utils";
 
 const ENTRY_TITLE_PATTERNS = [
   "intern", "internship", "graduate", "new grad", "new graduate",

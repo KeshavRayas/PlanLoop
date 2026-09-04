@@ -1,8 +1,5 @@
 import { SKILL_ALIASES } from "@/lib/constants";
-
-function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+import { escapeRegex } from "@/lib/utils";
 
 // Single combined regex matching all skill aliases in one pass
 const SKILL_REGEX = new RegExp(

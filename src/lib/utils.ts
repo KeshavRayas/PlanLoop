@@ -26,6 +26,10 @@ export function cn(...classes: (string | boolean | undefined | null)[]): string 
   return classes.filter(Boolean).join(" ");
 }
 
+export function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 const ENTITY_MAP: Record<string, string> = {
   "&lt;": "<",
   "&gt;": ">",

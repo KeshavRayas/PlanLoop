@@ -1,8 +1,5 @@
 import type { RawJob, ClassificationResult } from "@/lib/types";
-
-function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+import { escapeRegex } from "@/lib/utils";
 
 // Pre-compiled regexes (built once at module load, not per job)
 const CS_PATTERNS = [
