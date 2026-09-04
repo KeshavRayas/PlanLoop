@@ -5,7 +5,7 @@ import {
   tailoredResumeSchema,
   type TailoredResumeData,
 } from "@/lib/tailor/contract";
-import { collectEvidence, evidenceMap } from "@/lib/tailor/evidence";
+import { collectEvidencePair } from "@/lib/tailor/evidence";
 import { validateTailoredResume } from "@/lib/tailor/validate";
 import { canonicalizeTailored } from "@/lib/tailor/canonical";
 import type { ResumeData } from "@/lib/resume.types";
@@ -105,8 +105,7 @@ export async function tailorResume(
 
   const { base, content } = await requireBaseResumeContent();
 
-  const evidence = collectEvidence(content);
-  const evidenceById = evidenceMap(content);
+  const { evidence, evidenceById } = collectEvidencePair(content);
 
   const prompt = buildTailorPrompt({
     jobTitle: job.title,

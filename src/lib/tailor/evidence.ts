@@ -71,3 +71,17 @@ export function collectEvidence(data: ResumeData): EvidenceItem[] {
 export function evidenceMap(data: ResumeData): Map<string, string> {
   return new Map(collectEvidence(data).map((e) => [e.id, normalizeText(e.text)]));
 }
+
+/**
+ * Single-pass variant: callers that need both the list (prompt) and the map
+ * (validator) previously called collectEvidence + evidenceMap, traversing the
+ * resume twice. This collects once and derives both.
+ */
+export function collectEvidencePair(data: ResumeData): {
+  evidence: EvidenceItem[];
+  evidenceById: Map<string, string>;
+} {
+  const evidence = collectEvidence(data);
+  const evidenceById = new Map(evidence.map((e) => [e.id, normalizeText(e.text)]));
+  return { evidence, evidenceById };
+}

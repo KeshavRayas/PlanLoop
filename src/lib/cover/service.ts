@@ -6,7 +6,7 @@ import {
   type CoverLetterData,
 } from "@/lib/cover/contract";
 import { validateCoverLetter } from "@/lib/cover/validate";
-import { collectEvidence, evidenceMap } from "@/lib/tailor/evidence";
+import { collectEvidencePair } from "@/lib/tailor/evidence";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
 import { EmptyResumeError, requireBaseResumeContent } from "@/lib/tailor/service";
 import type { LlmProvider } from "@/lib/llm/types";
@@ -100,8 +100,7 @@ export async function generateCoverLetter(
 
   const { base, content } = await requireBaseResumeContent();
 
-  const evidence = collectEvidence(content);
-  const evidenceById = evidenceMap(content);
+  const { evidence, evidenceById } = collectEvidencePair(content);
 
   const prompt = buildCoverPrompt({
     jobTitle: job.title,

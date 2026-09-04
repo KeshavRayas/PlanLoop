@@ -6,7 +6,7 @@ import {
   type InterviewPrepData,
 } from "@/lib/interview/contract";
 import { validateInterviewPrep } from "@/lib/interview/validate";
-import { collectEvidence, evidenceMap } from "@/lib/tailor/evidence";
+import { collectEvidencePair } from "@/lib/tailor/evidence";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
 import { EmptyResumeError, requireBaseResumeContent } from "@/lib/tailor/service";
 import { extractTailoredHighlights } from "@/lib/cover/service";
@@ -103,8 +103,8 @@ export async function generateInterviewPrep(
 
   const { base, content } = await requireBaseResumeContent();
 
-  const evidence = relevantEvidence(collectEvidence(content), tailored.content);
-  const evidenceById = evidenceMap(content);
+  const { evidence: allEvidence, evidenceById } = collectEvidencePair(content);
+  const evidence = relevantEvidence(allEvidence, tailored.content);
 
   const prompt = buildInterviewPrompt({
     jobTitle: job.title,
