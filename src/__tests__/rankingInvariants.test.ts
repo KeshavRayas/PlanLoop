@@ -53,13 +53,30 @@ describe("ranking invariants", () => {
     const zurich = scoreJob(PROFILE, {
       ...BASE,
       title: "Software Engineer Intern - Zurich",
-      description: "Join our Zurich team, on-site.",
+      description: "On-site internship in Zurich, office-based.",
       skills: ["Python", "Go"],
       location: "Zurich, Switzerland",
     });
     expect(zurich.locationFit).toBe("INELIGIBLE");
     expect(eligible.locationFit).toBe("ELIGIBLE");
     expect(eligible.score).toBeGreaterThan(zurich.score);
+  });
+
+  it("uncertain ranks between eligible and ineligible equivalents", () => {
+    const mk = (location: string, workMode?: string, description?: string) =>
+      scoreJob(PROFILE, {
+        ...BASE,
+        title: "Software Engineer Intern",
+        description: description ?? "Role.",
+        skills: ["Python", "Go"],
+        location,
+        workMode,
+      }).score;
+    const eligible = mk("Remote");
+    const uncertain = mk("PL-Warsaw", "REMOTE");
+    const ineligible = mk("Zurich, Switzerland", undefined, "On-site in Zurich.");
+    expect(eligible).toBeGreaterThan(uncertain);
+    expect(uncertain).toBeGreaterThan(ineligible);
   });
 
   it("frontend stays between backend-strong and annotation", () => {

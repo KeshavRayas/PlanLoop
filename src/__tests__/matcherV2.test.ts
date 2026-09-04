@@ -116,13 +116,15 @@ describe("locationEligibility", () => {
     ).toBe("INELIGIBLE");
   });
 
-  it("structured-remote city codes are eligible without explicit restriction", () => {
-    expect(
-      locationEligibility({ location: "PL-Warsaw", workMode: "REMOTE" }).fit
-    ).toBe("ELIGIBLE");
-    expect(
-      locationEligibility({ location: "DE-Berlin-Trion Building", workMode: "REMOTE" }).fit
-    ).toBe("ELIGIBLE");
+  it("structured-remote foreign codes are UNCERTAIN, not ELIGIBLE", () => {
+    const warsaw = locationEligibility({ location: "PL-Warsaw", workMode: "REMOTE" });
+    expect(warsaw.fit).toBe("UNCERTAIN");
+    const berlin = locationEligibility({ location: "DE-Berlin-Trion Building", workMode: "REMOTE" });
+    expect(berlin.fit).toBe("UNCERTAIN");
+  });
+
+  it("structured-remote India-based cities stay ELIGIBLE", () => {
+    expect(locationEligibility({ location: "Mumbai", workMode: "REMOTE" }).fit).toBe("ELIGIBLE");
   });
 
   it("explicit restrictions disqualify remote postings", () => {
@@ -140,6 +142,26 @@ describe("locationEligibility", () => {
     ).toBe("INELIGIBLE");
   });
 
+  it("US-coded remote postings are UNCERTAIN via country code", () => {
+    expect(
+      locationEligibility({ location: "US-CA-Menlo Park", workMode: "REMOTE" }).fit
+    ).toBe("UNCERTAIN");
+    expect(
+      locationEligibility({ location: "US-WA-Bellevue", workMode: "REMOTE" }).fit
+    ).toBe("UNCERTAIN");
+  });
+
+  it("US-coded on-site postings are INELIGIBLE via country code", () => {
+    expect(
+      locationEligibility({ location: "US-CA-Menlo Park", description: "On-site role." }).fit
+    ).toBe("INELIGIBLE");
+  });
+
+  it("Belgrade without a country code still resolves", () => {
+    expect(locationEligibility({ location: "Belgrade", workMode: "REMOTE" }).fit).toBe("UNCERTAIN");
+    expect(locationEligibility({ location: "Belgrade" }).fit).toBe("INELIGIBLE");
+  });
+
   it("positive sponsorship language is not a restriction", () => {
     expect(
       locationEligibility({ location: "Remote", description: "We sponsor visas for the right candidate." }).fit
@@ -151,6 +173,15 @@ describe("locationEligibility", () => {
       locationEligibility({
         location: "Berlin, Germany",
         description: "Distributed systems role, on-site in Berlin.",
+      }).fit
+    ).toBe("INELIGIBLE");
+  });
+
+  it("remote denials defeat the remote substring", () => {
+    expect(
+      locationEligibility({
+        location: "Zurich, Switzerland",
+        description: "On-site internship in Zurich, no remote work.",
       }).fit
     ).toBe("INELIGIBLE");
   });
