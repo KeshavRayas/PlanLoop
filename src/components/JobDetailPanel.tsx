@@ -200,42 +200,40 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
     };
   }, [selectedId]);
 
-  async function runAnalysis(refresh: boolean) {
-    if (!selectedId || analyzing) return;
-    setAnalyzing(true);
-    setAnalysisError(null);
+  async function runJobPost<T>(
+    busy: boolean,
+    setBusy: (v: boolean) => void,
+    setError: (e: string | null) => void,
+    endpoint: string,
+    refresh: boolean,
+    fallback: string,
+    onSuccess: (data: T) => void,
+    blocked = false,
+  ) {
+    if (!selectedId || busy || blocked) return;
+    setBusy(true);
+    setError(null);
     try {
       const res = await fetch(
-        `/api/jobs/${selectedId}/analyze${refresh ? "?refresh=1" : ""}`,
+        `/api/jobs/${selectedId}${endpoint}${refresh ? "?refresh=1" : ""}`,
         { method: "POST" }
       );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Analysis failed");
-      setAnalysis(data);
+      const data = (await res.json()) as T & { error?: string };
+      if (!res.ok) throw new Error(data.error ?? fallback);
+      onSuccess(data);
     } catch (err) {
-      setAnalysisError(err instanceof Error ? err.message : "Analysis failed");
+      setError(err instanceof Error ? err.message : fallback);
     } finally {
-      setAnalyzing(false);
+      setBusy(false);
     }
   }
 
-  async function runTailor(refresh: boolean) {
-    if (!selectedId || tailoring || !analysis) return;
-    setTailoring(true);
-    setTailorError(null);
-    try {
-      const res = await fetch(
-        `/api/jobs/${selectedId}/tailor${refresh ? "?refresh=1" : ""}`,
-        { method: "POST" }
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Tailoring failed");
-      setTailored(data);
-    } catch (err) {
-      setTailorError(err instanceof Error ? err.message : "Tailoring failed");
-    } finally {
-      setTailoring(false);
-    }
+  function runAnalysis(refresh: boolean) {
+    return runJobPost(analyzing, setAnalyzing, setAnalysisError, "/analyze", refresh, "Analysis failed", setAnalysis);
+  }
+
+  function runTailor(refresh: boolean) {
+    return runJobPost(tailoring, setTailoring, setTailorError, "/tailor", refresh, "Tailoring failed", setTailored, !analysis);
   }
 
   async function runValidation() {
@@ -279,42 +277,12 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
     }
   }
 
-  async function runCover(refresh: boolean) {
-    if (!selectedId || covering || !analysis || !tailored) return;
-    setCovering(true);
-    setCoverError(null);
-    try {
-      const res = await fetch(
-        `/api/jobs/${selectedId}/cover${refresh ? "?refresh=1" : ""}`,
-        { method: "POST" }
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Cover letter failed");
-      setCover(data);
-    } catch (err) {
-      setCoverError(err instanceof Error ? err.message : "Cover letter failed");
-    } finally {
-      setCovering(false);
-    }
+  function runCover(refresh: boolean) {
+    return runJobPost(covering, setCovering, setCoverError, "/cover", refresh, "Cover letter failed", setCover, !analysis || !tailored);
   }
 
-  async function runInterview(refresh: boolean) {
-    if (!selectedId || preparing || !analysis || !tailored) return;
-    setPreparing(true);
-    setPrepError(null);
-    try {
-      const res = await fetch(
-        `/api/jobs/${selectedId}/interview${refresh ? "?refresh=1" : ""}`,
-        { method: "POST" }
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Interview prep failed");
-      setPrep(data);
-    } catch (err) {
-      setPrepError(err instanceof Error ? err.message : "Interview prep failed");
-    } finally {
-      setPreparing(false);
-    }
+  function runInterview(refresh: boolean) {
+    return runJobPost(preparing, setPreparing, setPrepError, "/interview", refresh, "Interview prep failed", setPrep, !analysis || !tailored);
   }
 
   async function setJobDecision(status: string, openUrl = false) {
