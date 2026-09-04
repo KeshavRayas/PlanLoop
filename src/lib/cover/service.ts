@@ -147,31 +147,22 @@ async function persistValidated(
     console.error(`[cover] provenance invalid for job ${jobId}: ${JSON.stringify(problems).slice(0, 1000)}`);
     throw new CoverValidationError(problems.map((p) => p.text).join("; "));
   }
+  const content = {
+    subject: data.subject,
+    greeting: data.greeting,
+    paragraphs: data.paragraphs,
+    closing: data.closing,
+  };
+  const shared = {
+    baseResumeId,
+    content,
+    evidenceIds: data.evidenceIds,
+    rawJson: raw as object,
+  };
   const saved = await prisma.coverLetter.upsert({
     where: { jobId },
-    create: {
-      jobId,
-      baseResumeId,
-      content: {
-        subject: data.subject,
-        greeting: data.greeting,
-        paragraphs: data.paragraphs,
-        closing: data.closing,
-      },
-      evidenceIds: data.evidenceIds,
-      rawJson: raw as object,
-    },
-    update: {
-      baseResumeId,
-      content: {
-        subject: data.subject,
-        greeting: data.greeting,
-        paragraphs: data.paragraphs,
-        closing: data.closing,
-      },
-      evidenceIds: data.evidenceIds,
-      rawJson: raw as object,
-    },
+    create: { jobId, ...shared },
+    update: shared,
   });
   return { cover: { ...data, id: saved.id }, cached: false as const };
 }

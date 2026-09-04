@@ -161,33 +161,23 @@ async function persistValidated(
       })
     ),
   ];
+  const content = {
+    technical: data.technical,
+    resumeBased: data.resumeBased,
+    behavioral: data.behavioral,
+    toAsk: data.toAsk,
+    gaps: data.gaps,
+  };
+  const shared = {
+    baseResumeId,
+    content,
+    evidenceIds,
+    rawJson: raw as object,
+  };
   const saved = await prisma.interviewPrep.upsert({
     where: { jobId },
-    create: {
-      jobId,
-      baseResumeId,
-      content: {
-        technical: data.technical,
-        resumeBased: data.resumeBased,
-        behavioral: data.behavioral,
-        toAsk: data.toAsk,
-        gaps: data.gaps,
-      },
-      evidenceIds,
-      rawJson: raw as object,
-    },
-    update: {
-      baseResumeId,
-      content: {
-        technical: data.technical,
-        resumeBased: data.resumeBased,
-        behavioral: data.behavioral,
-        toAsk: data.toAsk,
-        gaps: data.gaps,
-      },
-      evidenceIds,
-      rawJson: raw as object,
-    },
+    create: { jobId, ...shared },
+    update: shared,
   });
   return { prep: { ...data, id: saved.id }, cached: false as const };
 }
