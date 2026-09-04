@@ -7,10 +7,8 @@ import {
 } from "@/lib/cover/contract";
 import { validateCoverLetter } from "@/lib/cover/validate";
 import { collectEvidence, evidenceMap } from "@/lib/tailor/evidence";
-import type { ResumeData } from "@/lib/resume.types";
-import { hasResumeContent } from "@/lib/resume.utils";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
-import { EmptyResumeError, getBaseResume } from "@/lib/tailor/service";
+import { EmptyResumeError, requireBaseResumeContent } from "@/lib/tailor/service";
 import type { LlmProvider } from "@/lib/llm/types";
 import { generateJsonSanitized } from "@/lib/llm/sanitize";
 
@@ -100,9 +98,7 @@ export async function generateCoverLetter(
   });
   if (!tailored) throw new NeedsTailoredResumeError();
 
-  const base = await getBaseResume();
-  const content = base?.content as ResumeData | null;
-  if (!base || !content || !hasResumeContent(content)) throw new EmptyResumeError();
+  const { base, content } = await requireBaseResumeContent();
 
   const evidence = collectEvidence(content);
   const evidenceById = evidenceMap(content);

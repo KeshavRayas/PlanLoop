@@ -51,6 +51,14 @@ export async function getBaseResume() {
   return prisma.resume.findFirst({ orderBy: { updatedAt: "desc" } });
 }
 
+/** Shared guard: load the base resume and ensure it has content. */
+export async function requireBaseResumeContent() {
+  const base = await getBaseResume();
+  const content = base?.content as ResumeData | null;
+  if (!base || !content || !hasResumeContent(content)) throw new EmptyResumeError();
+  return { base, content };
+}
+
 export async function getTailoredResume(jobId: string) {
   const [current, versionCount] = await Promise.all([
     prisma.tailoredResume.findFirst({
@@ -95,9 +103,7 @@ export async function tailorResume(
   if (!job) throw new Error(`job not found: ${jobId}`);
   if (!job.analysis) throw new NeedsAnalysisError();
 
-  const base = await getBaseResume();
-  const content = base?.content as ResumeData | null;
-  if (!base || !content || !hasResumeContent(content)) throw new EmptyResumeError();
+  const { base, content } = await requireBaseResumeContent();
 
   const evidence = collectEvidence(content);
   const evidenceById = evidenceMap(content);

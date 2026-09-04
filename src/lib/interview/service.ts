@@ -7,10 +7,8 @@ import {
 } from "@/lib/interview/contract";
 import { validateInterviewPrep } from "@/lib/interview/validate";
 import { collectEvidence, evidenceMap } from "@/lib/tailor/evidence";
-import type { ResumeData } from "@/lib/resume.types";
-import { hasResumeContent } from "@/lib/resume.utils";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
-import { EmptyResumeError, getBaseResume } from "@/lib/tailor/service";
+import { EmptyResumeError, requireBaseResumeContent } from "@/lib/tailor/service";
 import { extractTailoredHighlights } from "@/lib/cover/service";
 import type { LlmProvider } from "@/lib/llm/types";
 import { generateJsonSanitized } from "@/lib/llm/sanitize";
@@ -103,9 +101,7 @@ export async function generateInterviewPrep(
     throw new NeedsValidTailoredResumeError(tailored.validationStatus);
   }
 
-  const base = await getBaseResume();
-  const content = base?.content as ResumeData | null;
-  if (!base || !content || !hasResumeContent(content)) throw new EmptyResumeError();
+  const { base, content } = await requireBaseResumeContent();
 
   const evidence = relevantEvidence(collectEvidence(content), tailored.content);
   const evidenceById = evidenceMap(content);
