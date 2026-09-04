@@ -106,46 +106,30 @@ export async function runMatching(
   const top = scored.slice(0, topN);
 
   await Promise.all(
-    top.map(({ jobId, result }) =>
-      prisma.jobMatch.upsert({
+    top.map(({ jobId, result }) => {
+      const matchData = {
+        score: result.score,
+        matchedSkills: result.matchedSkills,
+        missingSkills: result.missingSkills,
+        skillOverlap: result.skillOverlap,
+        salaryFit: result.salaryFit,
+        salaryScore: result.salaryScore,
+        recencyDecay: result.recencyDecay,
+        recencySource: result.recencySource,
+        sourceTrust: result.sourceTrust,
+        levelFit: result.levelFit,
+        roleFamily: result.roleFamily,
+        roleFit: result.roleFit,
+        locationFit: result.locationFit,
+        reasons: result.reasons,
+        nightlyRunId,
+      };
+      return prisma.jobMatch.upsert({
         where: { jobId },
-        update: {
-          score: result.score,
-          matchedSkills: result.matchedSkills,
-          missingSkills: result.missingSkills,
-          skillOverlap: result.skillOverlap,
-          salaryFit: result.salaryFit,
-          salaryScore: result.salaryScore,
-          recencyDecay: result.recencyDecay,
-          recencySource: result.recencySource,
-          sourceTrust: result.sourceTrust,
-          levelFit: result.levelFit,
-          roleFamily: result.roleFamily,
-          roleFit: result.roleFit,
-          locationFit: result.locationFit,
-          reasons: result.reasons,
-          nightlyRunId,
-        },
-        create: {
-          jobId,
-          score: result.score,
-          matchedSkills: result.matchedSkills,
-          missingSkills: result.missingSkills,
-          skillOverlap: result.skillOverlap,
-          salaryFit: result.salaryFit,
-          salaryScore: result.salaryScore,
-          recencyDecay: result.recencyDecay,
-          recencySource: result.recencySource,
-          sourceTrust: result.sourceTrust,
-          levelFit: result.levelFit,
-          roleFamily: result.roleFamily,
-          roleFit: result.roleFit,
-          locationFit: result.locationFit,
-          reasons: result.reasons,
-          nightlyRunId,
-        },
-      })
-    )
+        update: matchData,
+        create: { jobId, ...matchData },
+      });
+    })
   );
 
   await prisma.nightlyRun.update({
