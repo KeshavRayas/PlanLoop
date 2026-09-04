@@ -108,6 +108,7 @@ model Job {
   analysis JobAnalysis?
   tailoredResumes TailoredResume[]
   decision ApplicationDecision?
+  coverLetter CoverLetter?
 
   @@unique([externalId, source])
   @@index([source])
@@ -298,4 +299,16 @@ enum TailorValidationStatus {
   STRUCTURAL_VALID
   SEMANTIC_VALID
   SEMANTIC_INVALID
+}
+
+model CoverLetter {
+  id String @id @default(cuid())
+  jobId String @unique
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  baseResumeId String
+  content Json
+  evidenceIds String[]
+  rawJson Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -62,7 +62,8 @@ export const ModelName = {
   JobMatch: 'JobMatch',
   ApplicationDecision: 'ApplicationDecision',
   JobAnalysis: 'JobAnalysis',
-  TailoredResume: 'TailoredResume'
+  TailoredResume: 'TailoredResume',
+  CoverLetter: 'CoverLetter'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -289,6 +290,20 @@ export const TailoredResumeScalarFieldEnum = {
 } as const
 
 export type TailoredResumeScalarFieldEnum = (typeof TailoredResumeScalarFieldEnum)[keyof typeof TailoredResumeScalarFieldEnum]
+
+
+export const CoverLetterScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  baseResumeId: 'baseResumeId',
+  content: 'content',
+  evidenceIds: 'evidenceIds',
+  rawJson: 'rawJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CoverLetterScalarFieldEnum = (typeof CoverLetterScalarFieldEnum)[keyof typeof CoverLetterScalarFieldEnum]
 
 
 export const SortOrder = {

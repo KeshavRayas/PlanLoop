@@ -65,6 +65,17 @@ interface TailoredResumeView {
   cached?: boolean;
 }
 
+interface CoverLetterView {
+  id: string;
+  content: {
+    subject?: string;
+    greeting: string;
+    paragraphs: string[];
+    closing: string;
+  };
+  cached?: boolean;
+}
+
 function renderTailoredFields(fields: TailoredItemView["fields"]): string {
   const parts: string[] = [];
   for (const [key, value] of Object.entries(fields)) {
@@ -101,6 +112,10 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
   const [validating, setValidating] = useState(false);
   const [rendering, setRendering] = useState(false);
 
+  const [cover, setCover] = useState<CoverLetterView | null>(null);
+  const [covering, setCovering] = useState(false);
+  const [coverError, setCoverError] = useState<string | null>(null);
+
   const [decision, setDecision] = useState<string | null>(null);
   const [deciding, setDeciding] = useState(false);
   const [liveness, setLiveness] = useState<{ alive: boolean; evidence: string | null } | null>(null);
@@ -111,6 +126,8 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
     setAnalysisError(null);
     setTailored(null);
     setTailorError(null);
+    setCover(null);
+    setCoverError(null);
     setDecision(null);
     setLiveness(null);
     if (!selectedId) return;
@@ -131,6 +148,12 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!cancelled && data?.status && data.status !== "QUEUED") setDecision(data.status);
+      })
+      .catch(() => {});
+    fetch(`/api/jobs/${selectedId}/cover`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.content) setCover(data);
       })
       .catch(() => {});
     return () => {
@@ -214,6 +237,25 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
       setTailorError(err instanceof Error ? err.message : "Render failed");
     } finally {
       setRendering(false);
+    }
+  }
+
+  async function runCover(refresh: boolean) {
+    if (!selectedId || covering || !analysis || !tailored) return;
+    setCovering(true);
+    setCoverError(null);
+    try {
+      const res = await fetch(
+        `/api/jobs/${selectedId}/cover${refresh ? "?refresh=1" : ""}`,
+        { method: "POST" }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Cover letter failed");
+      setCover(data);
+    } catch (err) {
+      setCoverError(err instanceof Error ? err.message : "Cover letter failed");
+    } finally {
+      setCovering(false);
     }
   }
 
@@ -623,6 +665,64 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                   </button>
                 </div>
               )}
+            </div>
+
+            {/* Cover Letter Section */}
+            <div className="p-4 border border-black/10 rounded-[14px] bg-black/[0.03] space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-title font-extrabold flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Cover letter
+                </h3>
+                {cover && (
+                  <span className="px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border border-black/10 bg-white">
+                    Saved
+                  </span>
+                )}
+              </div>
+
+              {cover && (
+                <div className="p-3 border border-black/10 rounded-[12px] bg-white space-y-2">
+                  {cover.content.subject && (
+                    <p className="text-body font-extrabold leading-relaxed">
+                      {cover.content.subject}
+                    </p>
+                  )}
+                  <p className="text-body font-medium leading-relaxed">
+                    {cover.content.greeting}
+                  </p>
+                  {cover.content.paragraphs.map((p) => (
+                    <p key={p.slice(0, 32)} className="text-body font-medium leading-relaxed">
+                      {p}
+                    </p>
+                  ))}
+                  <p className="text-body font-medium leading-relaxed">
+                    {cover.content.closing}
+                  </p>
+                </div>
+              )}
+
+              {coverError && (
+                <p className="text-body font-bold text-red">{coverError}</p>
+              )}
+
+              <button
+                onClick={() => runCover(!!cover)}
+                disabled={covering || !analysis || !tailored}
+                className="w-full flex items-center justify-center gap-2 bg-black text-white font-extrabold px-4 py-3 rounded-full text-label uppercase tracking-widest transition-all duration-700 disabled:opacity-50"
+              >
+                <FileText className="w-4 h-4" />
+                {covering
+                  ? "Writing…"
+                  : cover
+                    ? "Regenerate letter"
+                    : "Write cover letter"}
+              </button>
+              <p className="text-label font-medium text-text-secondary">
+                {analysis && tailored
+                  ? "Built from the analysis + tailored resume above. Every claim cites base-resume evidence."
+                  : "Analyze the job and tailor a resume first — the letter builds on both."}
+              </p>
             </div>
           </div>
         )}
