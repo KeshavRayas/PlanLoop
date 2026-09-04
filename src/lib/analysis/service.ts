@@ -139,39 +139,25 @@ async function persistAnalysis(
   raw: unknown
 ): Promise<{ analysis: JobAnalysisData & { id: string }; cached: false }> {
 
+  const shared = {
+    summary: data.summary,
+    responsibilities: data.responsibilities,
+    requiredSkills: data.requiredSkills,
+    preferredSkills: data.preferredSkills,
+    matchedSkills: data.matchedSkills,
+    missingSkills: data.missingSkills,
+    experienceRequirements: data.experienceRequirements,
+    potentialConcerns: data.potentialConcerns,
+    workAuthorization: data.workAuthorization ?? null,
+    workMode: data.workMode ?? null,
+    verdict: data.verdict,
+    verdictReasons: data.verdictReasons,
+    rawJson: raw as object,
+  };
   const saved = await prisma.jobAnalysis.upsert({
     where: { jobId },
-    update: {
-      summary: data.summary,
-      responsibilities: data.responsibilities,
-      requiredSkills: data.requiredSkills,
-      preferredSkills: data.preferredSkills,
-      matchedSkills: data.matchedSkills,
-      missingSkills: data.missingSkills,
-      experienceRequirements: data.experienceRequirements,
-      potentialConcerns: data.potentialConcerns,
-      workAuthorization: data.workAuthorization ?? null,
-      workMode: data.workMode ?? null,
-      verdict: data.verdict,
-      verdictReasons: data.verdictReasons,
-      rawJson: raw as object,
-    },
-    create: {
-      jobId,
-      summary: data.summary,
-      responsibilities: data.responsibilities,
-      requiredSkills: data.requiredSkills,
-      preferredSkills: data.preferredSkills,
-      matchedSkills: data.matchedSkills,
-      missingSkills: data.missingSkills,
-      experienceRequirements: data.experienceRequirements,
-      potentialConcerns: data.potentialConcerns,
-      workAuthorization: data.workAuthorization ?? null,
-      workMode: data.workMode ?? null,
-      verdict: data.verdict,
-      verdictReasons: data.verdictReasons,
-      rawJson: raw as object,
-    },
+    update: shared,
+    create: { jobId, ...shared },
   });
 
   return { analysis: { ...data, id: saved.id }, cached: false as const };
