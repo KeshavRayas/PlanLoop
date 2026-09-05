@@ -28,7 +28,7 @@ throws typed `LlmError`s. Swap via the `LlmProvider` interface
 `LLM_TIMEOUT_MS` the timeout).
 
 **Local-only.** The route spawns the CLI on its host, so Analyze works
-under local `npm run dev`, never on Vercel. Everything else is unaffected.
+under local `bun run dev`, never on Vercel. Everything else is unaffected.
 
 ## Gotchas found the hard way (do not regress)
 

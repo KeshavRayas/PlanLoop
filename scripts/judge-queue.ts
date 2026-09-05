@@ -2,17 +2,21 @@ import { prisma } from "@/lib/prisma";
 import { getTopMatches } from "@/lib/repositories/matches.repository";
 
 // Prints the current TOP 25 as a judging table. Paste verdicts back with:
-//   npx tsx scripts/judge-queue.ts --rate <jobId> <EXCELLENT|GOOD|BAD> [--blind]
+//   bunx tsx scripts/judge-queue.ts --rate <jobId> <EXCELLENT|GOOD|BAD> [--blind]
 // Verdicts are observational only and never affect ranking (Phase 2.5.5).
 // Export judged rows with reason context for batch comparison:
-//   npx tsx scripts/judge-queue.ts --export <path.json>
+//   bunx tsx scripts/judge-queue.ts --export <path.json>
 
 async function rate(jobId: string, verdict: string, context: string) {
   const match = await prisma.jobMatch.findUnique({ where: { jobId } });
   if (!match) throw new Error(`no JobMatch for job ${jobId}`);
   await prisma.jobMatch.update({
     where: { jobId },
-    data: { humanVerdict: verdict, judgedAt: new Date(), judgmentContext: context },
+    data: {
+      humanVerdict: verdict,
+      judgedAt: new Date(),
+      judgmentContext: context,
+    },
   });
   console.log(`rated ${jobId} -> ${verdict} [${context}]`);
 }
@@ -43,10 +47,12 @@ async function exportJudged(path: string) {
 
 async function table() {
   const top = await getTopMatches(25);
-  console.log("rank | score | human | role | loc | title @ company | matched/total | id");
+  console.log(
+    "rank | score | human | role | loc | title @ company | matched/total | id",
+  );
   top.forEach((t, i) => {
     console.log(
-      `${String(i + 1).padStart(2)} | ${t.score.toFixed(2)} | ${(t.humanVerdict ?? "-").padEnd(9)} | ${(t.roleFamily ?? "?").padEnd(14)} | ${(t.locationFit ?? "?").padEnd(8)} | ${(t.job.location ?? "?").slice(0, 24).padEnd(24)} | ${t.job.title} @ ${t.company.name} | ${t.matchedSkills.length}/${t.job.skills.length} | ${t.job.id}`
+      `${String(i + 1).padStart(2)} | ${t.score.toFixed(2)} | ${(t.humanVerdict ?? "-").padEnd(9)} | ${(t.roleFamily ?? "?").padEnd(14)} | ${(t.locationFit ?? "?").padEnd(8)} | ${(t.job.location ?? "?").slice(0, 24).padEnd(24)} | ${t.job.title} @ ${t.company.name} | ${t.matchedSkills.length}/${t.job.skills.length} | ${t.job.id}`,
     );
   });
 }
@@ -54,7 +60,8 @@ async function table() {
 async function main() {
   const [, , cmd, a, b, c] = process.argv;
   if (cmd === "--rate" && a && b) {
-    if (!["EXCELLENT", "GOOD", "BAD"].includes(b)) throw new Error("verdict must be EXCELLENT|GOOD|BAD");
+    if (!["EXCELLENT", "GOOD", "BAD"].includes(b))
+      throw new Error("verdict must be EXCELLENT|GOOD|BAD");
     const context = c === "--blind" ? "LOCATION_HIDDEN" : "LOCATION_VISIBLE";
     await rate(a, b, context);
   } else if (cmd === "--export" && a) {

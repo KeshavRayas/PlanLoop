@@ -91,5 +91,5 @@ warnings), never a universal score.
 4. **Apply-time liveness** (`POST /api/jobs/:id/liveness`): HEAD, GET
    fallback, 5s timeout, dead-page markers. No persistence, no crawling.
 5. **Calibration**: `humanVerdict` + `judgedAt` on `JobMatch`,
-   observational only (ranking ignores them). `npx tsx scripts/judge-queue.ts`
+   observational only (ranking ignores them). `bunx tsx scripts/judge-queue.ts`
    prints the table; `--rate <jobId> <EXCELLENT|GOOD|BAD>` records.
