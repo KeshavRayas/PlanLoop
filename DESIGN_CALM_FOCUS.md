@@ -3,8 +3,7 @@
 > **Future agents: this file wins.** Chosen by user via Lavish review on 2026-09-04
 > (Concept C — Calm Focus, Slow & buttery 900ms). Inspired by awwwards.com/jobs.
 > Do NOT reintroduce Neo-Brutalism (thick black borders, hard offset shadows,
-> 150ms snaps, 3-column OS grid, yellow/green/purple command-center). See DESIGN.md
-> for what we explicitly killed.
+> 150ms snaps, 3-column OS grid, yellow/green/purple command-center).
 
 ## Decision
 - Direction: **C — Calm Focus**
