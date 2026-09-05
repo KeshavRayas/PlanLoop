@@ -9,7 +9,9 @@ export class GreenhouseSource implements JobSource {
   readonly name = "greenhouse";
 
   async fetchJobs(): Promise<RawJob[]> {
-    const companies = CURATED_COMPANIES.filter((c) => c.atsType === "greenhouse");
+    const companies = CURATED_COMPANIES.filter(
+      (c) => c.atsType === "greenhouse",
+    );
     const results: RawJob[] = [];
 
     await runBatched(companies, BATCH_SIZE, async (company) => {

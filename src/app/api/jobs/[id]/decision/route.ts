@@ -11,15 +11,25 @@ type Status = (typeof STATUSES)[number];
 
 export async function GET(_req: Request, ctx: { params: Params }) {
   const { id } = await ctx.params;
-  const job = await prisma.job.findUnique({ where: { id }, select: { id: true } });
+  const job = await prisma.job.findUnique({
+    where: { id },
+    select: { id: true },
+  });
   if (!job) return Response.json({ error: "Not found" }, { status: 404 });
-  const decision = await prisma.applicationDecision.findUnique({ where: { jobId: id } });
-  return Response.json(decision ?? { jobId: id, status: "QUEUED", decided: false });
+  const decision = await prisma.applicationDecision.findUnique({
+    where: { jobId: id },
+  });
+  return Response.json(
+    decision ?? { jobId: id, status: "QUEUED", decided: false },
+  );
 }
 
 export async function POST(req: Request, ctx: { params: Params }) {
   const { id } = await ctx.params;
-  const job = await prisma.job.findUnique({ where: { id }, select: { id: true } });
+  const job = await prisma.job.findUnique({
+    where: { id },
+    select: { id: true },
+  });
   if (!job) return Response.json({ error: "Not found" }, { status: 404 });
 
   let body: { status?: string; reason?: string };
@@ -31,7 +41,7 @@ export async function POST(req: Request, ctx: { params: Params }) {
   if (!body.status || !(STATUSES as readonly string[]).includes(body.status)) {
     return Response.json(
       { error: `status must be one of ${STATUSES.join(", ")}` },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

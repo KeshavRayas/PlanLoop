@@ -32,7 +32,9 @@ export class AshbySource implements JobSource {
           remote: j.isRemote ?? false,
           jobType: j.type === "Full-Time" ? "FULL_TIME" : undefined,
           postedAt: j.publishedDate ? new Date(j.publishedDate) : undefined,
-          applyUrl: String(j.applyUrl ?? `https://jobs.ashbyhq.com/${board}/${j.id}`),
+          applyUrl: String(
+            j.applyUrl ?? `https://jobs.ashbyhq.com/${board}/${j.id}`,
+          ),
         });
       }
     });

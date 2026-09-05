@@ -6,7 +6,9 @@ export class RemotiveSource implements JobSource {
   readonly name = "remotive";
 
   async fetchJobs(): Promise<RawJob[]> {
-    const res = await fetchWithTimeout("https://remotive.com/api/remote-jobs?limit=50");
+    const res = await fetchWithTimeout(
+      "https://remotive.com/api/remote-jobs?limit=50",
+    );
     if (!res.ok) return [];
 
     const data = await res.json();
@@ -20,7 +22,9 @@ export class RemotiveSource implements JobSource {
       location: String(j.candidate_required_location ?? ""),
       remote: true,
       jobType: j.job_type === "full_time" ? "FULL_TIME" : undefined,
-      postedAt: j.publication_date ? new Date(String(j.publication_date)) : undefined,
+      postedAt: j.publication_date
+        ? new Date(String(j.publication_date))
+        : undefined,
       applyUrl: String(j.url ?? ""),
     })) as RawJob[];
   }

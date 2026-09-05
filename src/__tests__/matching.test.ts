@@ -12,7 +12,15 @@ import {
 const PROFILE: MatcherProfile = {
   skills: ["TypeScript", "React", "PostgreSQL", "Docker", "AWS", "Go"],
   minSalary: 1200000,
-  preferredRoleFamilies: ["BACKEND", "INFRASTRUCTURE", "DEVOPS_SRE", "FULL_STACK", "ML_AI", "DATA", "FORWARD_DEPLOYED"],
+  preferredRoleFamilies: [
+    "BACKEND",
+    "INFRASTRUCTURE",
+    "DEVOPS_SRE",
+    "FULL_STACK",
+    "ML_AI",
+    "DATA",
+    "FORWARD_DEPLOYED",
+  ],
   vetoedRoleFamilies: ["DATA_ANNOTATION"],
   openToRemote: true,
 };
@@ -57,7 +65,7 @@ describe("scoreJob", () => {
   it("computes partial overlap and lists gaps", () => {
     const r = scoreJob(
       PROFILE,
-      makeJob({ skills: ["TypeScript", "React", "Kubernetes"] })
+      makeJob({ skills: ["TypeScript", "React", "Kubernetes"] }),
     );
     expect(r.matchedSkills).toEqual(["React", "TypeScript"]);
     expect(r.missingSkills).toEqual(["Kubernetes"]);
@@ -71,21 +79,33 @@ describe("scoreJob", () => {
   });
 
   it("does not penalize unknown salary (UNKNOWN scores above BELOW)", () => {
-    const unknown = scoreJob(PROFILE, makeJob({ salaryMin: null, salaryMax: null }));
-    const below = scoreJob(PROFILE, makeJob({ salaryMin: 500000, salaryMax: 800000 }));
+    const unknown = scoreJob(
+      PROFILE,
+      makeJob({ salaryMin: null, salaryMax: null }),
+    );
+    const below = scoreJob(
+      PROFILE,
+      makeJob({ salaryMin: 500000, salaryMax: 800000 }),
+    );
     expect(unknown.salaryFit).toBe("UNKNOWN");
     expect(below.salaryFit).toBe("BELOW");
     expect(unknown.score).toBeGreaterThan(below.score);
   });
 
   it("marks salary below profile minimum as BELOW with score 0", () => {
-    const r = scoreJob(PROFILE, makeJob({ salaryMin: 500000, salaryMax: 800000 }));
+    const r = scoreJob(
+      PROFILE,
+      makeJob({ salaryMin: 500000, salaryMax: 800000 }),
+    );
     expect(r.salaryFit).toBe("BELOW");
     expect(r.salaryScore).toBe(0);
   });
 
   it("treats known salary as MATCH when profile has no minimum", () => {
-    const r = scoreJob({ skills: [] }, makeJob({ salaryMin: 100, salaryMax: 200 }));
+    const r = scoreJob(
+      { skills: [] },
+      makeJob({ salaryMin: 100, salaryMax: 200 }),
+    );
     expect(r.salaryFit).toBe("MATCH");
   });
 
@@ -93,15 +113,21 @@ describe("scoreJob", () => {
     const fresh = scoreJob(PROFILE, makeJob({ postedAt: new Date() }));
     const old = scoreJob(
       PROFILE,
-      makeJob({ postedAt: new Date(Date.now() - 20 * 86400000) })
+      makeJob({ postedAt: new Date(Date.now() - 20 * 86400000) }),
     );
     expect(fresh.recencyDecay).toBeGreaterThan(old.recencyDecay);
     expect(fresh.score).toBeGreaterThan(old.score);
   });
 
   it("ranks high-trust ATS sources above aggregators", () => {
-    const ats = scoreJob(PROFILE, makeJob({ source: "GREENHOUSE", sourceScore: 3 }));
-    const agg = scoreJob(PROFILE, makeJob({ source: "ADZUNA", sourceScore: 0 }));
+    const ats = scoreJob(
+      PROFILE,
+      makeJob({ source: "GREENHOUSE", sourceScore: 3 }),
+    );
+    const agg = scoreJob(
+      PROFILE,
+      makeJob({ source: "ADZUNA", sourceScore: 0 }),
+    );
     expect(ats.sourceTrust).toBeGreaterThan(agg.sourceTrust);
     expect(ats.score).toBeGreaterThan(agg.score);
   });
@@ -155,7 +181,10 @@ describe("levelFitScore", () => {
 
 describe("salaryFitScore", () => {
   it("unknown salary is UNKNOWN/0.5, never zero", () => {
-    expect(salaryFitScore(null, null, 1200000)).toEqual({ fit: "UNKNOWN", score: 0.5 });
+    expect(salaryFitScore(null, null, 1200000)).toEqual({
+      fit: "UNKNOWN",
+      score: 0.5,
+    });
   });
 
   it("compares effective (max ?? min) salary against the minimum", () => {

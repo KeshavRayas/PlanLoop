@@ -8,7 +8,8 @@ export function Hero() {
         <span className="text-primary">startups &amp; MNCs</span>
       </h1>
       <p className="text-body-lg text-on-surface-variant mb-8">
-        Bangalore, India &bull; Remote &bull; Filtered by date, skills, and company type
+        Bangalore, India &bull; Remote &bull; Filtered by date, skills, and
+        company type
       </p>
       <SearchBar />
     </div>

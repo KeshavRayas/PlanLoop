@@ -7,7 +7,9 @@ import { extractPdfText, runAtsChecks } from "@/lib/pdf/ats";
 
 function hasPdflatex(): boolean {
   try {
-    execFileSync(process.platform === "win32" ? "pdflatex.exe" : "pdflatex", ["--version"]);
+    execFileSync(process.platform === "win32" ? "pdflatex.exe" : "pdflatex", [
+      "--version",
+    ]);
     return true;
   } catch {
     return false;
@@ -17,12 +19,14 @@ function hasPdflatex(): boolean {
 describe("escapeLatex", () => {
   it("escapes all special characters", () => {
     expect(escapeLatex("R&D 50% $100 #1 _x_ {a} ~ ^ \\")).toBe(
-      "R\\&D 50\\% \\$100 \\#1 \\_x\\_ \\{a\\} \\textasciitilde{} \\textasciircumflex{} \\textbackslash{}"
+      "R\\&D 50\\% \\$100 \\#1 \\_x\\_ \\{a\\} \\textasciitilde{} \\textasciircumflex{} \\textbackslash{}",
     );
   });
 
   it("leaves plain text untouched", () => {
-    expect(escapeLatex("Built backend APIs with Go.")).toBe("Built backend APIs with Go.");
+    expect(escapeLatex("Built backend APIs with Go.")).toBe(
+      "Built backend APIs with Go.",
+    );
   });
 });
 
@@ -34,7 +38,12 @@ describe("canonicalizeTailored", () => {
         type: "summary",
         title: "Summary",
         items: [
-          { id: "a", kind: "summary", fields: { text: "Hello." }, provenance: { sourceIds: ["a"], change: "REWRITE" } },
+          {
+            id: "a",
+            kind: "summary",
+            fields: { text: "Hello." },
+            provenance: { sourceIds: ["a"], change: "REWRITE" },
+          },
         ],
       },
       {
@@ -68,10 +77,18 @@ describe("canonicalizeTailored", () => {
 
   it("maps model field variants to canonical fields", () => {
     const out = canonicalizeTailored(raw);
-    const byId = new Map(out.sections.flatMap((s) => s.items.map((i) => [i.id, i])));
-    expect((byId.get("a")!.fields as { content: string }).content).toBe("Hello.");
-    expect((byId.get("b")!.fields as { bulletPoints: string[] }).bulletPoints).toEqual(["Did x."]);
-    expect((byId.get("c")!.fields as { technologies: string[] }).technologies).toEqual(["Go"]);
+    const byId = new Map(
+      out.sections.flatMap((s) => s.items.map((i) => [i.id, i])),
+    );
+    expect((byId.get("a")!.fields as { content: string }).content).toBe(
+      "Hello.",
+    );
+    expect(
+      (byId.get("b")!.fields as { bulletPoints: string[] }).bulletPoints,
+    ).toEqual(["Did x."]);
+    expect(
+      (byId.get("c")!.fields as { technologies: string[] }).technologies,
+    ).toEqual(["Go"]);
   });
 
   it("preserves ids and provenance", () => {
@@ -103,7 +120,12 @@ describe("runAtsChecks", () => {
       contactEmail: "keshav.rayas@gmail.com",
     });
     expect(r.textExtractable).toBe(true);
-    expect(r.sections).toEqual({ summary: true, experience: true, education: true, skills: true });
+    expect(r.sections).toEqual({
+      summary: true,
+      experience: true,
+      education: true,
+      skills: true,
+    });
     expect(r.requiredSkillsFound).toBe(2);
     expect(r.requiredSkillsTotal).toBe(3);
     expect(r.missingKeywords).toEqual(["Kubernetes"]);
@@ -131,7 +153,10 @@ describe.skipIf(!hasPdflatex())("pdflatex round trip", () => {
               {
                 id: "a",
                 kind: "summary",
-                fields: { content: "Backend engineer with Go and PostgreSQL. R&D focused 100%." },
+                fields: {
+                  content:
+                    "Backend engineer with Go and PostgreSQL. R&D focused 100%.",
+                },
                 provenance: { sourceIds: ["a"], change: "REWRITE" },
               },
             ],
@@ -147,7 +172,9 @@ describe.skipIf(!hasPdflatex())("pdflatex round trip", () => {
                 fields: {
                   title: "Software Intern",
                   company: "Acme",
-                  bulletPoints: ["Zebra-striped query optimization for PostgreSQL."],
+                  bulletPoints: [
+                    "Zebra-striped query optimization for PostgreSQL.",
+                  ],
                 },
                 provenance: { sourceIds: ["b"], change: "UNCHANGED" },
               },
@@ -168,7 +195,11 @@ describe.skipIf(!hasPdflatex())("pdflatex round trip", () => {
           },
         ],
       },
-      { name: "Keshav Rayas", location: "Bangalore", email: "keshav.rayas@gmail.com" }
+      {
+        name: "Keshav Rayas",
+        location: "Bangalore",
+        email: "keshav.rayas@gmail.com",
+      },
     );
 
     const { pdf } = await compileLatex(tex);

@@ -14,9 +14,7 @@ import { getWorkMode } from "@/lib/ingestion/location";
 import { cleanupOldLogs } from "@/lib/ingestion/log";
 import { stripHtml } from "@/lib/utils";
 import { rawJobSchema } from "@/lib/validation";
-import type {
-  JobSource as JobSourceEnum,
-} from "@/generated/prisma/enums";
+import type { JobSource as JobSourceEnum } from "@/generated/prisma/enums";
 
 const STALE_DAYS_THRESHOLD = 30;
 
@@ -76,21 +74,44 @@ const UPSERT_CONFLICT = `ON CONFLICT ("externalId", "source") DO UPDATE SET
   "sourceScore" = EXCLUDED."sourceScore"`;
 
 function buildJobParams(e: {
-  id: string; externalId: string; source: string; title: string;
-  description: string; applyUrl: string; companyId: string;
-  location: string | null; workMode: string;
-  salaryMin: number | null; salaryMax: number | null; salaryCurr: string | null;
-  jobType: string | null; experience: string | null;
-  skills: string[]; postedAt: Date | null;
-  classificationScore: number; sourceScore: number;
+  id: string;
+  externalId: string;
+  source: string;
+  title: string;
+  description: string;
+  applyUrl: string;
+  companyId: string;
+  location: string | null;
+  workMode: string;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  salaryCurr: string | null;
+  jobType: string | null;
+  experience: string | null;
+  skills: string[];
+  postedAt: Date | null;
+  classificationScore: number;
+  sourceScore: number;
 }): unknown[] {
   return [
-    e.id, e.externalId, e.source, e.title, e.description, e.applyUrl,
-    e.companyId, e.location, e.workMode,
-    e.salaryMin, e.salaryMax, e.salaryCurr,
-    e.jobType, e.experience,
-    e.skills, e.postedAt,
-    e.classificationScore, e.sourceScore,
+    e.id,
+    e.externalId,
+    e.source,
+    e.title,
+    e.description,
+    e.applyUrl,
+    e.companyId,
+    e.location,
+    e.workMode,
+    e.salaryMin,
+    e.salaryMax,
+    e.salaryCurr,
+    e.jobType,
+    e.experience,
+    e.skills,
+    e.postedAt,
+    e.classificationScore,
+    e.sourceScore,
   ];
 }
 
@@ -105,7 +126,9 @@ function buildValuePlaceholders(start: number, count: number): string {
 export async function runIngestionPipeline(): Promise<void> {
   // Pre-load all companies into a map (saves N separate queries)
   const allCompanies = await prisma.company.findMany();
-  const companyMap = new Map(allCompanies.map(c => [c.name.toLowerCase(), c.id]));
+  const companyMap = new Map(
+    allCompanies.map((c) => [c.name.toLowerCase(), c.id]),
+  );
 
   // Fetch all sources in parallel
   const sourceResults = await Promise.allSettled(
@@ -125,7 +148,7 @@ export async function runIngestionPipeline(): Promise<void> {
         });
         throw err;
       }
-    })
+    }),
   );
 
   // Process all sources in parallel
@@ -157,7 +180,11 @@ export async function runIngestionPipeline(): Promise<void> {
         sourceScore: number;
       }[] = [];
 
-      const logEntries: { source: string; externalId: string; rawPayload: string }[] = [];
+      const logEntries: {
+        source: string;
+        externalId: string;
+        rawPayload: string;
+      }[] = [];
       let rejectedNonCs = 0;
       let rejectedExp = 0;
       let rejectedLoc = 0;
@@ -170,39 +197,71 @@ export async function runIngestionPipeline(): Promise<void> {
         const job = parsed.data;
 
         if (job.postedAt) {
-          const ageDays = (Date.now() - job.postedAt.getTime()) / (1000 * 60 * 60 * 24);
-          if (ageDays > STALE_DAYS_THRESHOLD) { rejectedStale++; continue; }
+          const ageDays =
+            (Date.now() - job.postedAt.getTime()) / (1000 * 60 * 60 * 24);
+          if (ageDays > STALE_DAYS_THRESHOLD) {
+            rejectedStale++;
+            continue;
+          }
         }
 
         const classification = classifyJob(job);
         if (!classification.accepted) {
-          logEntries.push({ source: sourceEnum, externalId: job.externalId, rawPayload: JSON.stringify({ ...raw, _rejection: classification.reason }) });
+          logEntries.push({
+            source: sourceEnum,
+            externalId: job.externalId,
+            rawPayload: JSON.stringify({
+              ...raw,
+              _rejection: classification.reason,
+            }),
+          });
           rejectedNonCs++;
           continue;
         }
 
         const entryCheck = isEntryLevel(job);
         if (!entryCheck.accepted) {
-          logEntries.push({ source: sourceEnum, externalId: job.externalId, rawPayload: JSON.stringify({ ...raw, _rejection: entryCheck.reason }) });
+          logEntries.push({
+            source: sourceEnum,
+            externalId: job.externalId,
+            rawPayload: JSON.stringify({
+              ...raw,
+              _rejection: entryCheck.reason,
+            }),
+          });
           rejectedExp++;
           continue;
         }
 
         const workMode = getWorkMode(job);
         if (!workMode) {
-          logEntries.push({ source: sourceEnum, externalId: job.externalId, rawPayload: JSON.stringify({ ...raw, _rejection: "Invalid location for non-remote job" }) });
+          logEntries.push({
+            source: sourceEnum,
+            externalId: job.externalId,
+            rawPayload: JSON.stringify({
+              ...raw,
+              _rejection: "Invalid location for non-remote job",
+            }),
+          });
           rejectedLoc++;
           continue;
         }
 
         const sourceScore = getSourceScore(source.name);
-        logEntries.push({ source: sourceEnum, externalId: job.externalId, rawPayload: JSON.stringify(raw) });
+        logEntries.push({
+          source: sourceEnum,
+          externalId: job.externalId,
+          rawPayload: JSON.stringify(raw),
+        });
 
         // Lookup company from pre-loaded map, upsert if unknown
         const companyKey = job.companyName.toLowerCase();
         let companyId = companyMap.get(companyKey);
         if (!companyId) {
-          const slug = job.companyName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "");
+          const slug = job.companyName
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/-+$/, "");
           const company = await prisma.company.upsert({
             where: { slug },
             update: {},
@@ -239,14 +298,21 @@ export async function runIngestionPipeline(): Promise<void> {
 
       // Batch insert log entries (single multi-row INSERT)
       if (logEntries.length > 0) {
-        const logValues = logEntries.map((_, i) => {
-          const base = i * 4;
-          return `($${base + 1}, $${base + 2}::"JobSource", $${base + 3}, $${base + 4}::jsonb)`;
-        }).join(", ");
-        const logParams = logEntries.flatMap(e => [nanoid(), e.source, e.externalId, e.rawPayload]);
+        const logValues = logEntries
+          .map((_, i) => {
+            const base = i * 4;
+            return `($${base + 1}, $${base + 2}::"JobSource", $${base + 3}, $${base + 4}::jsonb)`;
+          })
+          .join(", ");
+        const logParams = logEntries.flatMap((e) => [
+          nanoid(),
+          e.source,
+          e.externalId,
+          e.rawPayload,
+        ]);
         await prisma.$executeRawUnsafe(
           `INSERT INTO "JobIngestionLog" ("id", "source", "externalId", "rawPayload") VALUES ${logValues}`,
-          ...logParams
+          ...logParams,
         );
       }
 
@@ -257,12 +323,12 @@ export async function runIngestionPipeline(): Promise<void> {
         const params = chunk.flatMap(buildJobParams);
         await prisma.$executeRawUnsafe(
           `INSERT INTO "Job" (${UPSERT_COLS}) VALUES ${values} ${UPSERT_CONFLICT}`,
-          ...params
+          ...params,
         );
       }
 
       console.log(
-        `[${sourceEnum}] Fetched: ${rawJobs.length} | Validated: ${validEntries.length} | Rejected: ${rejectedNonCs} non-CS, ${rejectedExp} exp, ${rejectedLoc} loc, ${rejectedStale} stale`
+        `[${sourceEnum}] Fetched: ${rawJobs.length} | Validated: ${validEntries.length} | Rejected: ${rejectedNonCs} non-CS, ${rejectedExp} exp, ${rejectedLoc} loc, ${rejectedStale} stale`,
       );
 
       await prisma.sourceSync.update({
@@ -275,14 +341,18 @@ export async function runIngestionPipeline(): Promise<void> {
           error: `rejected: ${rejectedNonCs} non-CS, ${rejectedExp} exp, ${rejectedLoc} loc, ${rejectedStale} stale`,
         },
       });
-    })
+    }),
   );
 
   // Cleanup old logs and stale jobs in parallel
   await Promise.all([
     cleanupOldLogs(),
     prisma.job.deleteMany({
-      where: { postedAt: { lt: new Date(Date.now() - STALE_DAYS_THRESHOLD * 24 * 60 * 60 * 1000) } },
+      where: {
+        postedAt: {
+          lt: new Date(Date.now() - STALE_DAYS_THRESHOLD * 24 * 60 * 60 * 1000),
+        },
+      },
     }),
   ]);
 }

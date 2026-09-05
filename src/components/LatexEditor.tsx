@@ -4,7 +4,12 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import type { ResumeData } from "@/lib/resume.types";
 import { LatexPreview } from "./LatexPreview";
 import {
-  Save, Download, Loader2, Check, FileText, Briefcase,
+  Save,
+  Download,
+  Loader2,
+  Check,
+  FileText,
+  Briefcase,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -20,9 +25,7 @@ export function LatexEditor({
   initialTitle,
 }: LatexEditorProps) {
   const [title, setTitle] = useState(initialTitle);
-  const [source, setSource] = useState(
-    initialData.originalContent ?? ""
-  );
+  const [source, setSource] = useState(initialData.originalContent ?? "");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const currentIdRef = useRef(resumeId);
@@ -68,7 +71,9 @@ export function LatexEditor({
     }
   }, [title, source]);
 
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const scheduleSave = useCallback(() => {
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => save(), 500);

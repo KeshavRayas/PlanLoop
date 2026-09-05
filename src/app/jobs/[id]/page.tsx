@@ -1,16 +1,19 @@
 import { notFound } from "next/navigation";
 import { getJobById } from "@/lib/repositories/jobs.repository";
 import { formatDaysAgo, formatSalary } from "@/lib/utils";
-import { Briefcase, MapPin, Clock, ArrowUpRight, DollarSign, FileText } from "lucide-react";
+import {
+  Briefcase,
+  MapPin,
+  Clock,
+  ArrowUpRight,
+  DollarSign,
+  FileText,
+} from "lucide-react";
 import Link from "next/link";
 
 type Params = Promise<{ id: string }>;
 
-export default async function JobDetailPage({
-  params,
-}: {
-  params: Params;
-}) {
+export default async function JobDetailPage({ params }: { params: Params }) {
   const { id } = await params;
   const job = await getJobById(id);
 
@@ -31,8 +34,8 @@ export default async function JobDetailPage({
         <div className="bg-surface border-4 border-black rounded-[24px] brutal-shadow-lg overflow-hidden">
           {/* Yellow header */}
           <div className="bg-yellow px-8 py-6 border-b-4 border-black">
-              <div className="flex items-start">
-                <div className="flex items-center gap-4">
+            <div className="flex items-start">
+              <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-full border-4 border-black flex items-center justify-center bg-white shrink-0">
                   <span className="text-headline font-black">
                     {job.company.name.charAt(0)}
@@ -64,14 +67,18 @@ export default async function JobDetailPage({
               )}
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span className="text-body font-medium">{formatDaysAgo(job.postedAt)}</span>
+                <span className="text-body font-medium">
+                  {formatDaysAgo(job.postedAt)}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Briefcase className="w-4 h-4" />
                 <span className="text-body font-medium">
-                  {job.workMode === "REMOTE" ? "Remote"
-                    : job.workMode === "HYBRID" ? "Hybrid"
-                    : "On-site"}
+                  {job.workMode === "REMOTE"
+                    ? "Remote"
+                    : job.workMode === "HYBRID"
+                      ? "Hybrid"
+                      : "On-site"}
                 </span>
               </div>
             </div>
@@ -80,7 +87,11 @@ export default async function JobDetailPage({
             <div className="flex items-center gap-3 p-4 border-3 border-black rounded-[14px] bg-surface-secondary">
               <DollarSign className="w-5 h-5 shrink-0" />
               <span className="text-title font-extrabold">
-                {formatSalary(job.salaryMin ?? undefined, job.salaryMax ?? undefined, job.salaryCurr ?? undefined)}
+                {formatSalary(
+                  job.salaryMin ?? undefined,
+                  job.salaryMax ?? undefined,
+                  job.salaryCurr ?? undefined,
+                )}
               </span>
             </div>
 
@@ -126,7 +137,6 @@ export default async function JobDetailPage({
                 <FileText className="w-4 h-4" />
                 Create Resume
               </a>
-
             </div>
 
             {job.externalId && (

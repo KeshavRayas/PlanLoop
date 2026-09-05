@@ -21,107 +21,171 @@ describe("getWorkMode", () => {
   });
 
   it("remote keyword in location returns REMOTE", () => {
-    expect(getWorkMode(makeJob({
-      location: "Remote",
-    }))).toBe("REMOTE");
+    expect(
+      getWorkMode(
+        makeJob({
+          location: "Remote",
+        }),
+      ),
+    ).toBe("REMOTE");
   });
 
   it("worldwide keyword returns REMOTE", () => {
-    expect(getWorkMode(makeJob({
-      location: "Worldwide",
-    }))).toBe("REMOTE");
+    expect(
+      getWorkMode(
+        makeJob({
+          location: "Worldwide",
+        }),
+      ),
+    ).toBe("REMOTE");
   });
 
   it("work from home returns REMOTE", () => {
-    expect(getWorkMode(makeJob({
-      description: "Work from home",
-      location: "India",
-    }))).toBe("REMOTE");
+    expect(
+      getWorkMode(
+        makeJob({
+          description: "Work from home",
+          location: "India",
+        }),
+      ),
+    ).toBe("REMOTE");
   });
 
   it("Bangalore location with hybrid keyword returns HYBRID", () => {
-    expect(getWorkMode(makeJob({
-      title: "Software Engineer",
-      description: "Hybrid role",
-      location: "Bangalore",
-    }))).toBe("HYBRID");
+    expect(
+      getWorkMode(
+        makeJob({
+          title: "Software Engineer",
+          description: "Hybrid role",
+          location: "Bangalore",
+        }),
+      ),
+    ).toBe("HYBRID");
   });
 
   it("Bengaluru location returns HYBRID when hybrid mentioned", () => {
-    expect(getWorkMode(makeJob({
-      title: "Backend Engineer",
-      description: "Hybrid work model",
-      location: "Bengaluru, India",
-    }))).toBe("HYBRID");
+    expect(
+      getWorkMode(
+        makeJob({
+          title: "Backend Engineer",
+          description: "Hybrid work model",
+          location: "Bengaluru, India",
+        }),
+      ),
+    ).toBe("HYBRID");
   });
 
   it("Bangalore without hybrid returns ONSITE", () => {
-    expect(getWorkMode(makeJob({
-      title: "Software Engineer",
-      location: "Bangalore",
-    }))).toBe("ONSITE");
+    expect(
+      getWorkMode(
+        makeJob({
+          title: "Software Engineer",
+          location: "Bangalore",
+        }),
+      ),
+    ).toBe("ONSITE");
   });
 
   it("Karnataka location returns ONSITE", () => {
-    expect(getWorkMode(makeJob({
-      location: "Karnataka, India",
-    }))).toBe("ONSITE");
+    expect(
+      getWorkMode(
+        makeJob({
+          location: "Karnataka, India",
+        }),
+      ),
+    ).toBe("ONSITE");
   });
 
   it("Bangalore Urban location returns ONSITE", () => {
-    expect(getWorkMode(makeJob({
-      location: "Bangalore Urban",
-    }))).toBe("ONSITE");
+    expect(
+      getWorkMode(
+        makeJob({
+          location: "Bangalore Urban",
+        }),
+      ),
+    ).toBe("ONSITE");
   });
 
   it("Mumbai location returns null (reject)", () => {
-    expect(getWorkMode(makeJob({
-      location: "Mumbai",
-    }))).toBeNull();
+    expect(
+      getWorkMode(
+        makeJob({
+          location: "Mumbai",
+        }),
+      ),
+    ).toBeNull();
   });
 
   it("Delhi location returns null (reject)", () => {
-    expect(getWorkMode(makeJob({
-      location: "Delhi, India",
-    }))).toBeNull();
+    expect(
+      getWorkMode(
+        makeJob({
+          location: "Delhi, India",
+        }),
+      ),
+    ).toBeNull();
   });
 
   it("Pune location returns null (reject)", () => {
-    expect(getWorkMode(makeJob({
-      location: "Pune",
-    }))).toBeNull();
+    expect(
+      getWorkMode(
+        makeJob({
+          location: "Pune",
+        }),
+      ),
+    ).toBeNull();
   });
 
   it("Hyderabad location returns null (reject)", () => {
-    expect(getWorkMode(makeJob({
-      location: "Hyderabad",
-    }))).toBeNull();
+    expect(
+      getWorkMode(
+        makeJob({
+          location: "Hyderabad",
+        }),
+      ),
+    ).toBeNull();
   });
 
   it("Chennai location returns null (reject)", () => {
-    expect(getWorkMode(makeJob({
-      location: "Chennai",
-    }))).toBeNull();
+    expect(
+      getWorkMode(
+        makeJob({
+          location: "Chennai",
+        }),
+      ),
+    ).toBeNull();
   });
 
   it("US only location without remote returns null", () => {
-    expect(getWorkMode(makeJob({
-      location: "US Only",
-    }))).toBeNull();
+    expect(
+      getWorkMode(
+        makeJob({
+          location: "US Only",
+        }),
+      ),
+    ).toBeNull();
   });
 
   it("Remote job overrides any location", () => {
-    expect(getWorkMode(makeJob({
-      location: "Mumbai",
-      remote: true,
-    }))).toBe("REMOTE");
+    expect(
+      getWorkMode(
+        makeJob({
+          location: "Mumbai",
+          remote: true,
+        }),
+      ),
+    ).toBe("REMOTE");
   });
 
   it("EU location without remote returns null", () => {
-    expect(getWorkMode(makeJob({
-      description: "Europe based",
-      location: "Germany",
-    }))).toBeNull();
+    expect(
+      getWorkMode(
+        makeJob({
+          description: "Europe based",
+          location: "Germany",
+        }),
+      ),
+    ).toBeNull();
   });
 });
 

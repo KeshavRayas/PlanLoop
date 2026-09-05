@@ -15,8 +15,7 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: "Job Search — Calm Focus",
-  description:
-    "A quiet, minimal job board. What do you want next?",
+  description: "A quiet, minimal job board. What do you want next?",
 };
 
 export default function RootLayout({
@@ -25,7 +24,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${instrumentSerif.variable} h-full`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${instrumentSerif.variable} h-full`}
+    >
       <body className="flex min-h-screen flex-col bg-[#FAFAF7] text-[#111111]">
         <main className="flex-1 flex flex-col">{children}</main>
       </body>

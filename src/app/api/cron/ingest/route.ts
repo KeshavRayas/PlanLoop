@@ -5,6 +5,9 @@ export async function GET() {
     await runIngestionPipeline();
     return Response.json({ success: true });
   } catch (err) {
-    return Response.json({ success: false, error: String(err) }, { status: 500 });
+    return Response.json(
+      { success: false, error: String(err) },
+      { status: 500 },
+    );
   }
 }

@@ -40,7 +40,10 @@ describe("coverLetterSchema", () => {
 
   it("rejects fewer than 3 paragraphs", () => {
     expect(
-      coverLetterSchema.safeParse({ ...validOutput(), paragraphs: ["one", "two"] }).success
+      coverLetterSchema.safeParse({
+        ...validOutput(),
+        paragraphs: ["one", "two"],
+      }).success,
     ).toBe(false);
   });
 
@@ -51,10 +54,10 @@ describe("coverLetterSchema", () => {
 
   it("rejects missing greeting/closing", () => {
     expect(
-      coverLetterSchema.safeParse({ ...validOutput(), greeting: "" }).success
+      coverLetterSchema.safeParse({ ...validOutput(), greeting: "" }).success,
     ).toBe(false);
     expect(
-      coverLetterSchema.safeParse({ ...validOutput(), closing: "" }).success
+      coverLetterSchema.safeParse({ ...validOutput(), closing: "" }).success,
     ).toBe(false);
   });
 });
@@ -86,7 +89,9 @@ describe("validateCoverLetter", () => {
       evidenceIds: ["bullet_erp_02", "bullet_erp_02"],
     };
     expect(
-      validateCoverLetter(out, EVIDENCE).some((i) => i.type === "DUPLICATE_EVIDENCE")
+      validateCoverLetter(out, EVIDENCE).some(
+        (i) => i.type === "DUPLICATE_EVIDENCE",
+      ),
     ).toBe(true);
   });
 });
@@ -102,7 +107,13 @@ describe("cover prompt", () => {
       missingSkills: ["Kubernetes"],
       verdict: "POSSIBLE",
       tailoredHighlights: ["Built backend APIs with PostgreSQL."],
-      evidence: [{ id: "bullet_erp_02", kind: "experience", text: "Built backend APIs." }],
+      evidence: [
+        {
+          id: "bullet_erp_02",
+          kind: "experience",
+          text: "Built backend APIs.",
+        },
+      ],
     });
     expect(p).toContain("Backend Engineer at Acme");
     expect(p).toContain("[bullet_erp_02 | experience]");
@@ -139,7 +150,10 @@ describe("extractTailoredHighlights", () => {
           {
             id: "exp_erp",
             kind: "experience",
-            fields: { title: "Intern", bullets: ["Built APIs with Go.", "Cut latency 20%."] },
+            fields: {
+              title: "Intern",
+              bullets: ["Built APIs with Go.", "Cut latency 20%."],
+            },
             provenance: { sourceIds: ["bullet_erp_01"], change: "REORDER" },
           },
         ],

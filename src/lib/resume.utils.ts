@@ -134,7 +134,7 @@ const sectionBlueprints: Record<string, () => ResumeSection> = {
 export function createSection(
   type: string,
   customTitle?: string,
-  customFormat?: CustomSectionFormat
+  customFormat?: CustomSectionFormat,
 ): ResumeSection {
   if (type === "custom") {
     const key = customFormat === "list" ? "custom-list" : "custom-text";
@@ -164,7 +164,7 @@ export function addItemToSection(section: ResumeSection): ResumeSection {
 
 export function removeItemFromSection(
   section: ResumeSection,
-  itemId: string
+  itemId: string,
 ): ResumeSection {
   return {
     ...section,
@@ -175,13 +175,11 @@ export function removeItemFromSection(
 export function updateItemInSection<T extends ResumeSection>(
   section: T,
   itemId: string,
-  patch: Partial<ResumeSectionItem>
+  patch: Partial<ResumeSectionItem>,
 ): T {
   return {
     ...section,
-    items: section.items.map((i) =>
-      i.id === itemId ? { ...i, ...patch } : i
-    ),
+    items: section.items.map((i) => (i.id === itemId ? { ...i, ...patch } : i)),
   } as T;
 }
 

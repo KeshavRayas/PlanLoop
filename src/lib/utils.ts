@@ -22,7 +22,9 @@ export function slugify(text: string): string {
     .trim();
 }
 
-export function cn(...classes: (string | boolean | undefined | null)[]): string {
+export function cn(
+  ...classes: (string | boolean | undefined | null)[]
+): string {
   return classes.filter(Boolean).join(" ");
 }
 
@@ -45,8 +47,13 @@ export function stripHtml(html: string): string {
     text = text.replaceAll(entity, char);
   }
   text = text.replace(/&#(\d+);/g, (_, c) => String.fromCharCode(Number(c)));
-  text = text.replace(/&#x([0-9a-f]+);/gi, (_, c) => String.fromCharCode(parseInt(c, 16)));
-  text = text.replace(/<\/(p|div|h[1-6]|li|tr|td|th|ul|ol|section|article)>/gi, "\n");
+  text = text.replace(/&#x([0-9a-f]+);/gi, (_, c) =>
+    String.fromCharCode(parseInt(c, 16)),
+  );
+  text = text.replace(
+    /<\/(p|div|h[1-6]|li|tr|td|th|ul|ol|section|article)>/gi,
+    "\n",
+  );
   text = text.replace(/<(br|hr)\/?>/gi, "\n");
   text = text.replace(/<[^>]*>/g, "");
   text = text.replace(/\n\s*\n/g, "\n");
@@ -54,7 +61,10 @@ export function stripHtml(html: string): string {
   return text.trim();
 }
 
-export async function fetchWithTimeout(url: string, options?: RequestInit & { timeout?: number }): Promise<Response> {
+export async function fetchWithTimeout(
+  url: string,
+  options?: RequestInit & { timeout?: number },
+): Promise<Response> {
   const timeout = options?.timeout ?? 5000;
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -68,7 +78,7 @@ export async function fetchWithTimeout(url: string, options?: RequestInit & { ti
 export async function runBatched<T>(
   items: T[],
   batchSize: number,
-  fn: (item: T) => Promise<void>
+  fn: (item: T) => Promise<void>,
 ): Promise<void> {
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
@@ -76,13 +86,18 @@ export async function runBatched<T>(
   }
 }
 
-export function formatSalary(min?: number, max?: number, curr?: string): string {
+export function formatSalary(
+  min?: number,
+  max?: number,
+  curr?: string,
+): string {
   const currency = curr || "₹";
   if (!min && !max) return "Salary Not Disclosed";
 
   const fmt = (val: number): string => {
     if (currency === "₹") {
-      if (val >= 100000) return `₹${(val / 100000).toFixed(1).replace(/\.0$/, "")}L`;
+      if (val >= 100000)
+        return `₹${(val / 100000).toFixed(1).replace(/\.0$/, "")}L`;
       if (val >= 1000) return `₹${(val / 1000).toFixed(0)}k`;
     }
     if (currency === "$" || currency === "€" || currency === "£") {

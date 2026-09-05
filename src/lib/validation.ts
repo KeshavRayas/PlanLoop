@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { CompanyType, ExperienceLevel, JobType, JobSource, WorkMode } from "@/generated/prisma/enums";
+import {
+  CompanyType,
+  ExperienceLevel,
+  JobType,
+  JobSource,
+  WorkMode,
+} from "@/generated/prisma/enums";
 
 export const rawJobSchema = z.object({
   externalId: z.string().min(1),

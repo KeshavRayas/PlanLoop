@@ -46,7 +46,7 @@ export interface TopMatch {
  */
 export async function getTopMatches(
   limit = 25,
-  nightlyRunId?: string
+  nightlyRunId?: string,
 ): Promise<TopMatch[]> {
   const runId =
     nightlyRunId ??

@@ -2,7 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { X, ArrowUpRight, Briefcase, MapPin, Clock, FileText, Sparkles } from "lucide-react";
+import {
+  X,
+  ArrowUpRight,
+  Briefcase,
+  MapPin,
+  Clock,
+  FileText,
+  Sparkles,
+} from "lucide-react";
 import type { JobSearchResult } from "@/lib/types";
 import { formatDaysAgo, formatSalary } from "@/lib/utils";
 
@@ -21,7 +29,10 @@ interface TailoredItemView {
   id: string;
   kind: string;
   fields: Record<string, string | boolean | string[]>;
-  provenance: { sourceIds: string[]; change: "UNCHANGED" | "REWRITE" | "REORDER" | "COMBINE" };
+  provenance: {
+    sourceIds: string[];
+    change: "UNCHANGED" | "REWRITE" | "REORDER" | "COMBINE";
+  };
 }
 
 interface TailoredSectionView {
@@ -41,7 +52,12 @@ interface SemanticIssueView {
 interface AtsResultView {
   textExtractable: boolean;
   charCount: number;
-  sections: { summary: boolean; experience: boolean; education: boolean; skills: boolean };
+  sections: {
+    summary: boolean;
+    experience: boolean;
+    education: boolean;
+    skills: boolean;
+  };
   requiredSkillsFound: number;
   requiredSkillsTotal: number;
   matchedKeywords: string[];
@@ -105,19 +121,21 @@ interface InterviewPrepView {
 
 function renderTailoredFields(fields: TailoredItemView["fields"]): string {
   const parts: string[] = [];
-  for (const [key, value] of Object.entries(fields)) {
+  for (const value of Object.values(fields)) {
     if (typeof value === "string" && value.trim()) parts.push(value.trim());
-    else if (Array.isArray(value) && value.length > 0) parts.push(value.join(" • "));
+    else if (Array.isArray(value) && value.length > 0)
+      parts.push(value.join(" • "));
   }
   return parts.join(" — ");
 }
 
-const CHANGE_STYLES: Record<TailoredItemView["provenance"]["change"], string> = {
-  UNCHANGED: "bg-[#F3F3F3]",
-  REWRITE: "bg-yellow",
-  REORDER: "bg-purple text-white",
-  COMBINE: "bg-green",
-};
+const CHANGE_STYLES: Record<TailoredItemView["provenance"]["change"], string> =
+  {
+    UNCHANGED: "bg-[#F3F3F3]",
+    REWRITE: "bg-yellow",
+    REORDER: "bg-purple text-white",
+    COMBINE: "bg-green",
+  };
 
 export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
   const router = useRouter();
@@ -126,7 +144,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
 
   const job = useMemo(
     () => jobs.find((j) => j.id === selectedId) ?? null,
-    [jobs, selectedId]
+    [jobs, selectedId],
   );
 
   const [analysis, setAnalysis] = useState<JobAnalysisView | null>(null);
@@ -149,9 +167,15 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
 
   const [decision, setDecision] = useState<string | null>(null);
   const [deciding, setDeciding] = useState(false);
-  const [liveness, setLiveness] = useState<{ alive: boolean; evidence: string | null } | null>(null);
+  const [liveness, setLiveness] = useState<{
+    alive: boolean;
+    evidence: string | null;
+  } | null>(null);
   const [checkingLive, setCheckingLive] = useState(false);
 
+  // Intentional reset-on-selection-change: clears the previous job's
+  // cached AI results before fetching the new selection below.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setAnalysis(null);
     setAnalysisError(null);
@@ -180,7 +204,8 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
     fetch(`/api/jobs/${selectedId}/decision`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (!cancelled && data?.status && data.status !== "QUEUED") setDecision(data.status);
+        if (!cancelled && data?.status && data.status !== "QUEUED")
+          setDecision(data.status);
       })
       .catch(() => {});
     fetch(`/api/jobs/${selectedId}/cover`)
@@ -199,6 +224,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
       cancelled = true;
     };
   }, [selectedId]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   async function runJobPost<T>(
     busy: boolean,
@@ -216,7 +242,7 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
     try {
       const res = await fetch(
         `/api/jobs/${selectedId}${endpoint}${refresh ? "?refresh=1" : ""}`,
-        { method: "POST" }
+        { method: "POST" },
       );
       const data = (await res.json()) as T & { error?: string };
       if (!res.ok) throw new Error(data.error ?? fallback);
@@ -229,11 +255,28 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
   }
 
   function runAnalysis(refresh: boolean) {
-    return runJobPost(analyzing, setAnalyzing, setAnalysisError, "/analyze", refresh, "Analysis failed", setAnalysis);
+    return runJobPost(
+      analyzing,
+      setAnalyzing,
+      setAnalysisError,
+      "/analyze",
+      refresh,
+      "Analysis failed",
+      setAnalysis,
+    );
   }
 
   function runTailor(refresh: boolean) {
-    return runJobPost(tailoring, setTailoring, setTailorError, "/tailor", refresh, "Tailoring failed", setTailored, !analysis);
+    return runJobPost(
+      tailoring,
+      setTailoring,
+      setTailorError,
+      "/tailor",
+      refresh,
+      "Tailoring failed",
+      setTailored,
+      !analysis,
+    );
   }
 
   async function runValidation() {
@@ -241,11 +284,13 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
     setValidating(true);
     setTailorError(null);
     try {
-      const res = await fetch(`/api/jobs/${selectedId}/validate`, { method: "POST" });
+      const res = await fetch(`/api/jobs/${selectedId}/validate`, {
+        method: "POST",
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Validation failed");
-      const refreshed = await fetch(`/api/jobs/${selectedId}/tailor`).then((r) =>
-        r.ok ? r.json() : null
+      const refreshed = await fetch(`/api/jobs/${selectedId}/tailor`).then(
+        (r) => (r.ok ? r.json() : null),
       );
       if (refreshed?.sections) setTailored(refreshed);
     } catch (err) {
@@ -262,12 +307,12 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
     try {
       const res = await fetch(
         `/api/jobs/${selectedId}/pdf${refresh ? "?refresh=1" : ""}`,
-        { method: "POST" }
+        { method: "POST" },
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Render failed");
-      const refreshed = await fetch(`/api/jobs/${selectedId}/tailor`).then((r) =>
-        r.ok ? r.json() : null
+      const refreshed = await fetch(`/api/jobs/${selectedId}/tailor`).then(
+        (r) => (r.ok ? r.json() : null),
       );
       if (refreshed?.sections) setTailored(refreshed);
     } catch (err) {
@@ -278,11 +323,29 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
   }
 
   function runCover(refresh: boolean) {
-    return runJobPost(covering, setCovering, setCoverError, "/cover", refresh, "Cover letter failed", setCover, !analysis || !tailored);
+    return runJobPost(
+      covering,
+      setCovering,
+      setCoverError,
+      "/cover",
+      refresh,
+      "Cover letter failed",
+      setCover,
+      !analysis || !tailored,
+    );
   }
 
   function runInterview(refresh: boolean) {
-    return runJobPost(preparing, setPreparing, setPrepError, "/interview", refresh, "Interview prep failed", setPrep, !analysis || !tailored);
+    return runJobPost(
+      preparing,
+      setPreparing,
+      setPrepError,
+      "/interview",
+      refresh,
+      "Interview prep failed",
+      setPrep,
+      !analysis || !tailored,
+    );
   }
 
   async function setJobDecision(status: string, openUrl = false) {
@@ -310,7 +373,9 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
     if (!selectedId || checkingLive) return;
     setCheckingLive(true);
     try {
-      const res = await fetch(`/api/jobs/${selectedId}/liveness`, { method: "POST" });
+      const res = await fetch(`/api/jobs/${selectedId}/liveness`, {
+        method: "POST",
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Liveness check failed");
       setLiveness({ alive: data.alive, evidence: data.evidence });
@@ -330,9 +395,11 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
   if (!selectedId) return null;
 
   const workModeLabel =
-    job?.workMode === "REMOTE" ? "Remote"
-    : job?.workMode === "HYBRID" ? "Hybrid"
-    : "On-site";
+    job?.workMode === "REMOTE"
+      ? "Remote"
+      : job?.workMode === "HYBRID"
+        ? "Hybrid"
+        : "On-site";
 
   return (
     <div className="bg-white border border-black/10 rounded-[22px] overflow-hidden flex flex-col h-full calm-card">
@@ -360,11 +427,16 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
               <span className="text-display block mb-4">👋</span>
               <p className="text-title font-extrabold mb-3">Select a role</p>
               <p className="text-body font-medium text-text-secondary leading-relaxed">
-                View:<br />
-                &bull; Requirements<br />
-                &bull; Skills<br />
-                &bull; Salary<br />
-                &bull; Application link<br />
+                View:
+                <br />
+                &bull; Requirements
+                <br />
+                &bull; Skills
+                <br />
+                &bull; Salary
+                <br />
+                &bull; Application link
+                <br />
                 &bull; Company details
               </p>
             </div>
@@ -409,7 +481,9 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
               )}
               <div className="flex items-center gap-3">
                 <Clock className="w-4 h-4 shrink-0" />
-                <span className="text-body font-medium">{formatDaysAgo(job.postedAt)}</span>
+                <span className="text-body font-medium">
+                  {formatDaysAgo(job.postedAt)}
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <Briefcase className="w-4 h-4 shrink-0" />
@@ -529,9 +603,12 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                 </h3>
                 {tailored && (
                   <span className="px-2.5 py-1 rounded-full text-label font-extrabold uppercase tracking-widest border border-black/10 bg-green">
-                    {tailored.sections.reduce((n, s) => n + s.items.length, 0)} items
+                    {tailored.sections.reduce((n, s) => n + s.items.length, 0)}{" "}
+                    items
                     {tailored.version ? ` · v${tailored.version}` : ""}
-                    {tailored.versionCount && tailored.versionCount > 1 ? ` of ${tailored.versionCount}` : ""}
+                    {tailored.versionCount && tailored.versionCount > 1
+                      ? ` of ${tailored.versionCount}`
+                      : ""}
                   </span>
                 )}
               </div>
@@ -592,8 +669,13 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                   {tailored.validationResult?.issues?.length ? (
                     <ul className="space-y-1.5">
                       {tailored.validationResult.issues.map((issue, i) => (
-                        <li key={`${issue.itemId}-${i}`} className="text-body font-medium leading-relaxed">
-                          <span className="font-extrabold">[{issue.severity}]</span>{" "}
+                        <li
+                          key={`${issue.itemId}-${i}`}
+                          className="text-body font-medium leading-relaxed"
+                        >
+                          <span className="font-extrabold">
+                            [{issue.severity}]
+                          </span>{" "}
                           <span className="font-bold">{issue.itemId}</span> —{" "}
                           {issue.explanation}
                         </li>
@@ -602,7 +684,8 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                   ) : (
                     tailored.validationStatus === "SEMANTIC_VALID" && (
                       <p className="text-body font-medium">
-                        Every claim traces to base-resume evidence. Render the PDF below.
+                        Every claim traces to base-resume evidence. Render the
+                        PDF below.
                       </p>
                     )
                   )}
@@ -654,18 +737,36 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                   {tailored.atsStatus === "CHECKED" && tailored.atsResult && (
                     <ul className="space-y-1">
                       <li className="text-body font-medium">
-                        {tailored.atsResult.textExtractable ? "✓" : "✗"} PDF text is extractable
+                        {tailored.atsResult.textExtractable ? "✓" : "✗"} PDF
+                        text is extractable
                       </li>
                       <li className="text-body font-medium">
-                        {Object.values(tailored.atsResult.sections).every(Boolean) ? "✓" : "⚠"}{" "}
-                        Sections detected ({Object.values(tailored.atsResult.sections).filter(Boolean).length}/4)
+                        {Object.values(tailored.atsResult.sections).every(
+                          Boolean,
+                        )
+                          ? "✓"
+                          : "⚠"}{" "}
+                        Sections detected (
+                        {
+                          Object.values(tailored.atsResult.sections).filter(
+                            Boolean,
+                          ).length
+                        }
+                        /4)
                       </li>
                       <li className="text-body font-medium">
-                        {tailored.atsResult.missingKeywords.length === 0 ? "✓" : "⚠"}{" "}
-                        {tailored.atsResult.requiredSkillsFound}/{tailored.atsResult.requiredSkillsTotal} required skills present
+                        {tailored.atsResult.missingKeywords.length === 0
+                          ? "✓"
+                          : "⚠"}{" "}
+                        {tailored.atsResult.requiredSkillsFound}/
+                        {tailored.atsResult.requiredSkillsTotal} required skills
+                        present
                       </li>
                       {tailored.atsResult.warnings.slice(0, 6).map((w) => (
-                        <li key={w} className="text-body font-medium text-text-secondary">
+                        <li
+                          key={w}
+                          className="text-body font-medium text-text-secondary"
+                        >
                           ⚠ {w}
                         </li>
                       ))}
@@ -674,12 +775,15 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
 
                   {tailored.renderStatus === "FAILED" && (
                     <p className="text-body font-bold text-red">
-                      Render failed — check server logs. Content is untouched; fix the template and re-render.
+                      Render failed — check server logs. Content is untouched;
+                      fix the template and re-render.
                     </p>
                   )}
 
                   <button
-                    onClick={() => runRender(tailored.renderStatus === "SUCCESS")}
+                    onClick={() =>
+                      runRender(tailored.renderStatus === "SUCCESS")
+                    }
                     disabled={rendering}
                     className="w-full flex items-center justify-center gap-2 bg-white text-black font-extrabold px-4 py-2.5 rounded-full border border-black/10 text-label uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-500 disabled:opacity-50"
                   >
@@ -718,7 +822,10 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                     {cover.content.greeting}
                   </p>
                   {cover.content.paragraphs.map((p) => (
-                    <p key={p.slice(0, 32)} className="text-body font-medium leading-relaxed">
+                    <p
+                      key={p.slice(0, 32)}
+                      className="text-body font-medium leading-relaxed"
+                    >
                       {p}
                     </p>
                   ))}
@@ -806,16 +913,26 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                                   STAR story
                                 </p>
                                 <p className="text-body font-medium leading-relaxed">
-                                  <span className="font-extrabold">Situation:</span> {q.starStory.situation}
+                                  <span className="font-extrabold">
+                                    Situation:
+                                  </span>{" "}
+                                  {q.starStory.situation}
                                 </p>
                                 <p className="text-body font-medium leading-relaxed">
-                                  <span className="font-extrabold">Task:</span> {q.starStory.task}
+                                  <span className="font-extrabold">Task:</span>{" "}
+                                  {q.starStory.task}
                                 </p>
                                 <p className="text-body font-medium leading-relaxed">
-                                  <span className="font-extrabold">Action:</span> {q.starStory.action}
+                                  <span className="font-extrabold">
+                                    Action:
+                                  </span>{" "}
+                                  {q.starStory.action}
                                 </p>
                                 <p className="text-body font-medium leading-relaxed">
-                                  <span className="font-extrabold">Result:</span> {q.starStory.result}
+                                  <span className="font-extrabold">
+                                    Result:
+                                  </span>{" "}
+                                  {q.starStory.result}
                                 </p>
                               </div>
                             )}
@@ -845,8 +962,12 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
                       </p>
                       <div className="space-y-1.5">
                         {prep.content.gaps.map((g) => (
-                          <p key={g.skill} className="text-body font-medium leading-relaxed">
-                            <span className="font-extrabold">{g.skill}:</span> {g.bridgeAnswer}
+                          <p
+                            key={g.skill}
+                            className="text-body font-medium leading-relaxed"
+                          >
+                            <span className="font-extrabold">{g.skill}:</span>{" "}
+                            {g.bridgeAnswer}
                           </p>
                         ))}
                       </div>
@@ -942,7 +1063,8 @@ export function JobDetailPanel({ jobs }: { jobs: JobSearchResult[] }) {
             </button>
           </div>
           <p className="text-label font-medium text-text-secondary">
-            Opening records OPENED only — confirm with I&apos;ve Applied after you submit.
+            Opening records OPENED only — confirm with I&apos;ve Applied after
+            you submit.
           </p>
         </div>
       )}

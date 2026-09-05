@@ -40,10 +40,10 @@ function validOutput(): {
   gaps: { skill: string; bridgeAnswer: string }[];
 } {
   const tech = Array.from({ length: 5 }, (_, i) =>
-    question({ question: `Technical Q${i}` })
+    question({ question: `Technical Q${i}` }),
   );
   const resume = Array.from({ length: 5 }, (_, i) =>
-    question({ question: `Resume Q${i}` })
+    question({ question: `Resume Q${i}` }),
   );
   const behavioral = [
     question({
@@ -87,10 +87,14 @@ describe("interviewPrepSchema", () => {
   it("enforces counts: 5/5/4/4", () => {
     const out = validOutput();
     expect(
-      interviewPrepSchema.safeParse({ ...out, technical: out.technical.slice(0, 4) }).success
+      interviewPrepSchema.safeParse({
+        ...out,
+        technical: out.technical.slice(0, 4),
+      }).success,
     ).toBe(false);
     expect(
-      interviewPrepSchema.safeParse({ ...out, toAsk: [...out.toAsk, "Extra?"] }).success
+      interviewPrepSchema.safeParse({ ...out, toAsk: [...out.toAsk, "Extra?"] })
+        .success,
     ).toBe(false);
   });
 
@@ -116,12 +120,15 @@ describe("validateInterviewPrep", () => {
         behavioral: [
           {
             ...bad.behavioral[0],
-            starStory: { ...(bad.behavioral[0].starStory as object), evidenceIds: ["bullet_nope_98"] },
+            starStory: {
+              ...(bad.behavioral[0].starStory as object),
+              evidenceIds: ["bullet_nope_98"],
+            },
           },
           ...bad.behavioral.slice(1),
         ],
       } as never,
-      EVIDENCE
+      EVIDENCE,
     );
     const texts = out.map((i) => i.text).join(" | ");
     expect(out.some((i) => i.type === "UNKNOWN_SOURCE")).toBe(true);
@@ -138,9 +145,7 @@ describe("relevantEvidence", () => {
     { id: "summary_01", kind: "summary", text: "Backend" },
   ];
   const tailored = {
-    sections: [
-      { items: [{ provenance: { sourceIds: ["bullet_erp_02"] } }] },
-    ],
+    sections: [{ items: [{ provenance: { sourceIds: ["bullet_erp_02"] } }] }],
   };
 
   it("prefers cited evidence, then skills/summary, capped", () => {
@@ -149,7 +154,9 @@ describe("relevantEvidence", () => {
   });
 
   it("handles missing tailored shapes defensively", () => {
-    expect(relevantEvidence(all, null, 10).map((e) => e.id)).toContain("skills_languages");
+    expect(relevantEvidence(all, null, 10).map((e) => e.id)).toContain(
+      "skills_languages",
+    );
     expect(relevantEvidence(all, {}, 10).length).toBeGreaterThan(0);
   });
 });
@@ -165,7 +172,9 @@ describe("buildInterviewPrompt", () => {
       missingSkills: ["Kubernetes"],
       verdict: "STRONG",
       tailoredHighlights: ["Built APIs."],
-      evidence: [{ id: "bullet_erp_02", kind: "experience", text: "Built APIs." }],
+      evidence: [
+        { id: "bullet_erp_02", kind: "experience", text: "Built APIs." },
+      ],
     });
     expect(p).toContain("Backend Engineer at Acme");
     expect(p).toContain("[bullet_erp_02 | experience]");

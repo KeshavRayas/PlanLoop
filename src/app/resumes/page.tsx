@@ -107,9 +107,16 @@ function ResumeItemCard({
             <FileText className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <h3 className="text-title font-extrabold leading-tight truncate">{title}</h3>
+            <h3 className="text-title font-extrabold leading-tight truncate">
+              {title}
+            </h3>
             <p className="text-label font-bold text-text-secondary">
-              Updated {new Date(updatedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+              Updated{" "}
+              {new Date(updatedAt).toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
             </p>
           </div>
         </div>
@@ -119,7 +126,10 @@ function ResumeItemCard({
       {skills.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-4">
           {skills.slice(0, 6).map((s) => (
-            <span key={s} className="px-2 py-0.5 rounded-full bg-[#F3F3F3] text-label font-bold">
+            <span
+              key={s}
+              className="px-2 py-0.5 rounded-full bg-[#F3F3F3] text-label font-bold"
+            >
               {s}
             </span>
           ))}

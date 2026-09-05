@@ -24,12 +24,14 @@ Vercel Cron Job runs every 6 hours: `GET /api/cron/ingest`
 ## Idempotency
 
 Running the cron multiple times is safe:
+
 - `@@unique([externalId, source])` prevents duplicate jobs
 - Prisma `upsert` updates existing records instead of creating duplicates
 
 ## Source Adapters
 
 Each adapter implements:
+
 ```typescript
 interface JobSource {
   readonly name: string;
@@ -37,14 +39,14 @@ interface JobSource {
 }
 ```
 
-| Source | Method | Notes |
-|--------|--------|-------|
-| Adzuna | REST API | Free tier, India/Bangalore focused |
-| Jooble | REST API | Free tier, global + India |
-| Remotive | JSON feed | No auth needed, remote jobs |
-| Greenhouse | Board JSON | Scrapes company-specific board URLs |
-| Lever | Public API | Scrapes company-specific postings |
-| Ashby | Posting API | Scrapes company-specific postings |
+| Source     | Method      | Notes                               |
+| ---------- | ----------- | ----------------------------------- |
+| Adzuna     | REST API    | Free tier, India/Bangalore focused  |
+| Jooble     | REST API    | Free tier, global + India           |
+| Remotive   | JSON feed   | No auth needed, remote jobs         |
+| Greenhouse | Board JSON  | Scrapes company-specific board URLs |
+| Lever      | Public API  | Scrapes company-specific postings   |
+| Ashby      | Posting API | Scrapes company-specific postings   |
 
 ## Debugging
 

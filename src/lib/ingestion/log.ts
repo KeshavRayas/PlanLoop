@@ -5,7 +5,7 @@ import type { Prisma } from "@/generated/prisma/client";
 export async function logRawPayload(
   source: JobSource,
   externalId: string,
-  rawPayload: unknown
+  rawPayload: unknown,
 ): Promise<void> {
   await prisma.jobIngestionLog.create({
     data: {

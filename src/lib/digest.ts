@@ -11,14 +11,16 @@ function matchLine(m: TopMatch, i: number): string {
   const salary = formatSalary(
     m.job.salaryMin ?? undefined,
     m.job.salaryMax ?? undefined,
-    m.job.salaryCurr ?? undefined
+    m.job.salaryCurr ?? undefined,
   );
   const skills =
     m.job.skills.length > 0
       ? `${m.matchedSkills.length}/${m.job.skills.length} skills`
       : "skills n/a";
   const missing =
-    m.missingSkills.length > 0 ? `\n   Missing: ${m.missingSkills.join(", ")}` : "";
+    m.missingSkills.length > 0
+      ? `\n   Missing: ${m.missingSkills.join(", ")}`
+      : "";
   const loc = m.job.location ?? m.job.workMode;
   return [
     `${i + 1}. [${m.score.toFixed(2)}] ${m.job.title} — ${m.company.name} (${loc})`,
@@ -37,14 +39,14 @@ function matchLine(m: TopMatch, i: number): string {
  */
 export async function sendNightlyDigest(
   matches: TopMatch[],
-  runId: string
+  runId: string,
 ): Promise<DigestResult> {
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.DIGEST_TO_EMAIL;
 
   if (!apiKey || !to) {
     console.log(
-      `[digest] skipped (run ${runId}): RESEND_API_KEY or DIGEST_TO_EMAIL not set`
+      `[digest] skipped (run ${runId}): RESEND_API_KEY or DIGEST_TO_EMAIL not set`,
     );
     return { sent: false, reason: "email-unconfigured" };
   }

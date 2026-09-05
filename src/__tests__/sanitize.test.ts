@@ -18,7 +18,9 @@ describe("sanitizeModelText", () => {
 
   it("normalizes dashes, quotes, and nbsp to ASCII", () => {
     expect(
-      sanitizeModelText(`${LSQUO}hello${RSQUO} ${EM_DASH} ${LDQUO}world${RDQUO}${NBSP}x`)
+      sanitizeModelText(
+        `${LSQUO}hello${RSQUO} ${EM_DASH} ${LDQUO}world${RDQUO}${NBSP}x`,
+      ),
     ).toBe(`'hello' - "world" x`);
     expect(sanitizeModelText(`a${EN_DASH}b`)).toBe("a-b");
   });
@@ -28,14 +30,20 @@ describe("sanitizeModelText", () => {
   });
 
   it("leaves clean text untouched", () => {
-    expect(sanitizeModelText("Built APIs with Go.")).toBe("Built APIs with Go.");
+    expect(sanitizeModelText("Built APIs with Go.")).toBe(
+      "Built APIs with Go.",
+    );
   });
 });
 
 describe("sanitizeModelJson", () => {
   it("deep-maps objects and arrays, passes through non-strings", () => {
     expect(
-      sanitizeModelJson({ a: `x${EM_DASH}y`, b: [`p${FFFD}q`, 1, null, true], c: { d: `${NBSP}z` } })
+      sanitizeModelJson({
+        a: `x${EM_DASH}y`,
+        b: [`p${FFFD}q`, 1, null, true],
+        c: { d: `${NBSP}z` },
+      }),
     ).toEqual({ a: "x-y", b: ["pq", 1, null, true], c: { d: "z" } });
   });
 });

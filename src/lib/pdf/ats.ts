@@ -22,9 +22,8 @@ export interface AtsResult {
 export async function extractPdfText(pdf: Buffer): Promise<string> {
   // Legacy build works on Node without a bundled worker: point workerSrc at
   // the absolute file so Turbopack's chunk-relative resolution is bypassed.
-  const pdfjs = (await import(
-    "pdfjs-dist/legacy/build/pdf.mjs"
-  )) as typeof import("pdfjs-dist/types/src/pdf");
+  const pdfjs =
+    (await import("pdfjs-dist/legacy/build/pdf.mjs")) as typeof import("pdfjs-dist/types/src/pdf");
   const { default: path } = await import("node:path");
   const { pathToFileURL } = await import("node:url");
   const { existsSync } = await import("node:fs");
@@ -34,7 +33,7 @@ export async function extractPdfText(pdf: Buffer): Promise<string> {
     "pdfjs-dist",
     "legacy",
     "build",
-    "pdf.worker.mjs"
+    "pdf.worker.mjs",
   );
   if (existsSync(workerSrc)) {
     // Absolute Windows paths must be file:// URLs for the ESM loader.
@@ -51,24 +50,29 @@ export async function extractPdfText(pdf: Buffer): Promise<string> {
     pages.push(
       content.items
         .map((item) => ("str" in item ? (item.str as string) : ""))
-        .join(" ")
+        .join(" "),
     );
   }
   await doc.cleanup();
-  return pages.join("\n").replace(/[ \t]+/g, " ").trim();
+  return pages
+    .join("\n")
+    .replace(/[ \t]+/g, " ")
+    .trim();
 }
 
 export function runAtsChecks(
   text: string,
   requiredSkills: string[],
-  opts: { contactEmail?: string | null } = {}
+  opts: { contactEmail?: string | null } = {},
 ): AtsResult {
   const lower = text.toLowerCase();
   const warnings: string[] = [];
 
   const textExtractable = text.length >= 200;
   if (!textExtractable) {
-    warnings.push(`only ${text.length} extractable characters — PDF text layer may be broken`);
+    warnings.push(
+      `only ${text.length} extractable characters — PDF text layer may be broken`,
+    );
   }
 
   const sections = {
@@ -84,11 +88,14 @@ export function runAtsChecks(
   const matchedKeywords: string[] = [];
   const missingKeywords: string[] = [];
   for (const skill of requiredSkills) {
-    if (skill && lower.includes(skill.toLowerCase())) matchedKeywords.push(skill);
+    if (skill && lower.includes(skill.toLowerCase()))
+      matchedKeywords.push(skill);
     else if (skill) missingKeywords.push(skill);
   }
   const keywordCoverage =
-    requiredSkills.length === 0 ? 1 : matchedKeywords.length / requiredSkills.length;
+    requiredSkills.length === 0
+      ? 1
+      : matchedKeywords.length / requiredSkills.length;
   for (const missing of missingKeywords) {
     warnings.push(`required skill missing from text layer: ${missing}`);
   }

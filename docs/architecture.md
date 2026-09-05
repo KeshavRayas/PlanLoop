@@ -56,12 +56,12 @@ Pipeline (src/lib/ingestion/pipeline.ts)
 
 ## Scale Targets
 
-| Metric | Target |
-|--------|--------|
-| Jobs | 50,000+ |
-| Companies | 5,000+ |
-| Users | 10,000+ |
+| Metric         | Target   |
+| -------------- | -------- |
+| Jobs           | 50,000+  |
+| Companies      | 5,000+   |
+| Users          | 10,000+  |
 | Searches/month | 100,000+ |
-| Source feeds | 6 |
+| Source feeds   | 6        |
 
 All on Vercel + Neon + Upstash free tiers.

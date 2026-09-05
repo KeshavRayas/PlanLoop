@@ -26,7 +26,8 @@ export async function HiringLeaderboard() {
                 {company.name}
               </p>
               <p className="text-label-sm text-tertiary">
-                {company.openRoles} open role{company.openRoles !== 1 ? "s" : ""}
+                {company.openRoles} open role
+                {company.openRoles !== 1 ? "s" : ""}
               </p>
             </div>
           </div>

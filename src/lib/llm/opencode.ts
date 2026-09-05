@@ -19,7 +19,8 @@ const DEFAULT_TIMEOUT_MS = 180_000;
  * Falls back to a shell lookup of `opencode` (short prompts only).
  */
 function resolveCommand(): { cmd: string; shell: boolean } {
-  if (process.env.OPENCODE_BIN) return { cmd: process.env.OPENCODE_BIN, shell: false };
+  if (process.env.OPENCODE_BIN)
+    return { cmd: process.env.OPENCODE_BIN, shell: false };
   // execPath-derived global root needs no subprocess and works regardless
   // of PATH (npm/node shims are not resolvable without a shell on Windows).
   try {
@@ -28,7 +29,7 @@ function resolveCommand(): { cmd: string; shell: boolean } {
       "node_modules",
       "opencode-ai",
       "bin",
-      "opencode.exe"
+      "opencode.exe",
     );
     if (existsSync(exe)) return { cmd: exe, shell: false };
   } catch {
@@ -143,7 +144,10 @@ function collectEventText(stdout: string): string {
 export class OpencodeCliProvider implements LlmProvider {
   readonly name = "opencode-cli";
 
-  async generateJson(systemPrompt: string, userPrompt: string): Promise<unknown> {
+  async generateJson(
+    systemPrompt: string,
+    userPrompt: string,
+  ): Promise<unknown> {
     const message = `${systemPrompt}\n\n---\n\n${userPrompt}`;
     const output = await this.run(message);
     const text = collectEventText(output);
@@ -153,7 +157,7 @@ export class OpencodeCliProvider implements LlmProvider {
       throw new LlmError(
         this.name,
         "model did not return parseable JSON",
-        `${String(err)} :: ${text.slice(0, 500)}`
+        `${String(err)} :: ${text.slice(0, 500)}`,
       );
     }
   }
@@ -187,9 +191,9 @@ export class OpencodeCliProvider implements LlmProvider {
           new LlmError(
             this.name,
             "failed to spawn opencode CLI (is it installed on this host? set OPENCODE_BIN to its path)",
-            String(err)
-          )
-        )
+            String(err),
+          ),
+        ),
       );
       child.on("close", (code) => {
         if (code === 0 && stdout.trim()) resolve(stdout);
@@ -198,8 +202,8 @@ export class OpencodeCliProvider implements LlmProvider {
             new LlmError(
               this.name,
               `opencode run exited with code ${code}`,
-              stderr.slice(0, 1000) || stdout.slice(0, 1000)
-            )
+              stderr.slice(0, 1000) || stdout.slice(0, 1000),
+            ),
           );
       });
     });

@@ -45,9 +45,14 @@ export interface ValidatePromptInput {
 }
 
 export function buildValidatePrompt(input: ValidatePromptInput): string {
-  const evidenceBlock = input.evidence.map((e) => `[${e.id}] ${e.text}`).join("\n");
+  const evidenceBlock = input.evidence
+    .map((e) => `[${e.id}] ${e.text}`)
+    .join("\n");
   const itemsBlock = input.items
-    .map((i) => `- item ${i.id} (cites: ${i.sourceIds.join(", ") || "none"}): ${i.text}`)
+    .map(
+      (i) =>
+        `- item ${i.id} (cites: ${i.sourceIds.join(", ") || "none"}): ${i.text}`,
+    )
     .join("\n");
   return [
     "Check each TAILORED item against the EVIDENCE. Flag escalation: added scope (INFLATED_CLAIM), technologies/metrics/roles absent from evidence (NEW_TECHNOLOGY, NEW_METRIC, ROLE_MISMATCH), or claims with no support at all (UNSUPPORTED_CLAIM). Rephrasing and combining cited evidence is fine.",
@@ -56,7 +61,7 @@ export function buildValidatePrompt(input: ValidatePromptInput): string {
     '{"valid": boolean, "issues": [{"itemId": string, "type": "UNSUPPORTED_CLAIM"|"INFLATED_CLAIM"|"NEW_TECHNOLOGY"|"NEW_METRIC"|"ROLE_MISMATCH", "severity": "LOW"|"MEDIUM"|"HIGH", "explanation": string}]}',
     "Set valid=false when any MEDIUM or HIGH issue exists. Empty issues with valid=true when everything is supported.",
     "Example supported item: evidence [bullet_erp_02] says building backend APIs; tailored says backend API development with PostgreSQL. Verdict: no issue.",
-    "Example violation: evidence says used PostgreSQL; tailored says architected PostgreSQL infrastructure handling millions of requests. Verdict: {\"itemId\": \"...\", \"type\": \"INFLATED_CLAIM\", \"severity\": \"HIGH\", \"explanation\": \"...\"}.",
+    'Example violation: evidence says used PostgreSQL; tailored says architected PostgreSQL infrastructure handling millions of requests. Verdict: {"itemId": "...", "type": "INFLATED_CLAIM", "severity": "HIGH", "explanation": "..."}.',
     "",
     `JOB (context only, not evidence): ${input.jobTitle} at ${input.companyName}`,
     "",

@@ -2,7 +2,9 @@ import { prisma } from "@/lib/prisma";
 import type { JobFilters, PaginatedResult, JobSearchResult } from "@/lib/types";
 import { daysAgo } from "@/lib/utils";
 
-export async function searchJobs(filters: JobFilters): Promise<PaginatedResult<JobSearchResult>> {
+export async function searchJobs(
+  filters: JobFilters,
+): Promise<PaginatedResult<JobSearchResult>> {
   const conditions: string[] = [];
   const params: unknown[] = [];
   let paramIdx = 1;
@@ -11,10 +13,14 @@ export async function searchJobs(filters: JobFilters): Promise<PaginatedResult<J
   conditions.push(`j."status" = 'ACTIVE'`);
   conditions.push(`j."classificationScore" IS NOT NULL`);
   conditions.push(`j."classificationScore" >= 0.70`);
-  conditions.push(`j."postedAt" IS NOT NULL AND DATE_PART('day', NOW() - j."postedAt") <= 30`);
+  conditions.push(
+    `j."postedAt" IS NOT NULL AND DATE_PART('day', NOW() - j."postedAt") <= 30`,
+  );
 
   if (filters.query) {
-    conditions.push(`j."searchVector" @@ plainto_tsquery('english', $${paramIdx})`);
+    conditions.push(
+      `j."searchVector" @@ plainto_tsquery('english', $${paramIdx})`,
+    );
     params.push(filters.query);
     paramIdx++;
   }
@@ -67,7 +73,8 @@ export async function searchJobs(filters: JobFilters): Promise<PaginatedResult<J
     paramIdx++;
   }
 
-  const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+  const where =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
   const page = filters.page ?? 1;
   const pageSize = filters.pageSize ?? 20;
@@ -78,28 +85,30 @@ export async function searchJobs(filters: JobFilters): Promise<PaginatedResult<J
      FROM "Job" j
      JOIN "Company" c ON c.id = j."companyId"
      ${where}`,
-    ...params
+    ...params,
   );
   const total = Number(countResult[0]?.total ?? 0);
 
-  const rows = await prisma.$queryRawUnsafe<{
-    id: string;
-    title: string;
-    description: string;
-    applyUrl: string;
-    workMode: string;
-    location: string | null;
-    salaryMin: number | null;
-    salaryMax: number | null;
-    salaryCurr: string | null;
-    postedAt: Date | null;
-    skills: string[];
-    companyId: string;
-    companyName: string;
-    companySlug: string;
-    companyLogo: string | null;
-    companyType: string;
-  }[]>(
+  const rows = await prisma.$queryRawUnsafe<
+    {
+      id: string;
+      title: string;
+      description: string;
+      applyUrl: string;
+      workMode: string;
+      location: string | null;
+      salaryMin: number | null;
+      salaryMax: number | null;
+      salaryCurr: string | null;
+      postedAt: Date | null;
+      skills: string[];
+      companyId: string;
+      companyName: string;
+      companySlug: string;
+      companyLogo: string | null;
+      companyType: string;
+    }[]
+  >(
     `SELECT j.id, j.title, j.description, j."applyUrl", j."workMode",
             j.location, j."salaryMin", j."salaryMax", j."salaryCurr",
             j."postedAt", j.skills,
@@ -112,7 +121,7 @@ export async function searchJobs(filters: JobFilters): Promise<PaginatedResult<J
      LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
     ...params,
     pageSize,
-    offset
+    offset,
   );
 
   const data = rows.map((r) => ({

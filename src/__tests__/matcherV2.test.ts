@@ -1,13 +1,18 @@
 import { describe, it, expect } from "vitest";
-import {
-  classifyRoleFamily,
-  roleFit,
-} from "@/lib/matching/roleFamily";
+import { classifyRoleFamily, roleFit } from "@/lib/matching/roleFamily";
 import { locationEligibility } from "@/lib/matching/eligibility";
 import { scoreJob } from "@/lib/matching/score";
 
 const GOALS = {
-  preferred: ["BACKEND", "INFRASTRUCTURE", "DEVOPS_SRE", "FULL_STACK", "ML_AI", "DATA", "FORWARD_DEPLOYED"],
+  preferred: [
+    "BACKEND",
+    "INFRASTRUCTURE",
+    "DEVOPS_SRE",
+    "FULL_STACK",
+    "ML_AI",
+    "DATA",
+    "FORWARD_DEPLOYED",
+  ],
   vetoed: ["DATA_ANNOTATION"],
 };
 
@@ -31,7 +36,10 @@ describe("classifyRoleFamily", () => {
     ["Software Engineer Metadata", "BACKEND"],
     ["Data Annotation Specialist, Data Science", "DATA_ANNOTATION"],
     ["German Quality Rater", "DATA_ANNOTATION"],
-    ["Forward Deployed Software Engineer - Dubbing Platform", "FORWARD_DEPLOYED"],
+    [
+      "Forward Deployed Software Engineer - Dubbing Platform",
+      "FORWARD_DEPLOYED",
+    ],
     ["Product Manager", "OTHER"],
   ];
   for (const [title, expected] of cases) {
@@ -43,13 +51,18 @@ describe("classifyRoleFamily", () => {
   it("annotation beats data-science substring matching", () => {
     // "Data Annotation Specialist, Data Science" contains "data science"
     // yet must classify as annotation, not DATA.
-    expect(classifyRoleFamily("Data Annotation Specialist, Data Science")).toBe("DATA_ANNOTATION");
+    expect(classifyRoleFamily("Data Annotation Specialist, Data Science")).toBe(
+      "DATA_ANNOTATION",
+    );
   });
 });
 
 describe("roleFit", () => {
   it("vetoes annotation regardless of preferences", () => {
-    expect(roleFit("DATA_ANNOTATION", GOALS)).toEqual({ fit: "VETO", score: 0 });
+    expect(roleFit("DATA_ANNOTATION", GOALS)).toEqual({
+      fit: "VETO",
+      score: 0,
+    });
     expect(roleFit("DATA_ANNOTATION", {})).toEqual({ fit: "VETO", score: 0 });
   });
 
@@ -69,27 +82,38 @@ describe("locationEligibility", () => {
   it("remote without restriction is ELIGIBLE", () => {
     expect(locationEligibility({ location: "Remote" }).fit).toBe("ELIGIBLE");
     expect(
-      locationEligibility({ location: "India", description: "Work from home" }).fit
+      locationEligibility({ location: "India", description: "Work from home" })
+        .fit,
     ).toBe("ELIGIBLE");
   });
 
   it("Bangalore / Bengaluru is ELIGIBLE", () => {
     expect(locationEligibility({ location: "Bangalore" }).fit).toBe("ELIGIBLE");
-    expect(locationEligibility({ location: "Bengaluru, Karnataka" }).fit).toBe("ELIGIBLE");
+    expect(locationEligibility({ location: "Bengaluru, Karnataka" }).fit).toBe(
+      "ELIGIBLE",
+    );
   });
 
   it("Zurich / Berlin on-site postings are INELIGIBLE", () => {
     expect(
-      locationEligibility({ location: "Zurich, Switzerland", description: "Join our Zurich team, on-site." }).fit
+      locationEligibility({
+        location: "Zurich, Switzerland",
+        description: "Join our Zurich team, on-site.",
+      }).fit,
     ).toBe("INELIGIBLE");
     expect(
-      locationEligibility({ location: "Berlin, Germany", description: "Onsite internship in Berlin." }).fit
+      locationEligibility({
+        location: "Berlin, Germany",
+        description: "Onsite internship in Berlin.",
+      }).fit,
     ).toBe("INELIGIBLE");
   });
 
   it("Mumbai on-site is INELIGIBLE but remote Mumbai stays ELIGIBLE", () => {
     expect(locationEligibility({ location: "Mumbai" }).fit).toBe("INELIGIBLE");
-    expect(locationEligibility({ location: "Mumbai", remote: true }).fit).toBe("ELIGIBLE");
+    expect(locationEligibility({ location: "Mumbai", remote: true }).fit).toBe(
+      "ELIGIBLE",
+    );
   });
 
   it("missing location is UNKNOWN, never silently eligible", () => {
@@ -102,7 +126,7 @@ describe("locationEligibility", () => {
       locationEligibility({
         location: "Bangalore",
         description: "Our Mumbai office collaborates closely. Hybrid role.",
-      }).fit
+      }).fit,
     ).toBe("ELIGIBLE");
   });
 
@@ -111,60 +135,87 @@ describe("locationEligibility", () => {
     expect(
       locationEligibility({
         location: "CH-Zurich-Observe",
-        description: "Snowflake is growing fast in India and worldwide. Join our Zurich team.",
-      }).fit
+        description:
+          "Snowflake is growing fast in India and worldwide. Join our Zurich team.",
+      }).fit,
     ).toBe("INELIGIBLE");
   });
 
   it("structured-remote foreign codes are UNCERTAIN, not ELIGIBLE", () => {
-    const warsaw = locationEligibility({ location: "PL-Warsaw", workMode: "REMOTE" });
+    const warsaw = locationEligibility({
+      location: "PL-Warsaw",
+      workMode: "REMOTE",
+    });
     expect(warsaw.fit).toBe("UNCERTAIN");
-    const berlin = locationEligibility({ location: "DE-Berlin-Trion Building", workMode: "REMOTE" });
+    const berlin = locationEligibility({
+      location: "DE-Berlin-Trion Building",
+      workMode: "REMOTE",
+    });
     expect(berlin.fit).toBe("UNCERTAIN");
   });
 
   it("structured-remote India-based cities stay ELIGIBLE", () => {
-    expect(locationEligibility({ location: "Mumbai", workMode: "REMOTE" }).fit).toBe("ELIGIBLE");
+    expect(
+      locationEligibility({ location: "Mumbai", workMode: "REMOTE" }).fit,
+    ).toBe("ELIGIBLE");
   });
 
   it("explicit restrictions disqualify remote postings", () => {
     expect(
-      locationEligibility({ location: "Remote", description: "US Only candidates." }).fit
+      locationEligibility({
+        location: "Remote",
+        description: "US Only candidates.",
+      }).fit,
     ).toBe("INELIGIBLE");
     expect(
       locationEligibility({
         location: "Remote",
         description: "Candidates must be authorized to work in the US.",
-      }).fit
+      }).fit,
     ).toBe("INELIGIBLE");
     expect(
-      locationEligibility({ location: "Remote", description: "No sponsorship available." }).fit
+      locationEligibility({
+        location: "Remote",
+        description: "No sponsorship available.",
+      }).fit,
     ).toBe("INELIGIBLE");
   });
 
   it("US-coded remote postings are UNCERTAIN via country code", () => {
     expect(
-      locationEligibility({ location: "US-CA-Menlo Park", workMode: "REMOTE" }).fit
+      locationEligibility({ location: "US-CA-Menlo Park", workMode: "REMOTE" })
+        .fit,
     ).toBe("UNCERTAIN");
     expect(
-      locationEligibility({ location: "US-WA-Bellevue", workMode: "REMOTE" }).fit
+      locationEligibility({ location: "US-WA-Bellevue", workMode: "REMOTE" })
+        .fit,
     ).toBe("UNCERTAIN");
   });
 
   it("US-coded on-site postings are INELIGIBLE via country code", () => {
     expect(
-      locationEligibility({ location: "US-CA-Menlo Park", description: "On-site role." }).fit
+      locationEligibility({
+        location: "US-CA-Menlo Park",
+        description: "On-site role.",
+      }).fit,
     ).toBe("INELIGIBLE");
   });
 
   it("Belgrade without a country code still resolves", () => {
-    expect(locationEligibility({ location: "Belgrade", workMode: "REMOTE" }).fit).toBe("UNCERTAIN");
-    expect(locationEligibility({ location: "Belgrade" }).fit).toBe("INELIGIBLE");
+    expect(
+      locationEligibility({ location: "Belgrade", workMode: "REMOTE" }).fit,
+    ).toBe("UNCERTAIN");
+    expect(locationEligibility({ location: "Belgrade" }).fit).toBe(
+      "INELIGIBLE",
+    );
   });
 
   it("positive sponsorship language is not a restriction", () => {
     expect(
-      locationEligibility({ location: "Remote", description: "We sponsor visas for the right candidate." }).fit
+      locationEligibility({
+        location: "Remote",
+        description: "We sponsor visas for the right candidate.",
+      }).fit,
     ).toBe("ELIGIBLE");
   });
 
@@ -173,7 +224,7 @@ describe("locationEligibility", () => {
       locationEligibility({
         location: "Berlin, Germany",
         description: "Distributed systems role, on-site in Berlin.",
-      }).fit
+      }).fit,
     ).toBe("INELIGIBLE");
   });
 
@@ -182,13 +233,13 @@ describe("locationEligibility", () => {
       locationEligibility({
         location: "Zurich, Switzerland",
         description: "On-site internship in Zurich, no remote work.",
-      }).fit
+      }).fit,
     ).toBe("INELIGIBLE");
   });
 
   it("remote role with remote closed is UNKNOWN", () => {
     expect(
-      locationEligibility({ location: "Remote" }, { openToRemote: false }).fit
+      locationEligibility({ location: "Remote" }, { openToRemote: false }).fit,
     ).toBe("UNKNOWN");
   });
 });

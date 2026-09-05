@@ -39,7 +39,9 @@ export async function GET(_req: Request, ctx: { params: Params }) {
   }
 
   // Fallback: build plain text from parsed sections
-  const lines: string[] = [`${resume.title}\n${"=".repeat(resume.title.length)}\n`];
+  const lines: string[] = [
+    `${resume.title}\n${"=".repeat(resume.title.length)}\n`,
+  ];
   for (const section of sections) {
     lines.push(`\n${section.title}\n${"-".repeat(section.title.length)}\n`);
     for (const item of section.items) {
@@ -51,12 +53,18 @@ export async function GET(_req: Request, ctx: { params: Params }) {
         }
         case "experience": {
           const ei = item as {
-            title?: string; company?: string; location?: string;
-            startDate?: string; endDate?: string; description?: string;
+            title?: string;
+            company?: string;
+            location?: string;
+            startDate?: string;
+            endDate?: string;
+            description?: string;
             bulletPoints?: string[];
           };
           if (ei.title || ei.company) {
-            lines.push(`${[ei.title, ei.company].filter(Boolean).join(" at ")}`);
+            lines.push(
+              `${[ei.title, ei.company].filter(Boolean).join(" at ")}`,
+            );
             if (ei.location) lines.push(`  ${ei.location}`);
             lines.push(`  ${ei.startDate || ""} — ${ei.endDate || "Present"}`);
             if (ei.description) lines.push(`  ${ei.description}`);
@@ -70,11 +78,18 @@ export async function GET(_req: Request, ctx: { params: Params }) {
         }
         case "education": {
           const ei = item as {
-            school?: string; degree?: string; field?: string;
-            startDate?: string; endDate?: string; gpa?: string; description?: string;
+            school?: string;
+            degree?: string;
+            field?: string;
+            startDate?: string;
+            endDate?: string;
+            gpa?: string;
+            description?: string;
           };
           if (ei.school || ei.degree) {
-            lines.push(`${[ei.degree, ei.field ? `in ${ei.field}` : ""].filter(Boolean).join(" ")} — ${ei.school}`);
+            lines.push(
+              `${[ei.degree, ei.field ? `in ${ei.field}` : ""].filter(Boolean).join(" ")} — ${ei.school}`,
+            );
             lines.push(`  ${ei.startDate || ""} — ${ei.endDate || "Present"}`);
             if (ei.gpa) lines.push(`  GPA: ${ei.gpa}`);
             if (ei.description) lines.push(`  ${ei.description}`);
@@ -84,14 +99,19 @@ export async function GET(_req: Request, ctx: { params: Params }) {
         case "skills": {
           const si = item as { category?: string; skills?: string[] };
           if (si.skills && si.skills.length > 0) {
-            lines.push(`${si.category ? si.category + ": " : ""}${si.skills.join(", ")}`);
+            lines.push(
+              `${si.category ? si.category + ": " : ""}${si.skills.join(", ")}`,
+            );
           }
           break;
         }
         case "projects": {
           const pi = item as {
-            name?: string; url?: string; description?: string;
-            bulletPoints?: string[]; technologies?: string[];
+            name?: string;
+            url?: string;
+            description?: string;
+            bulletPoints?: string[];
+            technologies?: string[];
           };
           if (pi.name) {
             lines.push(`${pi.name}${pi.url ? ` (${pi.url})` : ""}`);
@@ -110,7 +130,9 @@ export async function GET(_req: Request, ctx: { params: Params }) {
         case "certifications": {
           const ci = item as { name?: string; issuer?: string; date?: string };
           if (ci.name) {
-            lines.push(`${ci.name}${ci.issuer ? ` — ${ci.issuer}` : ""}${ci.date ? ` (${ci.date})` : ""}`);
+            lines.push(
+              `${ci.name}${ci.issuer ? ` — ${ci.issuer}` : ""}${ci.date ? ` (${ci.date})` : ""}`,
+            );
           }
           break;
         }

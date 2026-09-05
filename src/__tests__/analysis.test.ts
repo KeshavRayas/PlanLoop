@@ -32,7 +32,7 @@ describe("jobAnalysisSchema", () => {
 
   it("rejects empty verdictReasons and missing summary", () => {
     expect(
-      jobAnalysisSchema.safeParse({ ...VALID, verdictReasons: [] }).success
+      jobAnalysisSchema.safeParse({ ...VALID, verdictReasons: [] }).success,
     ).toBe(false);
     const { summary: _dropped, ...noSummary } = VALID;
     expect(jobAnalysisSchema.safeParse(noSummary).success).toBe(false);
@@ -79,7 +79,7 @@ describe("extractJsonObject", () => {
 
   it("strips prose prefixes and markdown fences", () => {
     const out = extractJsonObject(
-      'Here is your analysis:\n```json\n{"verdict":"STRONG","n":{"x":[1,2]}}\n```'
+      'Here is your analysis:\n```json\n{"verdict":"STRONG","n":{"x":[1,2]}}\n```',
     );
     expect(out).toEqual({ verdict: "STRONG", n: { x: [1, 2] } });
   });

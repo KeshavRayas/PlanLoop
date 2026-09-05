@@ -38,7 +38,8 @@ function str(f: Fields, ...keys: string[]): string {
 function strArr(f: Fields, ...keys: string[]): string[] {
   for (const k of keys) {
     const v = f[k];
-    if (Array.isArray(v)) return v.filter((x): x is string => typeof x === "string");
+    if (Array.isArray(v))
+      return v.filter((x): x is string => typeof x === "string");
   }
   return [];
 }
@@ -61,13 +62,28 @@ function canonicalFields(kind: string, f: Fields): Fields {
       return { content: str(f, "content", "text", "summary") };
     case "experience":
       return {
-        ...pickBase(f, ["title", "company", "location", "startDate", "endDate", "description"]),
+        ...pickBase(f, [
+          "title",
+          "company",
+          "location",
+          "startDate",
+          "endDate",
+          "description",
+        ]),
         current: bool(f, "current"),
         bulletPoints: strArr(f, "bulletPoints", "bullets"),
       };
     case "education":
       return {
-        ...pickBase(f, ["school", "degree", "field", "startDate", "endDate", "gpa", "description"]),
+        ...pickBase(f, [
+          "school",
+          "degree",
+          "field",
+          "startDate",
+          "endDate",
+          "gpa",
+          "description",
+        ]),
       };
     case "skills":
       return {
@@ -87,7 +103,9 @@ function canonicalFields(kind: string, f: Fields): Fields {
   }
 }
 
-export function canonicalizeTailored(data: TailoredResumeData): CanonicalResume {
+export function canonicalizeTailored(
+  data: TailoredResumeData,
+): CanonicalResume {
   return {
     sections: data.sections.map((s) => ({
       id: s.id,

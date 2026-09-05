@@ -8,21 +8,28 @@ import {
 import { validateCoverLetter } from "@/lib/cover/validate";
 import { collectEvidencePair } from "@/lib/tailor/evidence";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
-import { EmptyResumeError, requireBaseResumeContent } from "@/lib/tailor/service";
+import {
+  EmptyResumeError,
+  requireBaseResumeContent,
+} from "@/lib/tailor/service";
 import type { LlmProvider } from "@/lib/llm/types";
 import { generateJsonSanitized } from "@/lib/llm/sanitize";
 import { parseWithSingleRetry } from "@/lib/llm/retry";
 
 export class NeedsAnalysisError extends Error {
   constructor() {
-    super("analyze the job before writing a cover letter — no JobAnalysis found");
+    super(
+      "analyze the job before writing a cover letter — no JobAnalysis found",
+    );
     this.name = "NeedsAnalysisError";
   }
 }
 
 export class NeedsTailoredResumeError extends Error {
   constructor() {
-    super("tailor a resume before writing a cover letter — no current TailoredResume found");
+    super(
+      "tailor a resume before writing a cover letter — no current TailoredResume found",
+    );
     this.name = "NeedsTailoredResumeError";
   }
 }
@@ -46,7 +53,10 @@ export async function getCoverLetter(jobId: string) {
  * ({sections: [{items: [{fields}]}]}), but this stays defensive: unknown
  * shapes yield an empty list rather than throwing.
  */
-export function extractTailoredHighlights(content: unknown, limit = 8): string[] {
+export function extractTailoredHighlights(
+  content: unknown,
+  limit = 8,
+): string[] {
   if (!content || typeof content !== "object") return [];
   const sections = (content as { sections?: unknown }).sections;
   if (!Array.isArray(sections)) return [];
@@ -84,7 +94,7 @@ export function extractTailoredHighlights(content: unknown, limit = 8): string[]
  */
 export async function generateCoverLetter(
   jobId: string,
-  provider: LlmProvider = getDefaultProvider()
+  provider: LlmProvider = getDefaultProvider(),
 ): Promise<{ cover: CoverLetterData & { id: string }; cached: false }> {
   const job = await prisma.job.findUnique({
     where: { id: jobId },
@@ -115,7 +125,11 @@ export async function generateCoverLetter(
     evidence,
   });
 
-  const raw = await generateJsonSanitized(provider, COVER_SYSTEM_PROMPT, prompt);
+  const raw = await generateJsonSanitized(
+    provider,
+    COVER_SYSTEM_PROMPT,
+    prompt,
+  );
   const { data, raw: validRaw } = await parseWithSingleRetry({
     schema: coverLetterSchema,
     raw,
@@ -135,11 +149,13 @@ async function persistValidated(
   baseResumeId: string,
   data: CoverLetterData,
   evidenceById: Map<string, string>,
-  raw: unknown
+  raw: unknown,
 ): Promise<{ cover: CoverLetterData & { id: string }; cached: false }> {
   const problems = validateCoverLetter(data, evidenceById);
   if (problems.length > 0) {
-    console.error(`[cover] provenance invalid for job ${jobId}: ${JSON.stringify(problems).slice(0, 1000)}`);
+    console.error(
+      `[cover] provenance invalid for job ${jobId}: ${JSON.stringify(problems).slice(0, 1000)}`,
+    );
     throw new CoverValidationError(problems.map((p) => p.text).join("; "));
   }
   const content = {

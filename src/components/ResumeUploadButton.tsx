@@ -65,14 +65,21 @@ async function extractTextFromPDF(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
   const pdfjsLib = await import("pdfjs-dist");
   pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer.slice(0) }).promise;
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer.slice(0) })
+    .promise;
   let fullText = "";
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    const rawItems = content.items as { str?: string; transform?: number[]; height?: number }[];
+    const rawItems = content.items as {
+      str?: string;
+      transform?: number[];
+      height?: number;
+    }[];
     const items: TextItem[] = rawItems
-      .filter((item) => typeof item.str === "string" && Array.isArray(item.transform))
+      .filter(
+        (item) => typeof item.str === "string" && Array.isArray(item.transform),
+      )
       .map((item) => ({
         str: item.str as string,
         x: (item.transform as number[])[4],
@@ -89,75 +96,125 @@ const SECTION_PATTERNS: { type: string; patterns: RegExp[] }[] = [
   {
     type: "summary",
     patterns: [
-      /^summary$/i, /^professional summary$/i, /^profile$/i,
-      /^about me$/i, /^objective$/i, /^career objective$/i,
-      /^personal statement$/i, /^qualifications summary$/i,
+      /^summary$/i,
+      /^professional summary$/i,
+      /^profile$/i,
+      /^about me$/i,
+      /^objective$/i,
+      /^career objective$/i,
+      /^personal statement$/i,
+      /^qualifications summary$/i,
       /^professional profile$/i,
     ],
   },
   {
     type: "experience",
     patterns: [
-      /^experience$/i, /^work experience$/i, /^professional experience$/i,
-      /^employment$/i, /^work history$/i, /^relevant experience$/i,
-      /^employment history$/i, /^career history$/i, /^work background$/i,
-      /^internship experience$/i, /^internships$/i,
+      /^experience$/i,
+      /^work experience$/i,
+      /^professional experience$/i,
+      /^employment$/i,
+      /^work history$/i,
+      /^relevant experience$/i,
+      /^employment history$/i,
+      /^career history$/i,
+      /^work background$/i,
+      /^internship experience$/i,
+      /^internships$/i,
     ],
   },
   {
     type: "education",
     patterns: [
-      /^education$/i, /^academic background$/i, /^academics$/i,
-      /^educational qualification/i, /^academic qualifications$/i,
-      /^education and training$/i, /^educational background$/i,
+      /^education$/i,
+      /^academic background$/i,
+      /^academics$/i,
+      /^educational qualification/i,
+      /^academic qualifications$/i,
+      /^education and training$/i,
+      /^educational background$/i,
     ],
   },
   {
     type: "skills",
     patterns: [
-      /^skills$/i, /^technical skills$/i, /^core skills$/i,
-      /^technologies$/i, /^expertise$/i, /^tech stack/i,
-      /^technical expertise$/i, /^core competencies$/i,
-      /^areas of expertise$/i, /^key skills$/i, /^technical proficiency$/i,
+      /^skills$/i,
+      /^technical skills$/i,
+      /^core skills$/i,
+      /^technologies$/i,
+      /^expertise$/i,
+      /^tech stack/i,
+      /^technical expertise$/i,
+      /^core competencies$/i,
+      /^areas of expertise$/i,
+      /^key skills$/i,
+      /^technical proficiency$/i,
     ],
   },
   {
     type: "projects",
     patterns: [
-      /^projects$/i, /^personal projects$/i, /^academic projects$/i,
-      /^key projects/i, /^project experience$/i, /^open source$/i,
-      /^research$/i, /^research experience$/i,
-      /^publications$/i, /^research papers$/i,
+      /^projects$/i,
+      /^personal projects$/i,
+      /^academic projects$/i,
+      /^key projects/i,
+      /^project experience$/i,
+      /^open source$/i,
+      /^research$/i,
+      /^research experience$/i,
+      /^publications$/i,
+      /^research papers$/i,
     ],
   },
   {
     type: "certifications",
     patterns: [
-      /^certifications$/i, /^certificates$/i, /^licenses/i,
-      /^accreditations/i, /^licenses & certifications/i,
-      /^professional certifications$/i, /^professional development$/i,
-      /^courses$/i, /^training$/i, /^honors$/i, /^awards$/i,
-      /^honours$/i, /^achievements$/i, /^honors & awards$/i,
-      /^awards & honours$/i, /^certifications & courses$/i,
+      /^certifications$/i,
+      /^certificates$/i,
+      /^licenses/i,
+      /^accreditations/i,
+      /^licenses & certifications/i,
+      /^professional certifications$/i,
+      /^professional development$/i,
+      /^courses$/i,
+      /^training$/i,
+      /^honors$/i,
+      /^awards$/i,
+      /^honours$/i,
+      /^achievements$/i,
+      /^honors & awards$/i,
+      /^awards & honours$/i,
+      /^certifications & courses$/i,
       /^certifications and courses$/i,
     ],
   },
   {
     type: "custom",
     patterns: [
-      /^activities$/i, /^interests$/i, /^activities & interests$/i,
-      /^activities and interests$/i, /^extracurricular$/i,
-      /^extracurricular activities$/i, /^leadership$/i,
-      /^leadership experience$/i, /^volunteering$/i,
-      /^volunteer experience$/i, /^community service$/i,
-      /^relevant coursework$/i, /^coursework$/i,
-      /^academic coursework$/i, /^languages$/i,
+      /^activities$/i,
+      /^interests$/i,
+      /^activities & interests$/i,
+      /^activities and interests$/i,
+      /^extracurricular$/i,
+      /^extracurricular activities$/i,
+      /^leadership$/i,
+      /^leadership experience$/i,
+      /^volunteering$/i,
+      /^volunteer experience$/i,
+      /^community service$/i,
+      /^relevant coursework$/i,
+      /^coursework$/i,
+      /^academic coursework$/i,
+      /^languages$/i,
     ],
   },
 ];
 
 function detectSectionType(line: string): string | null {
-  const trimmed = line.trim().replace(/[:\-–—]+$/, "").trim();
+  const trimmed = line
+    .trim()
+    .replace(/[:\-–—]+$/, "")
+    .trim();
   for (const entry of SECTION_PATTERNS) {
     for (const pat of entry.patterns) {
       if (pat.test(trimmed)) return entry.type;
@@ -169,8 +226,14 @@ function detectSectionType(line: string): string | null {
 function isLikelySectionHeader(line: string): boolean {
   const trimmed = line.trim();
   if (!trimmed || trimmed.length < 2 || trimmed.length > 50) return false;
-  if (trimmed === trimmed.toUpperCase() && /[A-Z]{3,}/.test(trimmed)) return true;
-  if (/^(?:Education|Experience|Skills|Projects|Summary|Profile|Certifications|Publications|Leadership|Achievements|Languages|Interests|Technical Skills|Work History|Relevant Coursework|Academic Background|Extracurricular|Volunteering|Awards|Honours|Activities & Interests|Certifications & Courses)$/i.test(trimmed)) return true;
+  if (trimmed === trimmed.toUpperCase() && /[A-Z]{3,}/.test(trimmed))
+    return true;
+  if (
+    /^(?:Education|Experience|Skills|Projects|Summary|Profile|Certifications|Publications|Leadership|Achievements|Languages|Interests|Technical Skills|Work History|Relevant Coursework|Academic Background|Extracurricular|Volunteering|Awards|Honours|Activities & Interests|Certifications & Courses)$/i.test(
+      trimmed,
+    )
+  )
+    return true;
   return false;
 }
 
@@ -222,7 +285,10 @@ function parseSections(lines: string[]): { type: string; content: string[] }[] {
 function parseSummaryItem(content: string[]): ResumeSummaryItem {
   return {
     id: uid(),
-    content: content.map((l) => l.trim()).filter(Boolean).join(" "),
+    content: content
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .join(" "),
   };
 }
 
@@ -231,15 +297,27 @@ function parseExperienceItems(content: string[]): ResumeExperienceItem[] {
   let current: Partial<ResumeExperienceItem> = { id: uid() };
   const bulletLines: string[] = [];
 
-  const dateRegex = /((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*\d{4}\s*[-–]\s*(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*\d{4}|Present|Current|Now))/i;
+  const dateRegex =
+    /((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*\d{4}\s*[-–]\s*(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*\d{4}|Present|Current|Now))/i;
   const yearDateRegex = /(\d{4}\s*[-–]\s*(?:\d{4}|Present|Current|Now))/i;
 
   for (const line of content) {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
-    if (trimmed.startsWith("•") || trimmed.startsWith("-") || trimmed.startsWith("*") || trimmed.startsWith("–") || /^\d+[.)]/.test(trimmed)) {
-      bulletLines.push(trimmed.replace(/^[•\-*–]\s*/, "").replace(/^\d+[.)]\s*/, "").trim());
+    if (
+      trimmed.startsWith("•") ||
+      trimmed.startsWith("-") ||
+      trimmed.startsWith("*") ||
+      trimmed.startsWith("–") ||
+      /^\d+[.)]/.test(trimmed)
+    ) {
+      bulletLines.push(
+        trimmed
+          .replace(/^[•\-*–]\s*/, "")
+          .replace(/^\d+[.)]\s*/, "")
+          .trim(),
+      );
       continue;
     }
 
@@ -249,9 +327,20 @@ function parseExperienceItems(content: string[]): ResumeExperienceItem[] {
         items.push(current as ResumeExperienceItem);
         bulletLines.length = 0;
       }
-      current = { id: uid(), company: "", title: "", location: "", startDate: "", endDate: "", current: false, description: "", bulletPoints: [] };
+      current = {
+        id: uid(),
+        company: "",
+        title: "",
+        location: "",
+        startDate: "",
+        endDate: "",
+        current: false,
+        description: "",
+        bulletPoints: [],
+      };
 
-      const dateMatch = trimmed.match(dateRegex) || trimmed.match(yearDateRegex);
+      const dateMatch =
+        trimmed.match(dateRegex) || trimmed.match(yearDateRegex);
       if (dateMatch) {
         const dates = dateMatch[1].split(/[-–]/).map((d) => d.trim());
         current.startDate = dates[0] || "";
@@ -261,7 +350,11 @@ function parseExperienceItems(content: string[]): ResumeExperienceItem[] {
           current.endDate = "";
         }
       }
-      const remaining = trimmed.replace(dateRegex, "").replace(yearDateRegex, "").replace(/[,|]\s*$/, "").trim();
+      const remaining = trimmed
+        .replace(dateRegex, "")
+        .replace(yearDateRegex, "")
+        .replace(/[,|]\s*$/, "")
+        .trim();
       if (remaining && !current.title && !current.company) {
         current.title = remaining;
       }
@@ -279,24 +372,29 @@ function parseExperienceItems(content: string[]): ResumeExperienceItem[] {
     current.bulletPoints = [...bulletLines];
     items.push(current as ResumeExperienceItem);
   }
-  return items.length > 0 ? items : [{
-    id: uid(),
-    company: "",
-    title: "",
-    location: "",
-    startDate: "",
-    endDate: "",
-    current: false,
-    description: content.filter((l) => l.trim()).join("\n"),
-    bulletPoints: [],
-  }];
+  return items.length > 0
+    ? items
+    : [
+        {
+          id: uid(),
+          company: "",
+          title: "",
+          location: "",
+          startDate: "",
+          endDate: "",
+          current: false,
+          description: content.filter((l) => l.trim()).join("\n"),
+          bulletPoints: [],
+        },
+      ];
 }
 
 function parseEducationItems(content: string[]): ResumeEducationItem[] {
   const items: ResumeEducationItem[] = [];
   let current: Partial<ResumeEducationItem> = { id: uid() };
 
-  const dateRegex = /((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*\d{4}\s*[-–]\s*(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*\d{4}|Present|Current|Now|Expected\s+\d{4}))/i;
+  const dateRegex =
+    /((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*\d{4}\s*[-–]\s*(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*\d{4}|Present|Current|Now|Expected\s+\d{4}))/i;
   const yearDateRegex = /(\d{4}\s*[-–]\s*(?:\d{4}|Present|Current|Now))/i;
 
   for (const line of content) {
@@ -307,8 +405,18 @@ function parseEducationItems(content: string[]): ResumeEducationItem[] {
       if (current.school) {
         items.push(current as ResumeEducationItem);
       }
-      current = { id: uid(), school: "", degree: "", field: "", startDate: "", endDate: "", gpa: "", description: "" };
-      const dateMatch = trimmed.match(dateRegex) || trimmed.match(yearDateRegex);
+      current = {
+        id: uid(),
+        school: "",
+        degree: "",
+        field: "",
+        startDate: "",
+        endDate: "",
+        gpa: "",
+        description: "",
+      };
+      const dateMatch =
+        trimmed.match(dateRegex) || trimmed.match(yearDateRegex);
       if (dateMatch) {
         const dates = dateMatch[1].split(/[-–]/).map((d) => d.trim());
         current.startDate = dates[0] || "";
@@ -317,10 +425,14 @@ function parseEducationItems(content: string[]): ResumeEducationItem[] {
     } else if (!current.school) {
       current.school = trimmed;
     } else if (!current.degree) {
-      const degreeMatch = trimmed.match(/(Bachelor|Master|PhD|B\.\w+|M\.\w+|Ph\.D|Associate|Diploma|Bachelors|Masters)/i);
+      const degreeMatch = trimmed.match(
+        /(Bachelor|Master|PhD|B\.\w+|M\.\w+|Ph\.D|Associate|Diploma|Bachelors|Masters)/i,
+      );
       if (degreeMatch) {
         current.degree = degreeMatch[1];
-        current.field = trimmed.replace(degreeMatch[1], "").replace(/^[,\s]+|[,\s]+$/g, "");
+        current.field = trimmed
+          .replace(degreeMatch[1], "")
+          .replace(/^[,\s]+|[,\s]+$/g, "");
       } else {
         current.school += " " + trimmed;
       }
@@ -332,16 +444,20 @@ function parseEducationItems(content: string[]): ResumeEducationItem[] {
   if (current.school) {
     items.push(current as ResumeEducationItem);
   }
-  return items.length > 0 ? items : [{
-    id: uid(),
-    school: "",
-    degree: "",
-    field: "",
-    startDate: "",
-    endDate: "",
-    gpa: "",
-    description: content.filter((l) => l.trim()).join("\n"),
-  }];
+  return items.length > 0
+    ? items
+    : [
+        {
+          id: uid(),
+          school: "",
+          degree: "",
+          field: "",
+          startDate: "",
+          endDate: "",
+          gpa: "",
+          description: content.filter((l) => l.trim()).join("\n"),
+        },
+      ];
 }
 
 function parseSkillsItems(content: string[]): ResumeSkillsItem[] {
@@ -349,17 +465,22 @@ function parseSkillsItems(content: string[]): ResumeSkillsItem[] {
   for (const line of content) {
     const trimmed = line.trim();
     if (!trimmed) continue;
-    const parts = trimmed.split(/[,;|•\-]/).map((s) => s.trim()).filter(Boolean);
+    const parts = trimmed
+      .split(/[,;|•\-]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
     for (const part of parts) {
       const cleaned = part.replace(/^[•\-*–]\s*/, "").trim();
       if (cleaned) allSkills.push(cleaned);
     }
   }
-  return [{
-    id: uid(),
-    category: "General",
-    skills: allSkills,
-  }];
+  return [
+    {
+      id: uid(),
+      category: "General",
+      skills: allSkills,
+    },
+  ];
 }
 
 function parseProjectItems(content: string[]): ResumeProjectItem[] {
@@ -372,8 +493,19 @@ function parseProjectItems(content: string[]): ResumeProjectItem[] {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
-    if (trimmed.startsWith("•") || trimmed.startsWith("-") || trimmed.startsWith("*") || trimmed.startsWith("–") || /^\d+[.)]/.test(trimmed)) {
-      bulletLines.push(trimmed.replace(/^[•\-*–]\s*/, "").replace(/^\d+[.)]\s*/, "").trim());
+    if (
+      trimmed.startsWith("•") ||
+      trimmed.startsWith("-") ||
+      trimmed.startsWith("*") ||
+      trimmed.startsWith("–") ||
+      /^\d+[.)]/.test(trimmed)
+    ) {
+      bulletLines.push(
+        trimmed
+          .replace(/^[•\-*–]\s*/, "")
+          .replace(/^\d+[.)]\s*/, "")
+          .trim(),
+      );
       continue;
     }
 
@@ -385,8 +517,15 @@ function parseProjectItems(content: string[]): ResumeProjectItem[] {
       current.bulletPoints = [];
       current.technologies = [];
     } else if (/^tech/i.test(trimmed) || /^built (with|using)/i.test(trimmed)) {
-      const techStr = trimmed.replace(/^tech(?:nologies)?\s*[:;]?\s*/i, "").replace(/^built (with|using)\s*/i, "");
-      techs.push(...techStr.split(/[,;]/).map((s) => s.trim()).filter(Boolean));
+      const techStr = trimmed
+        .replace(/^tech(?:nologies)?\s*[:;]?\s*/i, "")
+        .replace(/^built (with|using)\s*/i, "");
+      techs.push(
+        ...techStr
+          .split(/[,;]/)
+          .map((s) => s.trim())
+          .filter(Boolean),
+      );
     } else {
       bulletLines.push(trimmed);
     }
@@ -404,7 +543,10 @@ function parseCertificationItems(content: string[]): ResumeCertificationItem[] {
   for (const line of content) {
     const trimmed = line.trim();
     if (!trimmed) continue;
-    const parts = trimmed.split(/[,|]/).map((s) => s.trim()).filter(Boolean);
+    const parts = trimmed
+      .split(/[,|]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
     items.push({
       id: uid(),
       name: parts[0] || trimmed,
@@ -422,13 +564,20 @@ function parseCustomItems(content: string[]): ResumeCustomItem[] {
   if (remaining.length === 0) {
     return [{ id: uid(), content: headerLine }];
   }
-  return [{
-    id: uid(),
-    content: remaining.map((l) => l.trim()).filter(Boolean).join("\n"),
-  }];
+  return [
+    {
+      id: uid(),
+      content: remaining
+        .map((l) => l.trim())
+        .filter(Boolean)
+        .join("\n"),
+    },
+  ];
 }
 
-function buildResumeData(sections: { type: string; content: string[] }[]): ResumeData {
+function buildResumeData(
+  sections: { type: string; content: string[] }[],
+): ResumeData {
   const resumeSections: ResumeSection[] = [];
 
   for (const section of sections) {
@@ -439,42 +588,72 @@ function buildResumeData(sections: { type: string; content: string[] }[]): Resum
       case "summary": {
         const item = parseSummaryItem(content);
         if (item.content) {
-          resumeSections.push({ id: uid(), type: "summary", title: "Summary", items: [item] });
+          resumeSections.push({
+            id: uid(),
+            type: "summary",
+            title: "Summary",
+            items: [item],
+          });
         }
         break;
       }
       case "experience": {
         const items = parseExperienceItems(content);
         if (items.length > 0) {
-          resumeSections.push({ id: uid(), type: "experience", title: "Experience", items });
+          resumeSections.push({
+            id: uid(),
+            type: "experience",
+            title: "Experience",
+            items,
+          });
         }
         break;
       }
       case "education": {
         const items = parseEducationItems(content);
         if (items.length > 0) {
-          resumeSections.push({ id: uid(), type: "education", title: "Education", items });
+          resumeSections.push({
+            id: uid(),
+            type: "education",
+            title: "Education",
+            items,
+          });
         }
         break;
       }
       case "skills": {
         const items = parseSkillsItems(content);
         if (items.length > 0 && items[0].skills.length > 0) {
-          resumeSections.push({ id: uid(), type: "skills", title: "Skills", items });
+          resumeSections.push({
+            id: uid(),
+            type: "skills",
+            title: "Skills",
+            items,
+          });
         }
         break;
       }
       case "projects": {
         const items = parseProjectItems(content);
         if (items.length > 0) {
-          resumeSections.push({ id: uid(), type: "projects", title: "Projects", items });
+          resumeSections.push({
+            id: uid(),
+            type: "projects",
+            title: "Projects",
+            items,
+          });
         }
         break;
       }
       case "certifications": {
         const items = parseCertificationItems(content);
         if (items.length > 0) {
-          resumeSections.push({ id: uid(), type: "certifications", title: "Certifications", items });
+          resumeSections.push({
+            id: uid(),
+            type: "certifications",
+            title: "Certifications",
+            items,
+          });
         }
         break;
       }
@@ -499,13 +678,23 @@ function buildResumeData(sections: { type: string; content: string[] }[]): Resum
 function storeUploadedResume(data: ResumeData, name: string) {
   try {
     const raw = localStorage.getItem("uploadedResumes");
-    const list: { id: string; name: string; data: ResumeData; createdAt: number }[] = raw ? JSON.parse(raw) : [];
+    const list: {
+      id: string;
+      name: string;
+      data: ResumeData;
+      createdAt: number;
+    }[] = raw ? JSON.parse(raw) : [];
     list.unshift({ id: uid(), name, data, createdAt: Date.now() });
     localStorage.setItem("uploadedResumes", JSON.stringify(list));
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
-export function ResumeUploadButton({ variant = "icon", onUpload }: ResumeUploadButtonProps) {
+export function ResumeUploadButton({
+  variant = "icon",
+  onUpload,
+}: ResumeUploadButtonProps) {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<ToastState>(null);
   const [showTextModal, setShowTextModal] = useState(false);
@@ -545,7 +734,11 @@ export function ResumeUploadButton({ variant = "icon", onUpload }: ResumeUploadB
       const res = await fetch("/api/resumes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: resumeName.trim(), content: pendingData, skills }),
+        body: JSON.stringify({
+          title: resumeName.trim(),
+          content: pendingData,
+          skills,
+        }),
       });
       if (res.ok) {
         const created = await res.json();
@@ -565,72 +758,86 @@ export function ResumeUploadButton({ variant = "icon", onUpload }: ResumeUploadB
     }
   }, [pendingData, resumeName, onUpload]);
 
-  const processContent = useCallback((text: string, defaultName: string, originalContent?: string, originalFormat?: "pdf" | "tex" | "text") => {
-    const lines = text.split("\n");
-    const parsed = parseSections(lines);
-    const resumeData = buildResumeData(parsed);
-    if (originalContent) {
-      resumeData.originalContent = originalContent;
-      resumeData.originalFormat = originalFormat;
-    }
-    setPendingData(resumeData);
-    setResumeName(defaultName);
-    setShowNameDialog(true);
-  }, []);
-
-  const handleFile = useCallback(async (file: File) => {
-    const isPDF = file.type.includes("pdf") || file.name.endsWith(".pdf");
-    const isTeX = file.name.endsWith(".tex");
-
-    if (!isPDF && !isTeX) {
-      setToast({ message: "Please select a PDF or .tex file", error: true });
-      setTimeout(() => setToast(null), 3000);
-      return;
-    }
-    setLoading(true);
-    try {
-      const baseName = file.name.replace(/\.(pdf|tex)$/i, "");
-      if (isTeX) {
-        // LaTeX files: store raw content without parsing
-        const raw = await file.text();
-        const resumeData: ResumeData = {
-          sections: [],
-          originalContent: raw,
-          originalFormat: "tex",
-        };
-        setPendingData(resumeData);
-        setResumeName(baseName);
-        setShowNameDialog(true);
-      } else {
-        const text = await extractTextFromPDF(file);
-        // Store original PDF as base64 for round-trip download
-        const buffer = await file.arrayBuffer();
-        const bytes = new Uint8Array(buffer);
-        let binary = "";
-        for (let i = 0; i < bytes.length; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        const base64 = btoa(binary);
-        processContent(text, baseName, base64, "pdf");
+  const processContent = useCallback(
+    (
+      text: string,
+      defaultName: string,
+      originalContent?: string,
+      originalFormat?: "pdf" | "tex" | "text",
+    ) => {
+      const lines = text.split("\n");
+      const parsed = parseSections(lines);
+      const resumeData = buildResumeData(parsed);
+      if (originalContent) {
+        resumeData.originalContent = originalContent;
+        resumeData.originalFormat = originalFormat;
       }
-    } catch (err) {
-      console.error("[Upload] Failed:", err);
-      setToast({ message: "Failed to parse file", error: true });
-      setTimeout(() => setToast(null), 3000);
-    } finally {
-      setLoading(false);
-      if (inputRef.current) inputRef.current.value = "";
-    }
-  }, [processContent]);
+      setPendingData(resumeData);
+      setResumeName(defaultName);
+      setShowNameDialog(true);
+    },
+    [],
+  );
+
+  const handleFile = useCallback(
+    async (file: File) => {
+      const isPDF = file.type.includes("pdf") || file.name.endsWith(".pdf");
+      const isTeX = file.name.endsWith(".tex");
+
+      if (!isPDF && !isTeX) {
+        setToast({ message: "Please select a PDF or .tex file", error: true });
+        setTimeout(() => setToast(null), 3000);
+        return;
+      }
+      setLoading(true);
+      try {
+        const baseName = file.name.replace(/\.(pdf|tex)$/i, "");
+        if (isTeX) {
+          // LaTeX files: store raw content without parsing
+          const raw = await file.text();
+          const resumeData: ResumeData = {
+            sections: [],
+            originalContent: raw,
+            originalFormat: "tex",
+          };
+          setPendingData(resumeData);
+          setResumeName(baseName);
+          setShowNameDialog(true);
+        } else {
+          const text = await extractTextFromPDF(file);
+          // Store original PDF as base64 for round-trip download
+          const buffer = await file.arrayBuffer();
+          const bytes = new Uint8Array(buffer);
+          let binary = "";
+          for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          const base64 = btoa(binary);
+          processContent(text, baseName, base64, "pdf");
+        }
+      } catch (err) {
+        console.error("[Upload] Failed:", err);
+        setToast({ message: "Failed to parse file", error: true });
+        setTimeout(() => setToast(null), 3000);
+      } finally {
+        setLoading(false);
+        if (inputRef.current) inputRef.current.value = "";
+      }
+    },
+    [processContent],
+  );
 
   const handleClick = useCallback(() => {
     inputRef.current?.click();
   }, []);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleFile(file);
-  }, [handleFile]);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) handleFile(file);
+    },
+    [handleFile],
+  );
 
   const handlePasteSubmit = useCallback(() => {
     if (!pasteText.trim()) {
@@ -700,7 +907,9 @@ export function ResumeUploadButton({ variant = "icon", onUpload }: ResumeUploadB
       {showTextModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-surface border-4 border-black rounded-[24px] brutal-shadow-lg p-6 w-full max-w-2xl mx-4">
-            <h3 className="text-title font-extrabold mb-4">Paste Resume Text</h3>
+            <h3 className="text-title font-extrabold mb-4">
+              Paste Resume Text
+            </h3>
             <textarea
               value={pasteText}
               onChange={(e) => setPasteText(e.target.value)}
@@ -710,7 +919,10 @@ export function ResumeUploadButton({ variant = "icon", onUpload }: ResumeUploadB
             />
             <div className="flex items-center justify-end gap-3 mt-4">
               <button
-                onClick={() => { setShowTextModal(false); setPasteText(""); }}
+                onClick={() => {
+                  setShowTextModal(false);
+                  setPasteText("");
+                }}
                 className="px-5 py-2.5 rounded-full border-3 border-black text-label font-extrabold uppercase tracking-widest hover:bg-black hover:text-white transition-[150ms]"
               >
                 Cancel
@@ -731,7 +943,8 @@ export function ResumeUploadButton({ variant = "icon", onUpload }: ResumeUploadB
           <div className="bg-surface border-4 border-black rounded-[24px] brutal-shadow-lg p-6 w-full max-w-md mx-4">
             <h3 className="text-title font-extrabold mb-2">Name Your Resume</h3>
             <p className="text-body font-medium text-text-secondary mb-4">
-              This resume will be saved and available when creating a new resume.
+              This resume will be saved and available when creating a new
+              resume.
             </p>
             <input
               type="text"
@@ -740,11 +953,16 @@ export function ResumeUploadButton({ variant = "icon", onUpload }: ResumeUploadB
               placeholder="Resume name"
               className="w-full border-3 border-black rounded-[12px] px-4 py-3 text-body font-medium bg-surface placeholder:text-text-secondary outline-none"
               autoFocus
-              onKeyDown={(e) => { if (e.key === "Enter") confirmName(); }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") confirmName();
+              }}
             />
             <div className="flex items-center justify-end gap-3 mt-4">
               <button
-                onClick={() => { setShowNameDialog(false); setPendingData(null); }}
+                onClick={() => {
+                  setShowNameDialog(false);
+                  setPendingData(null);
+                }}
                 className="px-5 py-2.5 rounded-full border-3 border-black text-label font-extrabold uppercase tracking-widest hover:bg-black hover:text-white transition-[150ms]"
               >
                 Discard

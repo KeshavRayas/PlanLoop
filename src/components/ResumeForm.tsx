@@ -1,7 +1,17 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, useSyncExternalStore } from "react";
-import type { ResumeData, ResumeSection, CustomSectionFormat } from "@/lib/resume.types";
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useSyncExternalStore,
+} from "react";
+import type {
+  ResumeData,
+  ResumeSection,
+  CustomSectionFormat,
+} from "@/lib/resume.types";
 import {
   createSection,
   SECTION_LABELS,
@@ -41,7 +51,9 @@ function getResumesSnapshot() {
   _cachedRawResumes = raw;
   try {
     _cachedResumes = raw ? JSON.parse(raw) : [];
-  } catch { _cachedResumes = []; }
+  } catch {
+    _cachedResumes = [];
+  }
   return _cachedResumes;
 }
 
@@ -61,20 +73,26 @@ export function ResumeForm({
   initialTitle,
 }: ResumeFormProps) {
   const [title, setTitle] = useState(initialTitle);
-  const [data, setData] = useState<ResumeData>(() => ensureItemIds(initialData));
+  const [data, setData] = useState<ResumeData>(() =>
+    ensureItemIds(initialData),
+  );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showSectionMenu, setShowSectionMenu] = useState(false);
   const [showSwitchMenu, setShowSwitchMenu] = useState(false);
 
   const uploadedResumes = useSyncExternalStore(
-    (cb) => { window.addEventListener("storage", cb); return () => window.removeEventListener("storage", cb); },
+    (cb) => {
+      window.addEventListener("storage", cb);
+      return () => window.removeEventListener("storage", cb);
+    },
     getResumesSnapshot,
     () => [],
   );
   const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [customSectionName, setCustomSectionName] = useState("");
-  const [customSectionFormat, setCustomSectionFormat] = useState<CustomSectionFormat>("text");
+  const [customSectionFormat, setCustomSectionFormat] =
+    useState<CustomSectionFormat>("text");
   const dataRef = useRef(data);
 
   useEffect(() => {
@@ -129,7 +147,9 @@ export function ResumeForm({
     }
   }, [title]);
 
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const scheduleSave = useCallback(() => {
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => save(), 500);
@@ -144,9 +164,7 @@ export function ResumeForm({
   function updateSection(sectionId: string, updated: ResumeSection) {
     setData((prev) => ({
       ...prev,
-      sections: prev.sections.map((s) =>
-        s.id === sectionId ? updated : s
-      ),
+      sections: prev.sections.map((s) => (s.id === sectionId ? updated : s)),
     }));
     scheduleSave();
   }
@@ -159,7 +177,11 @@ export function ResumeForm({
     scheduleSave();
   }
 
-  function addSection(type: string, customTitle?: string, customFormat?: CustomSectionFormat) {
+  function addSection(
+    type: string,
+    customTitle?: string,
+    customFormat?: CustomSectionFormat,
+  ) {
     const newSection = createSection(type, customTitle, customFormat);
     setData((prev) => ({
       ...prev,
@@ -198,7 +220,9 @@ export function ResumeForm({
   async function handleDownload() {
     // If original LaTeX content exists, download as .tex (preserves original format)
     if (data.originalFormat === "tex" && data.originalContent) {
-      const blob = new Blob([data.originalContent], { type: "text/plain;charset=utf-8" });
+      const blob = new Blob([data.originalContent], {
+        type: "text/plain;charset=utf-8",
+      });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -236,7 +260,7 @@ export function ResumeForm({
   }
 
   const availableTypes = SECTION_ORDER.filter(
-    (t) => !data.sections.find((s) => s.type === t)
+    (t) => !data.sections.find((s) => s.type === t),
   );
 
   return (
@@ -278,7 +302,10 @@ export function ResumeForm({
               </button>
               {showSwitchMenu && (
                 <>
-                  <div className="fixed inset-0 z-10" onClick={() => setShowSwitchMenu(false)} />
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setShowSwitchMenu(false)}
+                  />
                   <div className="absolute left-0 top-full mt-2 z-20 bg-surface border-3 border-black rounded-[14px] brutal-shadow-sm overflow-hidden min-w-[200px]">
                     {uploadedResumes.map((r) => (
                       <button
@@ -346,7 +373,12 @@ export function ResumeForm({
               ))}
               <div className="border-t-3 border-black" />
               <button
-                onClick={() => { setShowSectionMenu(false); setShowCustomDialog(true); setCustomSectionName(""); setCustomSectionFormat("text"); }}
+                onClick={() => {
+                  setShowSectionMenu(false);
+                  setShowCustomDialog(true);
+                  setCustomSectionName("");
+                  setCustomSectionFormat("text");
+                }}
                 className="w-full px-4 py-2.5 text-left text-body font-bold hover:bg-yellow transition-[150ms] flex items-center gap-2"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -370,7 +402,9 @@ export function ResumeForm({
               </button>
             </div>
             <label className="block mb-2">
-              <span className="text-label font-bold mb-1 block">Section Name</span>
+              <span className="text-label font-bold mb-1 block">
+                Section Name
+              </span>
               <input
                 type="text"
                 value={customSectionName}
@@ -447,7 +481,10 @@ export function ResumeForm({
           Download
         </button>
         <div className="ml-auto">
-          <ResumeUploadButton variant="button" onUpload={(parsed) => setData(parsed)} />
+          <ResumeUploadButton
+            variant="button"
+            onUpload={(parsed) => setData(parsed)}
+          />
         </div>
       </div>
     </div>
@@ -547,14 +584,9 @@ function SectionCard({
       </div>
       {!collapsed && (
         <div className="p-4 space-y-3">
-          <ResumeSectionEditor
-            section={section}
-            onChange={onUpdate}
-          />
+          <ResumeSectionEditor section={section} onChange={onUpdate} />
         </div>
       )}
     </div>
   );
 }
-
-

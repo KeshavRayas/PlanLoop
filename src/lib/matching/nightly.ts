@@ -23,7 +23,7 @@ export interface NightlyResult {
  */
 export async function runMatching(
   nightlyRunId: string,
-  topN: number = TOP_N_DEFAULT
+  topN: number = TOP_N_DEFAULT,
 ): Promise<{ candidates: number; matched: number }> {
   const profile = await getOrCreateDefaultProfile();
   const cutoff = new Date(Date.now() - STALE_DAYS * 24 * 60 * 60 * 1000);
@@ -62,14 +62,18 @@ export async function runMatching(
   const scored = [];
   for (const job of candidates) {
     // Hard filters first (logged, like the ingestion cheap filters).
-    const family = classifyRoleFamily(job.title, job.description);
+    const family = classifyRoleFamily(job.title);
     if (roleFit(family, goals).fit === "VETO") {
       vetoedRole++;
       continue;
     }
     const { fit: locFit } = locationEligibility(
-      { location: job.location, workMode: job.workMode, description: job.description },
-      { openToRemote: profile.openToRemote }
+      {
+        location: job.location,
+        workMode: job.workMode,
+        description: job.description,
+      },
+      { openToRemote: profile.openToRemote },
     );
     if (locFit === "INELIGIBLE") {
       ineligibleLocation++;
@@ -93,13 +97,13 @@ export async function runMatching(
           location: job.location,
           workMode: job.workMode,
         },
-        now
+        now,
       ),
     });
   }
 
   console.log(
-    `[matching] candidates: ${candidates.length} | vetoed role: ${vetoedRole} | ineligible location: ${ineligibleLocation} | scored: ${scored.length}`
+    `[matching] candidates: ${candidates.length} | vetoed role: ${vetoedRole} | ineligible location: ${ineligibleLocation} | scored: ${scored.length}`,
   );
 
   scored.sort((a, b) => b.result.score - a.result.score);
@@ -129,7 +133,7 @@ export async function runMatching(
         update: matchData,
         create: { jobId, ...matchData },
       });
-    })
+    }),
   );
 
   await prisma.nightlyRun.update({
@@ -145,9 +149,11 @@ export async function runMatching(
  * Model-free. Failures mark the run unsuccessful and rethrow.
  */
 export async function runNightly(
-  topN: number = TOP_N_DEFAULT
+  topN: number = TOP_N_DEFAULT,
 ): Promise<NightlyResult> {
-  const run = await prisma.nightlyRun.create({ data: { startedAt: new Date() } });
+  const run = await prisma.nightlyRun.create({
+    data: { startedAt: new Date() },
+  });
 
   try {
     await runIngestionPipeline();

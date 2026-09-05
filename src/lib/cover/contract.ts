@@ -36,7 +36,9 @@ export interface CoverPromptInput {
 }
 
 export function buildCoverPrompt(input: CoverPromptInput): string {
-  const evidenceBlock = input.evidence.map((e) => `[${e.id} | ${e.kind}] ${e.text}`).join("\n");
+  const evidenceBlock = input.evidence
+    .map((e) => `[${e.id} | ${e.kind}] ${e.text}`)
+    .join("\n");
   return [
     "Write a cover letter for the JOB below, using the ANALYSIS and the TAILORED HIGHLIGHTS. Address the company's needs with evidence-backed achievements only.",
     "Cite every achievement's source in evidenceIds (evidence IDs used).",

@@ -3,8 +3,11 @@ import { escapeRegex } from "@/lib/utils";
 
 // Single combined regex matching all skill aliases in one pass
 const SKILL_REGEX = new RegExp(
-  `\\b(${Object.keys(SKILL_ALIASES).sort((a, b) => b.length - a.length).map(escapeRegex).join("|")})\\b`,
-  "gi"
+  `\\b(${Object.keys(SKILL_ALIASES)
+    .sort((a, b) => b.length - a.length)
+    .map(escapeRegex)
+    .join("|")})\\b`,
+  "gi",
 );
 
 const ALIAS_MAP = SKILL_ALIASES;

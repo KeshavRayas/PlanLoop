@@ -11,7 +11,10 @@ function latexToHtml(source: string): string {
   // 2. Strip preamble
   html = html.replace(/\\documentclass\s*(?:\[[^\]]*\])?\s*\{[^}]*\}/g, "");
   html = html.replace(/\\usepackage\s*(?:\[[^\]]*\])?\s*\{[^}]*\}/g, "");
-  html = html.replace(/\\(?:newcommand|renewcommand)\s*(?:\\[a-zA-Z]+)\s*(?:\[[^\]]*\])?\s*\{[^}]*\}/g, "");
+  html = html.replace(
+    /\\(?:newcommand|renewcommand)\s*(?:\\[a-zA-Z]+)\s*(?:\[[^\]]*\])?\s*\{[^}]*\}/g,
+    "",
+  );
   html = html.replace(/\\geometry\s*(?:\[[^\]]*\])?\s*\{[^}]*\}/g, "");
   html = html.replace(/\\setlength\s*\{[^}]*\}\s*\{[^}]*\}/g, "");
 
@@ -20,19 +23,31 @@ function latexToHtml(source: string): string {
   if (docMatch) html = docMatch[1];
 
   // 4. Handle known formatting environments (before generic env stripping)
-  html = html.replace(/\\begin\{center\}([\s\S]*?)\\end\{center\}/g, '<div class="latex-center">$1</div>');
-  html = html.replace(/\\begin\{flushleft\}([\s\S]*?)\\end\{flushleft\}/g, '<div class="latex-left">$1</div>');
-  html = html.replace(/\\begin\{flushright\}([\s\S]*?)\\end\{flushright\}/g, '<div class="latex-right">$1</div>');
+  html = html.replace(
+    /\\begin\{center\}([\s\S]*?)\\end\{center\}/g,
+    '<div class="latex-center">$1</div>',
+  );
+  html = html.replace(
+    /\\begin\{flushleft\}([\s\S]*?)\\end\{flushleft\}/g,
+    '<div class="latex-left">$1</div>',
+  );
+  html = html.replace(
+    /\\begin\{flushright\}([\s\S]*?)\\end\{flushright\}/g,
+    '<div class="latex-right">$1</div>',
+  );
 
   // 5. Handle envs with nested-brace args (e.g., \begin{tabular}{>{\small}l X})
   //     The generic stripper (step 6) can't handle nested { } inside env args.
   html = html.replace(
     /\\begin\{([^}]*)\}(?:\[[^\]]*\])?\s*\{[^}]*\{[^}]*\}[^}]*\}([\s\S]*?)\\end\{\1\}/g,
-    "$2"
+    "$2",
   );
 
   // 6. Strip generic begin/end blocks, keep inner content
-  html = html.replace(/\\begin\{[^}]*\}(?:\[[^\]]*\])?(?:\{[^}]*\})?([\s\S]*?)\\end\{[^}]*\}/g, "$1");
+  html = html.replace(
+    /\\begin\{[^}]*\}(?:\[[^\]]*\])?(?:\{[^}]*\})?([\s\S]*?)\\end\{[^}]*\}/g,
+    "$1",
+  );
 
   // 7. Handle \\[10pt] line-break spacing (run before \\→newline so \\[10pt] is matched as a unit)
   html = html.replace(/(?:\\{1,2}\[\d+\.?\d*pt\s*\]?\s*)+/g, "<br/>");
@@ -57,7 +72,7 @@ function latexToHtml(source: string): string {
   // 12. Section headings
   html = html.replace(
     /\\(?:part|chapter|section|subsection|subsubsection|section\*|subsection\*|subsubsection\*|cvsection|cvsubsection|sectionstyle|sectionStyle|sectiontitle|sectionTitle|resumesection|headingsection|headingstyle|sectionHeader|sectionheader)\{([^}]*)\}/g,
-    "</p><h2 class='latex-h2'>$1</h2><p>"
+    "</p><h2 class='latex-h2'>$1</h2><p>",
   );
 
   // 13. Lists
@@ -68,31 +83,70 @@ function latexToHtml(source: string): string {
   html = html.replace(/\\end\{enumerate\}/g, "</li>\n</ol>\n<p>");
 
   // 14. Math mode
-  html = html.replace(/\\\[([\s\S]*?)\\\]/g, "<span class='latex-math'>[$1]</span>");
-  html = html.replace(/\$\$([\s\S]*?)\$\$/g, "<span class='latex-math'>[$1]</span>");
+  html = html.replace(
+    /\\\[([\s\S]*?)\\\]/g,
+    "<span class='latex-math'>[$1]</span>",
+  );
+  html = html.replace(
+    /\$\$([\s\S]*?)\$\$/g,
+    "<span class='latex-math'>[$1]</span>",
+  );
   html = html.replace(/\$([^$\n]*?)\$/g, "<span class='latex-math'>$1</span>");
 
   // 15. Additional text formatting commands (before generic stripping eats content)
-  html = html.replace(/\\(?:textsf)\{([^}]*)\}/g, '<span style="font-family:sans-serif">$1</span>');
-  html = html.replace(/\\(?:textrm)\{([^}]*)\}/g, '<span style="font-family:serif">$1</span>');
-  html = html.replace(/\\(?:textsc)\{([^}]*)\}/g, '<span class="latex-sc">$1</span>');
+  html = html.replace(
+    /\\(?:textsf)\{([^}]*)\}/g,
+    '<span style="font-family:sans-serif">$1</span>',
+  );
+  html = html.replace(
+    /\\(?:textrm)\{([^}]*)\}/g,
+    '<span style="font-family:serif">$1</span>',
+  );
+  html = html.replace(
+    /\\(?:textsc)\{([^}]*)\}/g,
+    '<span class="latex-sc">$1</span>',
+  );
 
   // 16. Braced font size: {\Large text} patterns (run before stray braces removal)
-  html = html.replace(/\{\s*\\(?:Huge|huge|LARGE)\s*([\s\S]*?)\s*\}/g, '<span class="latex-xxl">$1</span>');
-  html = html.replace(/\{\s*\\(?:Large)\s*([\s\S]*?)\s*\}/g, '<span class="latex-xl">$1</span>');
-  html = html.replace(/\{\s*\\(?:large)\s*([\s\S]*?)\s*\}/g, '<span class="latex-lg">$1</span>');
-  html = html.replace(/\{\s*\\(?:small|footnotesize|tiny)\s*([\s\S]*?)\s*\}/g, '<span class="latex-sm">$1</span>');
+  html = html.replace(
+    /\{\s*\\(?:Huge|huge|LARGE)\s*([\s\S]*?)\s*\}/g,
+    '<span class="latex-xxl">$1</span>',
+  );
+  html = html.replace(
+    /\{\s*\\(?:Large)\s*([\s\S]*?)\s*\}/g,
+    '<span class="latex-xl">$1</span>',
+  );
+  html = html.replace(
+    /\{\s*\\(?:large)\s*([\s\S]*?)\s*\}/g,
+    '<span class="latex-lg">$1</span>',
+  );
+  html = html.replace(
+    /\{\s*\\(?:small|footnotesize|tiny)\s*([\s\S]*?)\s*\}/g,
+    '<span class="latex-sm">$1</span>',
+  );
 
   // 17. Strip bare font switch commands (before generic command stripping)
-  html = html.replace(/\\(?:Huge|huge|LARGE|Large|large|normalsize|small|footnotesize|tiny)/g, '');
-  html = html.replace(/\\(?:sffamily|rmfamily|ttfamily|mdseries|bfseries|upshape|itshape|slshape|scshape|centering)/g, '');
+  html = html.replace(
+    /\\(?:Huge|huge|LARGE|Large|large|normalsize|small|footnotesize|tiny)/g,
+    "",
+  );
+  html = html.replace(
+    /\\(?:sffamily|rmfamily|ttfamily|mdseries|bfseries|upshape|itshape|slshape|scshape|centering)/g,
+    "",
+  );
 
   // 18. Custom spacing: collapse chains of \*{-Npt} / \*-Npt / *-Npt to section breaks
-  html = html.replace(/(?:\\?\*\{?\s*-?\d+\.?\d*pt\s*\}?\s*)+/g, "</p><hr class='latex-hr'/><p>");
+  html = html.replace(
+    /(?:\\?\*\{?\s*-?\d+\.?\d*pt\s*\}?\s*)+/g,
+    "</p><hr class='latex-hr'/><p>",
+  );
   html = html.replace(/(?:\\-?\d+\.?\d*pt\s*)+/g, "<br/>");
 
   // 19. Strip =NUMBERunit patterns (like =10in, =6pt)
-  html = html.replace(/=\d+(?:\.\d+)?(?:in|pt|cm|mm|em|ex|pc|bp|dd|cc|sp)?\s*/g, "");
+  html = html.replace(
+    /=\d+(?:\.\d+)?(?:in|pt|cm|mm|em|ex|pc|bp|dd|cc|sp)?\s*/g,
+    "",
+  );
 
   // 20. Strip [NUMBER] artifacts anywhere
   html = html.replace(/\[\d+\]\s*/g, "");
@@ -118,7 +172,7 @@ function latexToHtml(source: string): string {
   // 26. URLs to links
   html = html.replace(
     /(https?:\/\/[^\s<>]+)/g,
-    "<a href='$1' target='_blank' rel='noopener noreferrer' class='latex-link'>$1</a>"
+    "<a href='$1' target='_blank' rel='noopener noreferrer' class='latex-link'>$1</a>",
   );
 
   // 27. Collapse whitespace
@@ -131,7 +185,10 @@ function latexToHtml(source: string): string {
   html = html.trim();
 
   // 28. Wrap text paragraphs (skip already-wrapped HTML elements)
-  const blocks = html.split(/\n\n+/).map((b) => b.trim()).filter(Boolean);
+  const blocks = html
+    .split(/\n\n+/)
+    .map((b) => b.trim())
+    .filter(Boolean);
   const wrapped = blocks.map((block) => {
     if (/^<\w+/.test(block)) return block;
     return `<p>${block}</p>`;

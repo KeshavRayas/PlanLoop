@@ -13,7 +13,8 @@ export interface EvidenceItem {
 
 function renderValue(value: unknown): string {
   if (typeof value === "string") return value;
-  if (Array.isArray(value)) return value.filter((v) => typeof v === "string").join(" ");
+  if (Array.isArray(value))
+    return value.filter((v) => typeof v === "string").join(" ");
   return "";
 }
 
@@ -55,7 +56,11 @@ export function collectEvidence(data: ResumeData): EvidenceItem[] {
             ? b.split(":")[0]
             : `${id}_b${i + 1}`;
           const text = b.replace(/^bullet_[a-z]+_\d+:\s*/, "");
-          out.push({ id: bulletId, kind: section.type, text: `${header}: ${text}` });
+          out.push({
+            id: bulletId,
+            kind: section.type,
+            text: `${header}: ${text}`,
+          });
         });
         // The item shell itself (title/company/dates) is citable too.
         out.push({ id, kind: section.type, text: header });
@@ -69,7 +74,9 @@ export function collectEvidence(data: ResumeData): EvidenceItem[] {
 
 /** id → normalized text, for validator lookups. */
 export function evidenceMap(data: ResumeData): Map<string, string> {
-  return new Map(collectEvidence(data).map((e) => [e.id, normalizeText(e.text)]));
+  return new Map(
+    collectEvidence(data).map((e) => [e.id, normalizeText(e.text)]),
+  );
 }
 
 /**
@@ -82,6 +89,8 @@ export function collectEvidencePair(data: ResumeData): {
   evidenceById: Map<string, string>;
 } {
   const evidence = collectEvidence(data);
-  const evidenceById = new Map(evidence.map((e) => [e.id, normalizeText(e.text)]));
+  const evidenceById = new Map(
+    evidence.map((e) => [e.id, normalizeText(e.text)]),
+  );
   return { evidence, evidenceById };
 }

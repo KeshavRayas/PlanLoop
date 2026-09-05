@@ -8,7 +8,10 @@ import {
 import { validateInterviewPrep } from "@/lib/interview/validate";
 import { collectEvidencePair } from "@/lib/tailor/evidence";
 import { getDefaultProvider, setDefaultProvider } from "@/lib/analysis/service";
-import { EmptyResumeError, requireBaseResumeContent } from "@/lib/tailor/service";
+import {
+  EmptyResumeError,
+  requireBaseResumeContent,
+} from "@/lib/tailor/service";
 import { extractTailoredHighlights } from "@/lib/cover/service";
 import type { LlmProvider } from "@/lib/llm/types";
 import { generateJsonSanitized } from "@/lib/llm/sanitize";
@@ -16,14 +19,18 @@ import { parseWithSingleRetry } from "@/lib/llm/retry";
 
 export class NeedsAnalysisError extends Error {
   constructor() {
-    super("analyze the job before preparing an interview — no JobAnalysis found");
+    super(
+      "analyze the job before preparing an interview — no JobAnalysis found",
+    );
     this.name = "NeedsAnalysisError";
   }
 }
 
 export class NeedsValidTailoredResumeError extends Error {
   constructor(status: string) {
-    super(`tailored resume must be SEMANTIC_VALID for interview prep (found ${status})`);
+    super(
+      `tailored resume must be SEMANTIC_VALID for interview prep (found ${status})`,
+    );
     this.name = "NeedsValidTailoredResumeError";
   }
 }
@@ -49,11 +56,14 @@ export async function getInterviewPrep(jobId: string) {
 export function relevantEvidence(
   all: { id: string; kind: string; text: string }[],
   tailoredContent: unknown,
-  limit = 30
+  limit = 30,
 ): { id: string; kind: string; text: string }[] {
   const cited = new Set<string>();
-  const sections = (tailoredContent as { sections?: { items?: { provenance?: { sourceIds?: string[] } }[] }[] })
-    ?.sections;
+  const sections = (
+    tailoredContent as {
+      sections?: { items?: { provenance?: { sourceIds?: string[] } }[] }[];
+    }
+  )?.sections;
   if (Array.isArray(sections)) {
     for (const section of sections) {
       for (const item of section?.items ?? []) {
@@ -82,7 +92,7 @@ export function relevantEvidence(
  */
 export async function generateInterviewPrep(
   jobId: string,
-  provider: LlmProvider = getDefaultProvider()
+  provider: LlmProvider = getDefaultProvider(),
 ): Promise<{ prep: InterviewPrepData & { id: string }; cached: false }> {
   const job = await prisma.job.findUnique({
     where: { id: jobId },
@@ -119,7 +129,11 @@ export async function generateInterviewPrep(
     evidence,
   });
 
-  const raw = await generateJsonSanitized(provider, INTERVIEW_SYSTEM_PROMPT, prompt);
+  const raw = await generateJsonSanitized(
+    provider,
+    INTERVIEW_SYSTEM_PROMPT,
+    prompt,
+  );
   const { data, raw: validRaw } = await parseWithSingleRetry({
     schema: interviewPrepSchema,
     raw,
@@ -139,21 +153,27 @@ async function persistValidated(
   baseResumeId: string,
   data: InterviewPrepData,
   evidenceById: Map<string, string>,
-  raw: unknown
+  raw: unknown,
 ): Promise<{ prep: InterviewPrepData & { id: string }; cached: false }> {
   const problems = validateInterviewPrep(data, evidenceById);
   if (problems.length > 0) {
-    console.error(`[interview] provenance invalid for job ${jobId}: ${JSON.stringify(problems).slice(0, 1000)}`);
+    console.error(
+      `[interview] provenance invalid for job ${jobId}: ${JSON.stringify(problems).slice(0, 1000)}`,
+    );
     throw new InterviewValidationError(problems.map((p) => p.text).join("; "));
   }
   const evidenceIds = [
     ...new Set(
-      [...data.technical, ...data.resumeBased, ...data.behavioral].flatMap((q) => {
-        const base = [...q.evidenceIds];
-        const story = (q as { starStory?: { evidenceIds?: string[] } }).starStory;
-        if (story && Array.isArray(story.evidenceIds)) base.push(...story.evidenceIds);
-        return base;
-      })
+      [...data.technical, ...data.resumeBased, ...data.behavioral].flatMap(
+        (q) => {
+          const base = [...q.evidenceIds];
+          const story = (q as { starStory?: { evidenceIds?: string[] } })
+            .starStory;
+          if (story && Array.isArray(story.evidenceIds))
+            base.push(...story.evidenceIds);
+          return base;
+        },
+      ),
     ),
   ];
   const content = {

@@ -2,12 +2,12 @@
 
 /* ─── Calm Focus tokens (LOCKED — see DESIGN_CALM_FOCUS.md) ─── */
 @theme {
-  --color-paper: #FAFAF7;
+  --color-paper: #fafaf7;
   --color-ink: #111111;
   --color-muted: rgba(17, 17, 17, 0.55);
   --color-line: rgba(17, 17, 17, 0.08);
-  --color-card: #FFFFFF;
-  --color-search: #F4F4F1;
+  --color-card: #ffffff;
+  --color-search: #f4f4f1;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Instrument Serif", Georgia, serif;
@@ -41,7 +41,7 @@ body {
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #FAFAF7;
+  background: #fafaf7;
   color: #111111;
 }
 

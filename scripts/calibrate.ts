@@ -27,10 +27,12 @@ async function main() {
     orderBy: { score: "desc" },
   });
   const rows = inRun;
-  console.log(`run=${run.id.slice(0, 8)} judged-in-run=${rows.length} judged-filtered=${filtered.length}`);
+  console.log(
+    `run=${run.id.slice(0, 8)} judged-in-run=${rows.length} judged-filtered=${filtered.length}`,
+  );
   for (const r of filtered) {
     console.log(
-      `FILTERED | ${(r.humanVerdict ?? "-").padEnd(9)} | ${(r.roleFamily ?? "?").padEnd(14)} | ${(r as { judgmentContext?: string }).judgmentContext ?? "?"} | ${r.job.title.slice(0, 44)} @ ${r.job.company.name}`
+      `FILTERED | ${(r.humanVerdict ?? "-").padEnd(9)} | ${(r.roleFamily ?? "?").padEnd(14)} | ${(r as { judgmentContext?: string }).judgmentContext ?? "?"} | ${r.job.title.slice(0, 44)} @ ${r.job.company.name}`,
     );
   }
 
@@ -39,13 +41,16 @@ async function main() {
   const inTop = (v: string, n: number) =>
     byVerdict(v).filter((r) => (rankOf.get(r.jobId) ?? 99) <= n).length;
   for (const v of ["EXCELLENT", "GOOD", "BAD"]) {
-    console.log(`${v}: top5=${inTop(v, 5)} top10=${inTop(v, 10)} n=${byVerdict(v).length}`);
+    console.log(
+      `${v}: top5=${inTop(v, 5)} top10=${inTop(v, 10)} n=${byVerdict(v).length}`,
+    );
   }
 
   let inv = 0;
   for (let i = 0; i < rows.length; i++) {
     for (let j = i + 1; j < rows.length; j++) {
-      if (RANK_VALUE[rows[i].humanVerdict!] < RANK_VALUE[rows[j].humanVerdict!]) inv++;
+      if (RANK_VALUE[rows[i].humanVerdict!] < RANK_VALUE[rows[j].humanVerdict!])
+        inv++;
     }
   }
   console.log(`inversions: ${inv} of ${(rows.length * (rows.length - 1)) / 2}`);
@@ -68,16 +73,22 @@ async function main() {
   }
 
   // Location-specific cuts exclude LOCATION_HIDDEN judgments.
-  const visible = rows.filter((r) => (r as { judgmentContext?: string }).judgmentContext !== "LOCATION_HIDDEN");
-  const locErrors = visible.filter(
-    (r) => r.humanVerdict === "EXCELLENT" && r.locationFit === "INELIGIBLE"
+  const visible = rows.filter(
+    (r) =>
+      (r as { judgmentContext?: string }).judgmentContext !== "LOCATION_HIDDEN",
   );
-  console.log(`location errors (EXCELLENT but INELIGIBLE, visible ctx): ${locErrors.length}`);
+  const locErrors = visible.filter(
+    (r) => r.humanVerdict === "EXCELLENT" && r.locationFit === "INELIGIBLE",
+  );
+  console.log(
+    `location errors (EXCELLENT but INELIGIBLE, visible ctx): ${locErrors.length}`,
+  );
   for (const r of locErrors) {
     console.log(`  ${r.job.title.slice(0, 44)} @ ${r.job.company.name}`);
   }
   const unknownRate =
-    visible.filter((r) => r.locationFit === "UNKNOWN").length / Math.max(1, visible.length);
+    visible.filter((r) => r.locationFit === "UNKNOWN").length /
+    Math.max(1, visible.length);
   console.log(`location UNKNOWN-rate (visible ctx): ${unknownRate.toFixed(2)}`);
 
   await prisma.$disconnect();

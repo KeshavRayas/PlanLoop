@@ -19,7 +19,9 @@ const DEFAULT_PREFERRED_FAMILIES = [
 
 const DEFAULT_VETOED_FAMILIES = ["DATA_ANNOTATION"];
 
-export async function getOrCreateDefaultProfile(): Promise<MatcherProfile & { id: string }> {
+export async function getOrCreateDefaultProfile(): Promise<
+  MatcherProfile & { id: string }
+> {
   const existing = await prisma.profile.findFirst({
     orderBy: { updatedAt: "desc" },
   });

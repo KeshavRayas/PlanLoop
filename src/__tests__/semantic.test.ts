@@ -10,7 +10,12 @@ import { applyHighRule } from "@/lib/tailor/validateSemantic";
 // properties are asserted here; live model verdicts are verified separately
 // against the real Snowflake tailored resume (see docs/tailored-resume.md).
 
-const EVIDENCE = [{ id: "bullet_erp_05", text: "Design and optimize database queries for PostgreSQL-backed services." }];
+const EVIDENCE = [
+  {
+    id: "bullet_erp_05",
+    text: "Design and optimize database queries for PostgreSQL-backed services.",
+  },
+];
 const JD_MARKER = "Snowflake-Internal-JD-Should-Never-Appear";
 
 function promptFor(itemText: string, sourceIds: string[] = ["bullet_erp_05"]) {
@@ -53,21 +58,34 @@ describe("buildValidatePrompt", () => {
       items: [{ id: "i", text: "x", sourceIds: ["bullet_erp_05"] }],
     });
     expect(clean).not.toContain(JD_MARKER);
+    expect(p).toContain(JD_MARKER);
     expect(clean).toContain("context only, not evidence");
   });
 });
 
 describe("semanticResultSchema", () => {
   it("accepts a clean PASS", () => {
-    expect(semanticResultSchema.safeParse({ valid: true, issues: [] }).success).toBe(true);
+    expect(
+      semanticResultSchema.safeParse({ valid: true, issues: [] }).success,
+    ).toBe(true);
   });
 
   it("accepts a FAIL with typed issues", () => {
     const r = semanticResultSchema.safeParse({
       valid: false,
       issues: [
-        { itemId: "x", type: "NEW_METRIC", severity: "HIGH", explanation: "90% invented" },
-        { itemId: "y", type: "INFLATED_CLAIM", severity: "MEDIUM", explanation: "led a team" },
+        {
+          itemId: "x",
+          type: "NEW_METRIC",
+          severity: "HIGH",
+          explanation: "90% invented",
+        },
+        {
+          itemId: "y",
+          type: "INFLATED_CLAIM",
+          severity: "MEDIUM",
+          explanation: "led a team",
+        },
       ],
     });
     expect(r.success).toBe(true);
@@ -77,27 +95,51 @@ describe("semanticResultSchema", () => {
     expect(
       semanticResultSchema.safeParse({
         valid: false,
-        issues: [{ itemId: "x", type: "HALLUCINATION", severity: "HIGH", explanation: "z" }],
-      }).success
+        issues: [
+          {
+            itemId: "x",
+            type: "HALLUCINATION",
+            severity: "HIGH",
+            explanation: "z",
+          },
+        ],
+      }).success,
     ).toBe(false);
     expect(
       semanticResultSchema.safeParse({
         valid: false,
-        issues: [{ itemId: "x", type: "NEW_METRIC", severity: "HIGH", explanation: "" }],
-      }).success
+        issues: [
+          {
+            itemId: "x",
+            type: "NEW_METRIC",
+            severity: "HIGH",
+            explanation: "",
+          },
+        ],
+      }).success,
     ).toBe(false);
   });
 });
 
 describe("applyHighRule", () => {
   it("passes clean results through", () => {
-    expect(applyHighRule({ valid: true, issues: [] })).toEqual({ valid: true, forced: false });
+    expect(applyHighRule({ valid: true, issues: [] })).toEqual({
+      valid: true,
+      forced: false,
+    });
   });
 
   it("forces invalid on HIGH even when the model claims valid", () => {
     const r = applyHighRule({
       valid: true,
-      issues: [{ itemId: "x", type: "NEW_METRIC", severity: "HIGH", explanation: "invented 90%" }],
+      issues: [
+        {
+          itemId: "x",
+          type: "NEW_METRIC",
+          severity: "HIGH",
+          explanation: "invented 90%",
+        },
+      ],
     });
     expect(r).toEqual({ valid: false, forced: true });
   });
@@ -105,7 +147,14 @@ describe("applyHighRule", () => {
   it("leaves LOW-only results to the model verdict", () => {
     const r = applyHighRule({
       valid: true,
-      issues: [{ itemId: "x", type: "INFLATED_CLAIM", severity: "LOW", explanation: "stretch" }],
+      issues: [
+        {
+          itemId: "x",
+          type: "INFLATED_CLAIM",
+          severity: "LOW",
+          explanation: "stretch",
+        },
+      ],
     });
     expect(r).toEqual({ valid: true, forced: false });
   });

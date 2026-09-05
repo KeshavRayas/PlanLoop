@@ -92,7 +92,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export function ResumePDF({ data, title }: { data: ResumeData; title: string }) {
+export function ResumePDF({
+  data,
+  title,
+}: {
+  data: ResumeData;
+  title: string;
+}) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -139,7 +145,9 @@ function RenderSection({ section }: { section: ResumeSection }) {
                     {[ei.title, ei.company].filter(Boolean).join(" at ")}
                   </Text>
                   <Text style={styles.itemDate}>
-                    {[ei.startDate, ei.endDate || "Present"].filter(Boolean).join(" — ")}
+                    {[ei.startDate, ei.endDate || "Present"]
+                      .filter(Boolean)
+                      .join(" — ")}
                   </Text>
                 </View>
                 {ei.location ? (
@@ -150,12 +158,14 @@ function RenderSection({ section }: { section: ResumeSection }) {
                 ) : null}
                 {ei.bulletPoints && ei.bulletPoints.some((b) => b.trim()) && (
                   <View style={styles.bulletList}>
-                    {ei.bulletPoints.filter((b) => b.trim()).map((bp, i) => (
-                      <View key={i} style={styles.bulletItem}>
-                        <Text style={styles.bulletPoint}>•</Text>
-                        <Text style={styles.bulletText}>{bp.trim()}</Text>
-                      </View>
-                    ))}
+                    {ei.bulletPoints
+                      .filter((b) => b.trim())
+                      .map((bp, i) => (
+                        <View key={i} style={styles.bulletItem}>
+                          <Text style={styles.bulletPoint}>•</Text>
+                          <Text style={styles.bulletText}>{bp.trim()}</Text>
+                        </View>
+                      ))}
                   </View>
                 )}
               </View>
@@ -251,17 +261,18 @@ function RenderSection({ section }: { section: ResumeSection }) {
                     Tech: {pi.technologies.join(", ")}
                   </Text>
                 )}
-                {pi.bulletPoints &&
-                  pi.bulletPoints.some((b) => b.trim()) && (
-                    <View style={styles.bulletList}>
-                      {pi.bulletPoints.filter((b) => b.trim()).map((bp, i) => (
+                {pi.bulletPoints && pi.bulletPoints.some((b) => b.trim()) && (
+                  <View style={styles.bulletList}>
+                    {pi.bulletPoints
+                      .filter((b) => b.trim())
+                      .map((bp, i) => (
                         <View key={i} style={styles.bulletItem}>
                           <Text style={styles.bulletPoint}>•</Text>
                           <Text style={styles.bulletText}>{bp.trim()}</Text>
                         </View>
                       ))}
-                    </View>
-                  )}
+                  </View>
+                )}
               </View>
             );
           })}

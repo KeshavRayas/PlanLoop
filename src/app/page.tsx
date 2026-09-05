@@ -87,7 +87,9 @@ export default async function HomePage({
         </div>
         {(filters.query || filters.skills?.length) && (
           <p className="mt-6 text-[13px] text-black/50">
-            {filters.query ? `Results for “${filters.query}”` : "Filtered roles"}
+            {filters.query
+              ? `Results for “${filters.query}”`
+              : "Filtered roles"}
             {filters.skills?.length ? ` · ${filters.skills.join(", ")}` : ""}
           </p>
         )}
@@ -109,7 +111,10 @@ export default async function HomePage({
                 <JobCard key={job.id} job={job} index={i} />
               ))}
             </div>
-            <Pagination currentPage={result.page} totalPages={result.totalPages} />
+            <Pagination
+              currentPage={result.page}
+              totalPages={result.totalPages}
+            />
           </>
         )}
       </section>

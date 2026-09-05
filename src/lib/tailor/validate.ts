@@ -1,4 +1,7 @@
-import { REQUIRED_SECTION_TYPES, type TailoredResumeData } from "@/lib/tailor/contract";
+import {
+  REQUIRED_SECTION_TYPES,
+  type TailoredResumeData,
+} from "@/lib/tailor/contract";
 import { evidenceText, normalizeText } from "@/lib/tailor/evidence";
 import type { ResumeData } from "@/lib/resume.types";
 
@@ -28,14 +31,17 @@ const FLAT_KINDS = new Set(["summary", "skills", "custom"]);
 export function validateTailoredResume(
   output: TailoredResumeData,
   evidence: Map<string, string>,
-  base?: ResumeData
+  base?: ResumeData,
 ): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
 
   const types = new Set(output.sections.map((s) => s.type));
   for (const required of REQUIRED_SECTION_TYPES) {
     if (!types.has(required)) {
-      issues.push({ type: "MISSING_SECTION", text: `required section missing: ${required}` });
+      issues.push({
+        type: "MISSING_SECTION",
+        text: `required section missing: ${required}`,
+      });
     }
   }
 
@@ -43,18 +49,27 @@ export function validateTailoredResume(
   for (const section of output.sections) {
     for (const item of section.items) {
       if (seenIds.has(item.id)) {
-        issues.push({ type: "DUPLICATE_ID", text: `duplicate item id: ${item.id}` });
+        issues.push({
+          type: "DUPLICATE_ID",
+          text: `duplicate item id: ${item.id}`,
+        });
       }
       seenIds.add(item.id);
 
       const sources = item.provenance.sourceIds;
       if (sources.length === 0) {
-        issues.push({ type: "EMPTY_SOURCES", text: `no sources cited: ${item.id}` });
+        issues.push({
+          type: "EMPTY_SOURCES",
+          text: `no sources cited: ${item.id}`,
+        });
         continue;
       }
       for (const src of sources) {
         if (!evidence.has(src)) {
-          issues.push({ type: "UNKNOWN_SOURCE", text: `${item.id} cites unknown evidence: ${src}` });
+          issues.push({
+            type: "UNKNOWN_SOURCE",
+            text: `${item.id} cites unknown evidence: ${src}`,
+          });
         }
       }
 
@@ -78,7 +93,9 @@ export function validateTailoredResume(
           }
         } else {
           const sourceText = evidence.get(sources[0]);
-          const itemText = normalizeText(evidenceText(item.fields as Record<string, unknown>));
+          const itemText = normalizeText(
+            evidenceText(item.fields as Record<string, unknown>),
+          );
           if (sourceText !== undefined && itemText !== sourceText) {
             issues.push({
               type: "TEXT_MISMATCH",
@@ -95,7 +112,9 @@ export function validateTailoredResume(
 
 function fieldSkills(fields: Record<string, unknown>): string[] {
   const skills = (fields as { skills?: unknown }).skills;
-  return Array.isArray(skills) ? skills.filter((s): s is string => typeof s === "string") : [];
+  return Array.isArray(skills)
+    ? skills.filter((s): s is string => typeof s === "string")
+    : [];
 }
 
 function findSkillsItem(base: ResumeData, id: string): string[] | null {

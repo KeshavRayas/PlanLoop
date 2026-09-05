@@ -6,7 +6,12 @@ import { z } from "zod";
 // Deterministic validation (validate.ts) enforces the provenance rule; LLM
 // semantic validation arrives in Phase 2.3.
 
-export const changeTypeSchema = z.enum(["UNCHANGED", "REWRITE", "REORDER", "COMBINE"]);
+export const changeTypeSchema = z.enum([
+  "UNCHANGED",
+  "REWRITE",
+  "REORDER",
+  "COMBINE",
+]);
 
 export const provenanceSchema = z.object({
   sourceIds: z.array(z.string().min(1)).min(1).max(10),
@@ -21,7 +26,15 @@ const fieldValueSchema = z.union([
 
 export const tailoredItemSchema = z.object({
   id: z.string().min(1).max(100),
-  kind: z.enum(["summary", "experience", "education", "skills", "projects", "certifications", "custom"]),
+  kind: z.enum([
+    "summary",
+    "experience",
+    "education",
+    "skills",
+    "projects",
+    "certifications",
+    "custom",
+  ]),
   fields: z.record(z.string(), fieldValueSchema),
   provenance: provenanceSchema,
 });
@@ -41,7 +54,12 @@ export type TailoredResumeData = z.infer<typeof tailoredResumeSchema>;
 export type TailoredItem = z.infer<typeof tailoredItemSchema>;
 
 /** Section types the tailored resume must preserve from the base resume. */
-export const REQUIRED_SECTION_TYPES = ["summary", "experience", "education", "skills"];
+export const REQUIRED_SECTION_TYPES = [
+  "summary",
+  "experience",
+  "education",
+  "skills",
+];
 
 export const TAILOR_SYSTEM_PROMPT = [
   "Answer DIRECTLY in this response. Do NOT use any tools. Do NOT explore files. Do NOT run commands.",
@@ -62,7 +80,9 @@ export interface TailorPromptInput {
 }
 
 export function buildTailorPrompt(input: TailorPromptInput): string {
-  const evidenceBlock = input.evidence.map((e) => `[${e.id} | ${e.kind}] ${e.text}`).join("\n");
+  const evidenceBlock = input.evidence
+    .map((e) => `[${e.id} | ${e.kind}] ${e.text}`)
+    .join("\n");
   return [
     "Rewrite the resume below for the JOB, using the ANALYSIS. Keep every section. Reorder bullets so the most relevant come first. Rewrite wording to mirror the posting's keywords WITHOUT changing facts.",
     "Every tailored item needs provenance: sourceIds (evidence IDs used) and change (UNCHANGED | REWRITE | REORDER | COMBINE).",

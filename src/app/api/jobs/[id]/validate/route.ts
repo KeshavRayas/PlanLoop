@@ -13,7 +13,10 @@ export const maxDuration = 300;
 
 export async function GET(_req: Request, ctx: { params: Params }) {
   const { id } = await ctx.params;
-  const job = await prisma.job.findUnique({ where: { id }, select: { id: true } });
+  const job = await prisma.job.findUnique({
+    where: { id },
+    select: { id: true },
+  });
   if (!job) return Response.json({ error: "Not found" }, { status: 404 });
   try {
     return Response.json({ ...(await getValidation(id)), cached: true });

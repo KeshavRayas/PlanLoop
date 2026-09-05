@@ -69,7 +69,10 @@ async function main() {
         if (!dryRun) {
           await prisma.job.update({
             where: { id: job.id },
-            data: { status: JobStatus.REJECTED, rejectionReason: RejectionReason.NON_CS },
+            data: {
+              status: JobStatus.REJECTED,
+              rejectionReason: RejectionReason.NON_CS,
+            },
           });
         }
         continue;
@@ -80,7 +83,11 @@ async function main() {
         const reason = entryCheck.reason?.includes("experience")
           ? RejectionReason.NON_ENTRY_LEVEL
           : RejectionReason.UNKNOWN_EXPERIENCE;
-        counts[reason === RejectionReason.NON_ENTRY_LEVEL ? "NON_ENTRY_LEVEL" : "UNKNOWN_EXPERIENCE"]++;
+        counts[
+          reason === RejectionReason.NON_ENTRY_LEVEL
+            ? "NON_ENTRY_LEVEL"
+            : "UNKNOWN_EXPERIENCE"
+        ]++;
         if (!dryRun) {
           await prisma.job.update({
             where: { id: job.id },
@@ -96,7 +103,10 @@ async function main() {
         if (!dryRun) {
           await prisma.job.update({
             where: { id: job.id },
-            data: { status: JobStatus.REJECTED, rejectionReason: RejectionReason.INVALID_LOCATION },
+            data: {
+              status: JobStatus.REJECTED,
+              rejectionReason: RejectionReason.INVALID_LOCATION,
+            },
           });
         }
         continue;
@@ -120,7 +130,10 @@ async function main() {
   }
 
   const totalRejected =
-    counts.NON_CS + counts.NON_ENTRY_LEVEL + counts.UNKNOWN_EXPERIENCE + counts.INVALID_LOCATION;
+    counts.NON_CS +
+    counts.NON_ENTRY_LEVEL +
+    counts.UNKNOWN_EXPERIENCE +
+    counts.INVALID_LOCATION;
 
   console.log(`\n─── Results ───\n`);
   console.log(`  NON_CS:             ${counts.NON_CS}`);

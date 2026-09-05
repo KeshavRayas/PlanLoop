@@ -28,7 +28,7 @@ export function ResumeSectionEditor({ section, onChange }: Props) {
     (itemId: string) => {
       onChange(removeItemFromSection(section, itemId));
     },
-    [section, onChange]
+    [section, onChange],
   );
 
   const updateItem = useCallback(
@@ -36,16 +36,21 @@ export function ResumeSectionEditor({ section, onChange }: Props) {
       onChange({
         ...section,
         items: section.items.map((i) =>
-          i.id === itemId ? { ...i, ...patch } : i
+          i.id === itemId ? { ...i, ...patch } : i,
         ),
       });
     },
-    [section, onChange]
+    [section, onChange],
   );
 
   switch (section.type) {
     case "summary":
-      return <SummaryEditor items={section.items as ResumeSummaryItem[]} onItemChange={updateItem} />;
+      return (
+        <SummaryEditor
+          items={section.items as ResumeSummaryItem[]}
+          onItemChange={updateItem}
+        />
+      );
     case "experience":
       return (
         <ItemListEditor
@@ -72,7 +77,10 @@ export function ResumeSectionEditor({ section, onChange }: Props) {
       );
     case "skills":
       return (
-        <SkillsEditor items={section.items as ResumeSkillsItem[]} onItemChange={updateItem} />
+        <SkillsEditor
+          items={section.items as ResumeSkillsItem[]}
+          onItemChange={updateItem}
+        />
       );
     case "projects":
       return (
@@ -111,7 +119,9 @@ export function ResumeSectionEditor({ section, onChange }: Props) {
         />
       );
     default:
-      return <p className="text-body text-text-secondary">Unknown section type</p>;
+      return (
+        <p className="text-body text-text-secondary">Unknown section type</p>
+      );
   }
 }
 
@@ -507,7 +517,9 @@ function CustomSectionEditor({
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-label font-bold text-text-secondary">Format:</span>
+        <span className="text-label font-bold text-text-secondary">
+          Format:
+        </span>
         <button
           onClick={() => onFormatChange("text")}
           className={`px-3 py-1 rounded-full border-2 text-label font-bold transition-[150ms] ${
@@ -534,7 +546,8 @@ function CustomSectionEditor({
         <textarea
           value={items[0]?.content || ""}
           onChange={(e) => {
-            if (items[0]) onItemChange(items[0].id, { content: e.target.value });
+            if (items[0])
+              onItemChange(items[0].id, { content: e.target.value });
           }}
           placeholder="Enter content..."
           rows={5}
@@ -572,7 +585,10 @@ function ItemListEditor<T extends { id: string }>({
   onItemChange: (id: string, patch: Record<string, unknown>) => void;
   onRemove: (id: string) => void;
   onAdd: () => void;
-  renderItem: (item: T, onChange: (id: string, patch: Record<string, unknown>) => void) => React.ReactNode;
+  renderItem: (
+    item: T,
+    onChange: (id: string, patch: Record<string, unknown>) => void,
+  ) => React.ReactNode;
 }) {
   return (
     <div className="space-y-4">
@@ -582,7 +598,9 @@ function ItemListEditor<T extends { id: string }>({
           className="border-2 border-black rounded-[12px] p-4 relative"
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-label font-bold text-text-secondary">#{i + 1}</span>
+            <span className="text-label font-bold text-text-secondary">
+              #{i + 1}
+            </span>
             <button
               onClick={() => onRemove(item.id)}
               className="w-6 h-6 rounded-full border-2 border-red flex items-center justify-center text-red hover:bg-red hover:text-white transition-[150ms]"

@@ -33,7 +33,7 @@ export class SemanticValidationError extends Error {
  */
 export async function validateTailored(
   jobId: string,
-  provider: LlmProvider = getDefaultProvider()
+  provider: LlmProvider = getDefaultProvider(),
 ): Promise<{ status: TailorValidationStatus; result: SemanticResult }> {
   const tailored = await prisma.tailoredResume.findFirst({
     where: { jobId, isCurrent: true },
@@ -47,7 +47,9 @@ export async function validateTailored(
   });
   if (!job) throw new Error(`job not found: ${jobId}`);
 
-  const base = await prisma.resume.findUnique({ where: { id: tailored.baseResumeId } });
+  const base = await prisma.resume.findUnique({
+    where: { id: tailored.baseResumeId },
+  });
   const content = base?.content as ResumeData | null;
   if (!content) throw new Error("base resume missing");
 
@@ -58,12 +60,18 @@ export async function validateTailored(
     s.items.map((item) => {
       const fields = item.fields as Record<string, unknown>;
       const text = Object.values(fields)
-        .flatMap((v) => (typeof v === "string" ? [v] : Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : []))
+        .flatMap((v) =>
+          typeof v === "string"
+            ? [v]
+            : Array.isArray(v)
+              ? v.filter((x): x is string => typeof x === "string")
+              : [],
+        )
         .join(" ")
         .replace(/\s+/g, " ")
         .trim();
       return { id: item.id, text, sourceIds: item.provenance.sourceIds };
-    })
+    }),
   );
 
   const prompt = buildValidatePrompt({
@@ -76,28 +84,37 @@ export async function validateTailored(
   const raw = await provider.generateJson(VALIDATOR_SYSTEM_PROMPT, prompt);
   let parsed = semanticResultSchema.safeParse(raw);
   if (!parsed.success) {
-    const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
-    console.error(`[validate] first attempt invalid for job ${jobId}: ${issues}`);
+    const issues = parsed.error.issues
+      .map((i) => `${i.path.join(".")}: ${i.message}`)
+      .join("; ");
+    console.error(
+      `[validate] first attempt invalid for job ${jobId}: ${issues}`,
+    );
     const retry = await provider.generateJson(
       VALIDATOR_SYSTEM_PROMPT,
-      `Your previous output failed validation: ${issues}\nReturn ONLY the corrected JSON in exactly the requested shape.\n\n---\n\n${prompt}`
+      `Your previous output failed validation: ${issues}\nReturn ONLY the corrected JSON in exactly the requested shape.\n\n---\n\n${prompt}`,
     );
     parsed = semanticResultSchema.safeParse(retry);
     if (!parsed.success) {
       throw new SemanticValidationError(
-        parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")
+        parsed.error.issues
+          .map((i) => `${i.path.join(".")}: ${i.message}`)
+          .join("; "),
       );
     }
-    return persist(jobId, parsed.data, retry);
+    return persist(jobId, parsed.data);
   }
-  return persist(jobId, parsed.data, raw);
+  return persist(jobId, parsed.data);
 }
 
 /**
  * The model does not get the final word on invented facts: any HIGH issue
  * forces the whole result invalid.
  */
-export function applyHighRule(data: SemanticResult): { valid: boolean; forced: boolean } {
+export function applyHighRule(data: SemanticResult): {
+  valid: boolean;
+  forced: boolean;
+} {
   const forced = data.issues.some((i) => i.severity === "HIGH");
   return { valid: data.valid && !forced, forced };
 }
@@ -105,13 +122,16 @@ export function applyHighRule(data: SemanticResult): { valid: boolean; forced: b
 async function persist(
   jobId: string,
   data: SemanticResult,
-  raw: unknown
 ): Promise<{ status: TailorValidationStatus; result: SemanticResult }> {
   // Any HIGH issue forces invalid — the model does not get the final word
   // on invented facts.
   const { valid, forced } = applyHighRule(data);
-  const result: SemanticResult = forced ? { valid: false, issues: data.issues } : data;
-  const status: TailorValidationStatus = valid ? "SEMANTIC_VALID" : "SEMANTIC_INVALID";
+  const result: SemanticResult = forced
+    ? { valid: false, issues: data.issues }
+    : data;
+  const status: TailorValidationStatus = valid
+    ? "SEMANTIC_VALID"
+    : "SEMANTIC_INVALID";
 
   const current = await prisma.tailoredResume.findFirst({
     where: { jobId, isCurrent: true },

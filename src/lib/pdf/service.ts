@@ -10,7 +10,9 @@ import { getOrCreateDefaultProfile } from "@/lib/matching/profile";
 
 export class NotValidatedError extends Error {
   constructor(status: string) {
-    super(`refusing to render: validationStatus is ${status}, need SEMANTIC_VALID`);
+    super(
+      `refusing to render: validationStatus is ${status}, need SEMANTIC_VALID`,
+    );
     this.name = "NotValidatedError";
   }
 }
@@ -67,7 +69,8 @@ export async function renderPdf(jobId: string): Promise<{
     throw new RenderError("no sections to render", "");
   }
 
-  const profile = await getOrCreateDefaultProfile();
+  // Ensure a default profile exists for downstream matching reads.
+  await getOrCreateDefaultProfile();
   const fullProfile = await prisma.profile.findFirst({
     orderBy: { updatedAt: "desc" },
   });
@@ -102,18 +105,27 @@ export async function renderPdf(jobId: string): Promise<{
   let ats: AtsResult;
   try {
     const text = await extractPdfText(pdf);
-    ats = runAtsChecks(text, requiredSkills, { contactEmail: fullProfile?.email });
+    ats = runAtsChecks(text, requiredSkills, {
+      contactEmail: fullProfile?.email,
+    });
   } catch (err) {
     ats = {
       textExtractable: false,
       charCount: 0,
-      sections: { summary: false, experience: false, education: false, skills: false },
+      sections: {
+        summary: false,
+        experience: false,
+        education: false,
+        skills: false,
+      },
       requiredSkillsFound: 0,
       requiredSkillsTotal: requiredSkills.length,
       matchedKeywords: [],
       missingKeywords: [...requiredSkills],
       keywordCoverage: 0,
-      warnings: [`extraction failed: ${err instanceof Error ? err.message : String(err)}`],
+      warnings: [
+        `extraction failed: ${err instanceof Error ? err.message : String(err)}`,
+      ],
     };
   }
 
@@ -143,7 +155,9 @@ async function markFailed(jobId: string, detail: string): Promise<void> {
     where: { id: current.id },
     data: { renderStatus: "FAILED", renderedAt: new Date() },
   });
-  console.error(`[pdf] render failed for job ${jobId}: ${detail.slice(0, 500)}`);
+  console.error(
+    `[pdf] render failed for job ${jobId}: ${detail.slice(0, 500)}`,
+  );
 }
 
 export async function getPdfState(jobId: string) {

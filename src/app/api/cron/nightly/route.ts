@@ -7,6 +7,9 @@ export async function GET() {
     const result = await runNightly();
     return Response.json({ success: true, ...result });
   } catch (err) {
-    return Response.json({ success: false, error: String(err) }, { status: 500 });
+    return Response.json(
+      { success: false, error: String(err) },
+      { status: 500 },
+    );
   }
 }

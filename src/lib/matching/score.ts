@@ -1,6 +1,15 @@
 import { SKILL_ALIASES } from "@/lib/constants";
-import { classifyRoleFamily, roleFit, type RoleFamily, type RoleFit } from "@/lib/matching/roleFamily";
-import { locationEligibility, LOCATION_FIT_SCORE, type LocationFit } from "@/lib/matching/eligibility";
+import {
+  classifyRoleFamily,
+  roleFit,
+  type RoleFamily,
+  type RoleFit,
+} from "@/lib/matching/roleFamily";
+import {
+  locationEligibility,
+  LOCATION_FIT_SCORE,
+  type LocationFit,
+} from "@/lib/matching/eligibility";
 
 // ─── Matcher v2: fully deterministic, model-free ─────────────────────────────
 // Pure module: zero Prisma / API / LLM dependencies. v2 adds role-family fit
@@ -95,7 +104,7 @@ function normalizeSkillSet(skills: string[]): Set<string> {
 
 export function recencyDecay(
   postedAt: Date | string | null | undefined,
-  now: Date = new Date()
+  now: Date = new Date(),
 ): number {
   if (!postedAt) return 0.5;
   const posted = postedAt instanceof Date ? postedAt : new Date(postedAt);
@@ -111,7 +120,7 @@ export function recencyDecay(
 
 export function sourceTrustScore(
   source?: string | null,
-  sourceScore?: number | null
+  sourceScore?: number | null,
 ): number {
   if (sourceScore != null) {
     if (sourceScore >= 3) return 1.0;
@@ -132,7 +141,7 @@ export function levelFitScore(experience?: string | null): number {
 export function salaryFitScore(
   jobMin?: number | null,
   jobMax?: number | null,
-  profileMin?: number | null
+  profileMin?: number | null,
 ): { fit: SalaryFit; score: number } {
   if (jobMin == null && jobMax == null) return { fit: "UNKNOWN", score: 0.5 };
   if (profileMin == null) return { fit: "MATCH", score: 1 };
@@ -145,7 +154,7 @@ export function salaryFitScore(
 export function scoreJob(
   profile: MatcherProfile,
   job: ScorableJob,
-  now: Date = new Date()
+  now: Date = new Date(),
 ): MatchResult {
   const profileSkills = normalizeSkillSet(profile.skills);
   const jobSkills = [...normalizeSkillSet(job.skills)];
@@ -160,7 +169,7 @@ export function scoreJob(
   const { fit: salaryFit, score: salaryScore } = salaryFitScore(
     job.salaryMin,
     job.salaryMax,
-    profile.minSalary
+    profile.minSalary,
   );
   // Recency fallback: posting date when present, otherwise first-seen date.
   // The source is recorded so explanations stay honest.
@@ -174,20 +183,21 @@ export function scoreJob(
   const trust = sourceTrustScore(job.source, job.sourceScore);
   const level = levelFitScore(job.experience);
 
-  const family = classifyRoleFamily(job.title ?? "", job.description ?? "");
+  const family = classifyRoleFamily(job.title ?? "");
   const { fit: roleFitResult, score: roleScore } = roleFit(family, {
     preferred: profile.preferredRoleFamilies,
     vetoed: profile.vetoedRoleFamilies,
   });
-  const { fit: locationFitResult, reason: locationReason } = locationEligibility(
-    {
-      location: job.location,
-      remote: job.remote,
-      workMode: job.workMode,
-      description: job.description,
-    },
-    { openToRemote: profile.openToRemote }
-  );
+  const { fit: locationFitResult, reason: locationReason } =
+    locationEligibility(
+      {
+        location: job.location,
+        remote: job.remote,
+        workMode: job.workMode,
+        description: job.description,
+      },
+      { openToRemote: profile.openToRemote },
+    );
   const locationScore = LOCATION_FIT_SCORE[locationFitResult];
 
   const score =
@@ -203,9 +213,7 @@ export function scoreJob(
   if (jobSkills.length === 0) {
     reasons.push("no skills extracted — overlap neutral (0.5)");
   } else {
-    reasons.push(
-      `${matchedSkills.length}/${jobSkills.length} skills matched`
-    );
+    reasons.push(`${matchedSkills.length}/${jobSkills.length} skills matched`);
   }
   if (missingSkills.length > 0) {
     reasons.push(`missing: ${missingSkills.join(", ")}`);
@@ -219,17 +227,19 @@ export function scoreJob(
   }
   if (job.experience) {
     reasons.push(
-      level === 1 ? "entry-level fit" : "non-entry experience signal"
+      level === 1 ? "entry-level fit" : "non-entry experience signal",
     );
   } else {
     reasons.push("experience unknown — neutral");
   }
   if (job.source) {
     reasons.push(
-      trust >= 1 ? `${job.source} (high-trust source)` : `${job.source} source`
+      trust >= 1 ? `${job.source} (high-trust source)` : `${job.source} source`,
     );
   }
-  reasons.push(`role: ${family} (${roleFitResult.toLowerCase().replace("_", " ")})`);
+  reasons.push(
+    `role: ${family} (${roleFitResult.toLowerCase().replace("_", " ")})`,
+  );
   reasons.push(`location: ${locationReason}`);
   if (recencySource === "scraped") {
     reasons.push("recency based on scraped date; posting date unavailable");

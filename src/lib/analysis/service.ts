@@ -27,7 +27,9 @@ export class AnalysisValidationError extends Error {
 
 export class EmptyProfileError extends Error {
   constructor() {
-    super("Profile.skills is empty — add your skills to the default Profile before analyzing jobs");
+    super(
+      "Profile.skills is empty — add your skills to the default Profile before analyzing jobs",
+    );
     this.name = "EmptyProfileError";
   }
 }
@@ -55,7 +57,7 @@ export async function getAnalysis(jobId: string) {
  */
 export async function analyzeJob(
   jobId: string,
-  provider: LlmProvider = getDefaultProvider()
+  provider: LlmProvider = getDefaultProvider(),
 ): Promise<{ analysis: JobAnalysisData & { id: string }; cached: false }> {
   const job = await prisma.job.findUnique({
     where: { id: jobId },
@@ -86,7 +88,7 @@ export async function analyzeJob(
       experience: job.experience,
       title: job.title,
     },
-    new Date()
+    new Date(),
   );
   const remainder = profile.skills
     .filter((s) => !overlap.matchedSkills.includes(s))
@@ -108,7 +110,11 @@ export async function analyzeJob(
     profileMinSalary: profile.minSalary,
   });
 
-  const raw = await generateJsonSanitized(provider, ANALYZE_SYSTEM_PROMPT, prompt);
+  const raw = await generateJsonSanitized(
+    provider,
+    ANALYZE_SYSTEM_PROMPT,
+    prompt,
+  );
   let parsed = jobAnalysisSchema.safeParse(raw);
   if (!parsed.success) {
     // One repair retry: show the model its validation errors and ask for
@@ -116,16 +122,23 @@ export async function analyzeJob(
     const issues = parsed.error.issues
       .map((i) => `${i.path.join(".")}: ${i.message}`)
       .join("; ");
-    console.error(`[analyze] first attempt invalid for job ${jobId}: ${issues}`);
-    console.error(`[analyze] rejected payload: ${JSON.stringify(raw).slice(0, 1000)}`);
-    const retry = await generateJsonSanitized(provider, 
+    console.error(
+      `[analyze] first attempt invalid for job ${jobId}: ${issues}`,
+    );
+    console.error(
+      `[analyze] rejected payload: ${JSON.stringify(raw).slice(0, 1000)}`,
+    );
+    const retry = await generateJsonSanitized(
+      provider,
       ANALYZE_SYSTEM_PROMPT,
-      `Your previous output failed validation with these errors: ${issues}\nReturn ONLY the corrected JSON object in exactly the requested shape, no other text.\n\n---\n\n${prompt}`
+      `Your previous output failed validation with these errors: ${issues}\nReturn ONLY the corrected JSON object in exactly the requested shape, no other text.\n\n---\n\n${prompt}`,
     );
     parsed = jobAnalysisSchema.safeParse(retry);
     if (!parsed.success) {
       throw new AnalysisValidationError(
-        parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")
+        parsed.error.issues
+          .map((i) => `${i.path.join(".")}: ${i.message}`)
+          .join("; "),
       );
     }
     return persistAnalysis(jobId, parsed.data, retry);
@@ -136,9 +149,8 @@ export async function analyzeJob(
 async function persistAnalysis(
   jobId: string,
   data: JobAnalysisData,
-  raw: unknown
+  raw: unknown,
 ): Promise<{ analysis: JobAnalysisData & { id: string }; cached: false }> {
-
   const shared = {
     summary: data.summary,
     responsibilities: data.responsibilities,

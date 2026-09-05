@@ -4,7 +4,10 @@ import { useState, useCallback } from "react";
 
 export function RefreshButton() {
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<{ message: string; error: boolean } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    error: boolean;
+  } | null>(null);
 
   const handleRefresh = useCallback(async () => {
     if (loading) return;
@@ -14,7 +17,9 @@ export function RefreshButton() {
     const timeoutId = setTimeout(() => controller.abort(), 300000);
 
     try {
-      const res = await fetch("/api/cron/ingest", { signal: controller.signal });
+      const res = await fetch("/api/cron/ingest", {
+        signal: controller.signal,
+      });
       if (!res.ok) {
         const text = await res.text().catch(() => "Unknown error");
         throw new Error(text || `HTTP ${res.status}`);

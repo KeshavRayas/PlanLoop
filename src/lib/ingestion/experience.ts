@@ -3,20 +3,51 @@ import type { RawJob, EntryLevelResult } from "@/lib/types";
 import { escapeRegex } from "@/lib/utils";
 
 const ENTRY_TITLE_PATTERNS = [
-  "intern", "internship", "graduate", "new grad", "new graduate",
-  "associate", "junior", "trainee", "campus hire", "fresher",
-  "entry level", "entry-level", "apprentice", "0-2", "0-3",
+  "intern",
+  "internship",
+  "graduate",
+  "new grad",
+  "new graduate",
+  "associate",
+  "junior",
+  "trainee",
+  "campus hire",
+  "fresher",
+  "entry level",
+  "entry-level",
+  "apprentice",
+  "0-2",
+  "0-3",
   "early career",
-  "software engineer i", "sde i", "swe i", "sde1", "swe1",
-  "university graduate", "campus graduate", "graduate engineer",
-  "graduate software engineer", "entry software engineer",
-  "associate data engineer", "software developer i",
+  "software engineer i",
+  "sde i",
+  "swe i",
+  "sde1",
+  "swe1",
+  "university graduate",
+  "campus graduate",
+  "graduate engineer",
+  "graduate software engineer",
+  "entry software engineer",
+  "associate data engineer",
+  "software developer i",
 ].map((t) => new RegExp(`\\b${escapeRegex(t)}\\b`, "i"));
 
 const SENIOR_TITLE_PATTERNS = [
-  "senior", "lead", "principal", "staff", "manager", "director",
-  "vp", "vice president", "architect", "head of", "chief",
-  "head ", "managing", "partner",
+  "senior",
+  "lead",
+  "principal",
+  "staff",
+  "manager",
+  "director",
+  "vp",
+  "vice president",
+  "architect",
+  "head of",
+  "chief",
+  "head ",
+  "managing",
+  "partner",
 ].map((t) => new RegExp(`\\b${escapeRegex(t)}\\b`, "i"));
 
 const RELAXED_CEILING_ROLES = [
@@ -46,8 +77,15 @@ export function isEntryLevel(job: RawJob): EntryLevelResult {
     return { accepted: true, experienceLevel: "ENTRY" };
   }
 
-  if (job.experience === "MID" || job.experience === "SENIOR" || job.experience === "LEAD") {
-    return { accepted: false, reason: `API experience level: ${job.experience}` };
+  if (
+    job.experience === "MID" ||
+    job.experience === "SENIOR" ||
+    job.experience === "LEAD"
+  ) {
+    return {
+      accepted: false,
+      reason: `API experience level: ${job.experience}`,
+    };
   }
 
   const title = job.title.toLowerCase();
@@ -72,7 +110,8 @@ export function isEntryLevel(job: RawJob): EntryLevelResult {
 
   if (yoeMatch) {
     const years = parseInt(yoeMatch[1]);
-    if (years >= 5) return { accepted: false, reason: `${years}+ years experience required` };
+    if (years >= 5)
+      return { accepted: false, reason: `${years}+ years experience required` };
     if (years <= ceiling) return { accepted: true, experienceLevel: "ENTRY" };
   }
 
@@ -80,8 +119,13 @@ export function isEntryLevel(job: RawJob): EntryLevelResult {
   if (rangeMatch) {
     const minYears = parseInt(rangeMatch[1]);
     const maxYears = parseInt(rangeMatch[2]);
-    if (maxYears > ceiling || minYears > ceiling) return { accepted: false, reason: `${minYears}-${maxYears} years experience required` };
-    if (minYears <= ceiling) return { accepted: true, experienceLevel: "ENTRY" };
+    if (maxYears > ceiling || minYears > ceiling)
+      return {
+        accepted: false,
+        reason: `${minYears}-${maxYears} years experience required`,
+      };
+    if (minYears <= ceiling)
+      return { accepted: true, experienceLevel: "ENTRY" };
   }
 
   return { accepted: false, reason: "Unable to determine experience level" };
@@ -119,7 +163,10 @@ const SENIOR_PATTERNS = [
   /\b\d[\s-]?\d\s+years?\b/i,
 ];
 
-export function inferExperienceLevel(title: string, description?: string): ExperienceLevel {
+export function inferExperienceLevel(
+  title: string,
+  description?: string,
+): ExperienceLevel {
   const text = `${title} ${description ?? ""}`;
 
   const hasEntry = ENTRY_PATTERNS.some((p) => p.test(text));
@@ -129,8 +176,14 @@ export function inferExperienceLevel(title: string, description?: string): Exper
   if (hasSenior && !hasEntry) return "SENIOR";
 
   if (hasEntry && hasSenior) {
-    const entryScore = ENTRY_PATTERNS.reduce((s, p) => s + (p.test(text) ? 1 : 0), 0);
-    const seniorScore = SENIOR_PATTERNS.reduce((s, p) => s + (p.test(text) ? 1 : 0), 0);
+    const entryScore = ENTRY_PATTERNS.reduce(
+      (s, p) => s + (p.test(text) ? 1 : 0),
+      0,
+    );
+    const seniorScore = SENIOR_PATTERNS.reduce(
+      (s, p) => s + (p.test(text) ? 1 : 0),
+      0,
+    );
     return entryScore >= seniorScore ? "ENTRY" : "SENIOR";
   }
 

@@ -8,7 +8,15 @@ import { scoreJob } from "@/lib/matching/score";
 const PROFILE = {
   skills: ["Python", "Go", "PostgreSQL", "Docker"],
   minSalary: null,
-  preferredRoleFamilies: ["BACKEND", "INFRASTRUCTURE", "DEVOPS_SRE", "FULL_STACK", "ML_AI", "DATA", "FORWARD_DEPLOYED"],
+  preferredRoleFamilies: [
+    "BACKEND",
+    "INFRASTRUCTURE",
+    "DEVOPS_SRE",
+    "FULL_STACK",
+    "ML_AI",
+    "DATA",
+    "FORWARD_DEPLOYED",
+  ],
   vetoedRoleFamilies: ["DATA_ANNOTATION"],
   openToRemote: true,
 };
@@ -74,7 +82,11 @@ describe("ranking invariants", () => {
       }).score;
     const eligible = mk("Remote");
     const uncertain = mk("PL-Warsaw", "REMOTE");
-    const ineligible = mk("Zurich, Switzerland", undefined, "On-site in Zurich.");
+    const ineligible = mk(
+      "Zurich, Switzerland",
+      undefined,
+      "On-site in Zurich.",
+    );
     expect(eligible).toBeGreaterThan(uncertain);
     expect(uncertain).toBeGreaterThan(ineligible);
   });

@@ -22,12 +22,17 @@ function getUploadedResumesSnapshot() {
     _cachedRaw = raw;
     if (raw) {
       const list = JSON.parse(raw);
-      _cachedSnapshot = list.length > 0 ? (list[0] as { name: string; data: ResumeData }) : null;
+      _cachedSnapshot =
+        list.length > 0
+          ? (list[0] as { name: string; data: ResumeData })
+          : null;
     } else {
       _cachedSnapshot = null;
     }
     return _cachedSnapshot;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 function getServerSnapshot() {
@@ -38,7 +43,11 @@ function NewResumeContent() {
   const searchParams = useSearchParams();
   const jobId = searchParams.get("job") || undefined;
 
-  const latest = useSyncExternalStore(subscribeToLocalStorage, getUploadedResumesSnapshot, getServerSnapshot);
+  const latest = useSyncExternalStore(
+    subscribeToLocalStorage,
+    getUploadedResumesSnapshot,
+    getServerSnapshot,
+  );
 
   return (
     <div className="h-screen overflow-hidden flex flex-col bg-bg">

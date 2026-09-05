@@ -63,7 +63,9 @@ export interface InterviewPromptInput {
 }
 
 export function buildInterviewPrompt(input: InterviewPromptInput): string {
-  const evidenceBlock = input.evidence.map((e) => `[${e.id} | ${e.kind}] ${e.text}`).join("\n");
+  const evidenceBlock = input.evidence
+    .map((e) => `[${e.id} | ${e.kind}] ${e.text}`)
+    .join("\n");
   return [
     "Prepare interview prep for the JOB below, using the ANALYSIS and the candidate's TAILORED HIGHLIGHTS. Ground every question in real evidence.",
     "technical[5]: questions on the job's required skills. resumeBased[5]: questions about things the candidate actually claims. behavioral[4]: experience questions; attach an optional starStory (situation/task/action/result + evidenceIds) ONLY where a genuine experience story fits — never force one (e.g. 'why this role' needs none). toAsk[4]: role/team/tech-specific questions for the interviewer. gaps[]: one honest bridge answer per known gap.",

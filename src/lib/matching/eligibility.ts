@@ -178,7 +178,7 @@ function includesAny(haystack: string, needles: string[]): boolean {
  */
 export function locationEligibility(
   job: EligibilityInput,
-  profile: EligibilityProfile = {}
+  profile: EligibilityProfile = {},
 ): { fit: LocationFit; reason: string } {
   const text = `${job.location ?? ""} ${job.description ?? ""}`.toLowerCase();
   const loc = (job.location ?? "").toLowerCase();
@@ -197,7 +197,8 @@ export function locationEligibility(
   const cityInLoc =
     includesAny(loc, INDIA_OTHER) || includesAny(loc, FOREIGN_MARKERS);
   const homeInDesc =
-    ["india", "bengaluru", "bangalore"].some((m) => text.includes(m)) && !cityInLoc;
+    ["india", "bengaluru", "bangalore"].some((m) => text.includes(m)) &&
+    !cityInLoc;
   const homeSignal = homeInLoc || homeInDesc;
 
   if (remoteSignal && openToRemote) {
@@ -208,15 +209,25 @@ export function locationEligibility(
     // India-based remote stays fully eligible.
     const restriction = findRestriction(text);
     if (restriction) {
-      return { fit: "INELIGIBLE", reason: `remote but restricted ("${restriction}")` };
+      return {
+        fit: "INELIGIBLE",
+        reason: `remote but restricted ("${restriction}")`,
+      };
     }
-    if (homeSignal) return { fit: "ELIGIBLE", reason: "remote, India/APAC-inclusive" };
+    if (homeSignal)
+      return { fit: "ELIGIBLE", reason: "remote, India/APAC-inclusive" };
     if (includesAny(loc, INDIA_OTHER)) {
       return { fit: "ELIGIBLE", reason: "remote, India-based" };
     }
     const country = locationCountryCode(job.location);
-    if ((country && !HOME_COUNTRY_CODES.includes(country)) || includesAny(loc, FOREIGN_MARKERS)) {
-      return { fit: "UNCERTAIN", reason: `remote, ${job.location} requisition — eligibility uncertain` };
+    if (
+      (country && !HOME_COUNTRY_CODES.includes(country)) ||
+      includesAny(loc, FOREIGN_MARKERS)
+    ) {
+      return {
+        fit: "UNCERTAIN",
+        reason: `remote, ${job.location} requisition — eligibility uncertain`,
+      };
     }
     return { fit: "ELIGIBLE", reason: "remote, no restriction stated" };
   }
@@ -225,7 +236,8 @@ export function locationEligibility(
     return { fit: "UNKNOWN", reason: "remote role, remote not preferred" };
   }
 
-  if (homeSignal) return { fit: "ELIGIBLE", reason: "home market (Bangalore/India)" };
+  if (homeSignal)
+    return { fit: "ELIGIBLE", reason: "home market (Bangalore/India)" };
 
   if (!loc.trim()) {
     return { fit: "UNKNOWN", reason: "no location information" };
@@ -239,7 +251,10 @@ export function locationEligibility(
     includesAny(loc, FOREIGN_MARKERS) ||
     (country && !HOME_COUNTRY_CODES.includes(country))
   ) {
-    return { fit: "INELIGIBLE", reason: `outside home market (${job.location})` };
+    return {
+      fit: "INELIGIBLE",
+      reason: `outside home market (${job.location})`,
+    };
   }
 
   return { fit: "UNKNOWN", reason: "location unclear" };

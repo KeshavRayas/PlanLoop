@@ -13,7 +13,8 @@ export class JoobleSource implements JobSource {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        keywords: "(software engineer) OR (data scientist) OR (machine learning) OR (AI engineer) OR (SDE) OR (full stack) OR (data analyst) OR (computer science) OR (software developer)",
+        keywords:
+          "(software engineer) OR (data scientist) OR (machine learning) OR (AI engineer) OR (SDE) OR (full stack) OR (data analyst) OR (computer science) OR (software developer)",
         location: "Bangalore",
         page: 1,
       }),

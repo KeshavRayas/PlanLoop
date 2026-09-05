@@ -32,11 +32,11 @@ export function ResumeEditor({
       .catch(() => setJob(null));
   }, [jobId]);
 
-  const isLatex = initialData.originalFormat === "tex" || (
-    initialData.sections.length === 1 &&
-    initialData.sections[0]?.type === "custom" &&
-    initialData.sections[0]?.title === "LaTeX Document"
-  );
+  const isLatex =
+    initialData.originalFormat === "tex" ||
+    (initialData.sections.length === 1 &&
+      initialData.sections[0]?.type === "custom" &&
+      initialData.sections[0]?.title === "LaTeX Document");
 
   if (isLatex) {
     return (
@@ -66,7 +66,9 @@ export function ResumeEditor({
         <aside className="w-[420px] shrink-0 border-l-4 border-black overflow-hidden flex flex-col bg-surface">
           {jobLoading ? (
             <div className="flex items-center justify-center h-full">
-              <p className="text-body font-medium text-text-secondary">Loading job...</p>
+              <p className="text-body font-medium text-text-secondary">
+                Loading job...
+              </p>
             </div>
           ) : job ? (
             <>
@@ -75,12 +77,16 @@ export function ResumeEditor({
                   <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center">
                     <Briefcase className="w-4 h-4 text-yellow" />
                   </div>
-                  <span className="text-title font-extrabold">Job Description</span>
+                  <span className="text-title font-extrabold">
+                    Job Description
+                  </span>
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-5">
                 <div>
-                  <h2 className="text-title font-extrabold leading-tight">{job.title}</h2>
+                  <h2 className="text-title font-extrabold leading-tight">
+                    {job.title}
+                  </h2>
                   <p className="text-body font-bold text-text-secondary mt-1">
                     {job.company.name}
                   </p>
@@ -92,24 +98,34 @@ export function ResumeEditor({
                   {job.location && (
                     <div className="flex items-center gap-2.5">
                       <MapPin className="w-4 h-4 shrink-0" />
-                      <span className="text-body font-medium">{job.location}</span>
+                      <span className="text-body font-medium">
+                        {job.location}
+                      </span>
                     </div>
                   )}
                   <div className="flex items-center gap-2.5">
                     <Clock className="w-4 h-4 shrink-0" />
-                    <span className="text-body font-medium">{formatDaysAgo(job.postedAt)}</span>
+                    <span className="text-body font-medium">
+                      {formatDaysAgo(job.postedAt)}
+                    </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 p-3 border-3 border-black rounded-[14px] bg-surface-secondary">
                   <span className="text-title font-extrabold">
-                    {formatSalary(job.salaryMin ?? undefined, job.salaryMax ?? undefined, job.salaryCurr ?? undefined)}
+                    {formatSalary(
+                      job.salaryMin ?? undefined,
+                      job.salaryMax ?? undefined,
+                      job.salaryCurr ?? undefined,
+                    )}
                   </span>
                 </div>
 
                 {job.skills.length > 0 && (
                   <div>
-                    <h3 className="text-title font-extrabold mb-3">Required Skills</h3>
+                    <h3 className="text-title font-extrabold mb-3">
+                      Required Skills
+                    </h3>
                     <div className="flex flex-wrap gap-1.5">
                       {job.skills.map((skill) => (
                         <span
@@ -124,7 +140,9 @@ export function ResumeEditor({
                 )}
 
                 <div>
-                  <h3 className="text-title font-extrabold mb-3">Description</h3>
+                  <h3 className="text-title font-extrabold mb-3">
+                    Description
+                  </h3>
                   <p className="text-body font-medium text-text-secondary leading-relaxed whitespace-pre-line">
                     {job.description}
                   </p>
@@ -143,7 +161,9 @@ export function ResumeEditor({
             </>
           ) : (
             <div className="flex items-center justify-center h-full p-6 text-center">
-              <p className="text-body font-medium text-text-secondary">Job not found</p>
+              <p className="text-body font-medium text-text-secondary">
+                Job not found
+              </p>
             </div>
           )}
         </aside>

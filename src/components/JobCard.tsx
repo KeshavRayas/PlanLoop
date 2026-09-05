@@ -9,7 +9,10 @@ export function JobCard({
   job: JobSearchResult;
   index?: number;
 }) {
-  const meta = [job.location, formatSalary(job.salaryMin, job.salaryMax, job.salaryCurr)]
+  const meta = [
+    job.location,
+    formatSalary(job.salaryMin, job.salaryMax, job.salaryCurr),
+  ]
     .filter(Boolean)
     .join(" · ");
 

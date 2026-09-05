@@ -11,7 +11,7 @@ export interface CoverValidationIssue {
 
 export function validateCoverLetter(
   output: CoverLetterData,
-  evidence: Map<string, string>
+  evidence: Map<string, string>,
 ): CoverValidationIssue[] {
   const issues: CoverValidationIssue[] = [];
 
@@ -23,11 +23,17 @@ export function validateCoverLetter(
   const seen = new Set<string>();
   for (const src of output.evidenceIds) {
     if (seen.has(src)) {
-      issues.push({ type: "DUPLICATE_EVIDENCE", text: `duplicate evidence id: ${src}` });
+      issues.push({
+        type: "DUPLICATE_EVIDENCE",
+        text: `duplicate evidence id: ${src}`,
+      });
     }
     seen.add(src);
     if (!evidence.has(src)) {
-      issues.push({ type: "UNKNOWN_SOURCE", text: `cites unknown evidence: ${src}` });
+      issues.push({
+        type: "UNKNOWN_SOURCE",
+        text: `cites unknown evidence: ${src}`,
+      });
     }
   }
 

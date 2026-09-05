@@ -20,13 +20,14 @@ export function JobFilters({ total }: { total: number }) {
       params.set("page", "1");
       router.push(`/?${params.toString()}`);
     },
-    [router, searchParams]
+    [router, searchParams],
   );
 
   const currentQuery = searchParams.get("q") || "";
   const currentWorkMode = searchParams.get("workMode");
   const currentJobType = searchParams.get("jobType");
-  const activeSkills = searchParams.get("skills")?.split(",").filter(Boolean) ?? [];
+  const activeSkills =
+    searchParams.get("skills")?.split(",").filter(Boolean) ?? [];
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -35,7 +36,8 @@ export function JobFilters({ total }: { total: number }) {
     setParams({ q: q || null });
   }
 
-  const isAll = !currentWorkMode && !currentJobType && activeSkills.length === 0;
+  const isAll =
+    !currentWorkMode && !currentJobType && activeSkills.length === 0;
 
   function pillClass(on: boolean) {
     return `calm-pill cursor-pointer ${on ? "on" : ""}`;
@@ -72,7 +74,7 @@ export function JobFilters({ total }: { total: number }) {
             setParams(
               currentWorkMode === "REMOTE"
                 ? { workMode: null, location: null }
-                : { workMode: "REMOTE", location: null }
+                : { workMode: "REMOTE", location: null },
             )
           }
         >
@@ -81,7 +83,9 @@ export function JobFilters({ total }: { total: number }) {
         <button
           className={pillClass(currentJobType === "FULL_TIME")}
           onClick={() =>
-            setParams({ jobType: currentJobType === "FULL_TIME" ? null : "FULL_TIME" })
+            setParams({
+              jobType: currentJobType === "FULL_TIME" ? null : "FULL_TIME",
+            })
           }
         >
           Full-time
@@ -141,7 +145,8 @@ export function JobFilters({ total }: { total: number }) {
                   onClick={() =>
                     setParams({
                       skills: activeSkills.includes(skill)
-                        ? activeSkills.filter((s) => s !== skill).join(",") || null
+                        ? activeSkills.filter((s) => s !== skill).join(",") ||
+                          null
                         : [...activeSkills, skill].join(","),
                     })
                   }
@@ -168,7 +173,11 @@ export function JobFilters({ total }: { total: number }) {
                     }
                     className={pillClass(currentWorkMode === m)}
                   >
-                    {m === "REMOTE" ? "Remote" : m === "HYBRID" ? "Hybrid" : "On-site"}
+                    {m === "REMOTE"
+                      ? "Remote"
+                      : m === "HYBRID"
+                        ? "Hybrid"
+                        : "On-site"}
                   </button>
                 ))}
               </div>
@@ -186,7 +195,11 @@ export function JobFilters({ total }: { total: number }) {
                     }
                     className={pillClass(currentJobType === t)}
                   >
-                    {t === "FULL_TIME" ? "Full-time" : t === "CONTRACT" ? "Contract" : "Internship"}
+                    {t === "FULL_TIME"
+                      ? "Full-time"
+                      : t === "CONTRACT"
+                        ? "Contract"
+                        : "Internship"}
                   </button>
                 ))}
               </div>

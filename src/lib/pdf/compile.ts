@@ -22,7 +22,7 @@ function binary(): string {
 
 export async function compileLatex(
   tex: string,
-  timeoutMs = 90_000
+  timeoutMs = 90_000,
 ): Promise<{ pdf: Buffer; log: string }> {
   const dir = await mkdtemp(path.join(tmpdir(), "resume-"));
   try {
@@ -43,17 +43,23 @@ function runPdflatex(dir: string, timeoutMs: number): Promise<string> {
     const child = spawn(
       binary(),
       ["-interaction=nonstopmode", "-halt-on-error", "resume.tex"],
-      { cwd: dir, timeout: timeoutMs, stdio: ["ignore", "pipe", "pipe"] }
+      { cwd: dir, timeout: timeoutMs, stdio: ["ignore", "pipe", "pipe"] },
     );
     let out = "";
     child.stdout?.on("data", (d: Buffer) => (out += d.toString()));
     child.stderr?.on("data", (d: Buffer) => (out += d.toString()));
     child.on("error", (err) =>
-      reject(new RenderError(`cannot run pdflatex: ${String(err)}`, ""))
+      reject(new RenderError(`cannot run pdflatex: ${String(err)}`, "")),
     );
     child.on("close", (code) => {
       if (code === 0) resolve(out);
-      else reject(new RenderError(`pdflatex exited with code ${code}`, out.slice(-3000)));
+      else
+        reject(
+          new RenderError(
+            `pdflatex exited with code ${code}`,
+            out.slice(-3000),
+          ),
+        );
     });
   });
 }

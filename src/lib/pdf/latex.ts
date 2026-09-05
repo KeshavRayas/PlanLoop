@@ -18,7 +18,7 @@ const ESCAPES: Record<string, string> = {
   "\\": "\\textbackslash{}",
   "&": "\\&",
   "%": "\\%",
-  "$": "\\$",
+  $: "\\$",
   "#": "\\#",
   _: "\\_",
   "{": "\\{",
@@ -48,8 +48,14 @@ function contactLine(c: ResumeContact): string {
   if (c.phone) parts.push(escapeLatex(c.phone));
   if (c.email) parts.push(escapeLatex(c.email));
   const links: string[] = [];
-  if (c.linkedin) links.push(`\\href{${escapeLatex(c.linkedin)}}{${escapeLatex(displayUrl(c.linkedin))}}`);
-  if (c.github) links.push(`\\href{${escapeLatex(c.github)}}{${escapeLatex(displayUrl(c.github))}}`);
+  if (c.linkedin)
+    links.push(
+      `\\href{${escapeLatex(c.linkedin)}}{${escapeLatex(displayUrl(c.linkedin))}}`,
+    );
+  if (c.github)
+    links.push(
+      `\\href{${escapeLatex(c.github)}}{${escapeLatex(displayUrl(c.github))}}`,
+    );
   const line1 = parts.join(" \\\\;|\\\\; ");
   const line2 = links.join("\n    \\\\;|\\\\; ");
   return [line1, line2].filter(Boolean).join(" \\\\[2pt]\n    ");
@@ -59,7 +65,10 @@ function displayUrl(url: string): string {
   return url.replace(/^https?:\/\//, "");
 }
 
-export function renderLatex(resume: CanonicalResume, contact: ResumeContact): string {
+export function renderLatex(
+  resume: CanonicalResume,
+  contact: ResumeContact,
+): string {
   const header = [
     "\\documentclass[a4paper,10pt]{article}",
     "",
@@ -111,7 +120,9 @@ export function renderLatex(resume: CanonicalResume, contact: ResumeContact): st
       const f = item.fields as unknown as Record<string, unknown>;
       const s = (v: unknown) => (typeof v === "string" ? v : "");
       const arr = (v: unknown) =>
-        Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+        Array.isArray(v)
+          ? v.filter((x): x is string => typeof x === "string")
+          : [];
       switch (section.type) {
         case "summary": {
           const content = s(f.content);
@@ -120,14 +131,19 @@ export function renderLatex(resume: CanonicalResume, contact: ResumeContact): st
         }
         case "experience": {
           if (!s(f.title) && !s(f.company)) break;
-          const dates = [s(f.startDate), s(f.endDate) || (f.current ? "Present" : "")]
+          const dates = [
+            s(f.startDate),
+            s(f.endDate) || (f.current ? "Present" : ""),
+          ]
             .filter(Boolean)
             .join(" -- ");
           parts.push(
-            `\\textbf{${escapeLatex(s(f.title))}}${s(f.company) ? ` -- ${escapeLatex(s(f.company))}` : ""} \\hfill ${escapeLatex(dates)} \\\\`
+            `\\textbf{${escapeLatex(s(f.title))}}${s(f.company) ? ` -- ${escapeLatex(s(f.company))}` : ""} \\hfill ${escapeLatex(dates)} \\\\`,
           );
-          if (s(f.location)) parts.push(`\\textit{${escapeLatex(s(f.location))}}\n`);
-          if (s(f.description)) parts.push(`${escapeLatex(s(f.description))}\n`);
+          if (s(f.location))
+            parts.push(`\\textit{${escapeLatex(s(f.location))}}\n`);
+          if (s(f.description))
+            parts.push(`${escapeLatex(s(f.description))}\n`);
           parts.push(bullets(arr(f.bulletPoints)));
           break;
         }
@@ -135,16 +151,22 @@ export function renderLatex(resume: CanonicalResume, contact: ResumeContact): st
           if (!s(f.school) && !s(f.degree)) break;
           const degree = [s(f.degree), s(f.field)].filter(Boolean).join(" in ");
           parts.push(
-            `\\textbf{${escapeLatex(s(f.school))}} \\hfill ${escapeLatex([s(f.startDate), s(f.endDate)].filter(Boolean).join(" -- "))} \\\\`
+            `\\textbf{${escapeLatex(s(f.school))}} \\hfill ${escapeLatex([s(f.startDate), s(f.endDate)].filter(Boolean).join(" -- "))} \\\\`,
           );
-          if (degree) parts.push(`${escapeLatex(degree)}${s(f.gpa) ? ` \\hfill ${escapeLatex(s(f.gpa))}` : ""} \\\\\n`);
-          if (s(f.description)) parts.push(`${escapeLatex(s(f.description))}\n`);
+          if (degree)
+            parts.push(
+              `${escapeLatex(degree)}${s(f.gpa) ? ` \\hfill ${escapeLatex(s(f.gpa))}` : ""} \\\\\n`,
+            );
+          if (s(f.description))
+            parts.push(`${escapeLatex(s(f.description))}\n`);
           break;
         }
         case "skills": {
           const skills = arr(f.skills);
           if (skills.length === 0) break;
-          const label = s(f.category) ? `\\textbf{${escapeLatex(s(f.category))}} & ` : "";
+          const label = s(f.category)
+            ? `\\textbf{${escapeLatex(s(f.category))}} & `
+            : "";
           parts.push(`${label}${skills.map(escapeLatex).join(", ")} \\\\\n`);
           break;
         }
@@ -152,16 +174,17 @@ export function renderLatex(resume: CanonicalResume, contact: ResumeContact): st
           if (!s(f.name)) break;
           const tech = arr(f.technologies);
           parts.push(
-            `\\textbf{${escapeLatex(s(f.name))}}${tech.length > 0 ? ` \\hfill ${escapeLatex(tech.join(", "))}` : ""} \\\\\n`
+            `\\textbf{${escapeLatex(s(f.name))}}${tech.length > 0 ? ` \\hfill ${escapeLatex(tech.join(", "))}` : ""} \\\\\n`,
           );
-          if (s(f.description)) parts.push(`${escapeLatex(s(f.description))}\n`);
+          if (s(f.description))
+            parts.push(`${escapeLatex(s(f.description))}\n`);
           parts.push(bullets(arr(f.bulletPoints)));
           break;
         }
         case "certifications": {
           if (!s(f.name)) break;
           parts.push(
-            `${escapeLatex(s(f.name))}${s(f.issuer) ? ` -- ${escapeLatex(s(f.issuer))}` : ""}${s(f.date) ? ` \\hfill ${escapeLatex(s(f.date))}` : ""} \\\\\n`
+            `${escapeLatex(s(f.name))}${s(f.issuer) ? ` -- ${escapeLatex(s(f.issuer))}` : ""}${s(f.date) ? ` \\hfill ${escapeLatex(s(f.date))}` : ""} \\\\\n`,
           );
           break;
         }
@@ -176,8 +199,8 @@ export function renderLatex(resume: CanonicalResume, contact: ResumeContact): st
       bodies.push(
         renderSection(
           section.title,
-          `\\begin{tabularx}{\\textwidth}{>{\\bfseries}l X}\n${parts.join("\n")}\\end{tabularx}\n`
-        )
+          `\\begin{tabularx}{\\textwidth}{>{\\bfseries}l X}\n${parts.join("\n")}\\end{tabularx}\n`,
+        ),
       );
     } else {
       bodies.push(renderSection(section.title, parts.join("\n")));

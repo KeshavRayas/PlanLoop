@@ -41,7 +41,9 @@ export function sanitizeModelJson(value: unknown): unknown {
 export async function generateJsonSanitized(
   provider: LlmProvider,
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
 ): Promise<unknown> {
-  return sanitizeModelJson(await provider.generateJson(systemPrompt, userPrompt));
+  return sanitizeModelJson(
+    await provider.generateJson(systemPrompt, userPrompt),
+  );
 }

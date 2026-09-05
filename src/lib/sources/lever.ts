@@ -30,9 +30,12 @@ export class LeverSource implements JobSource {
           remote: j.categories?.commitment
             ? String(j.categories.commitment).toLowerCase().includes("remote")
             : false,
-          jobType: j.categories?.commitment === "Full-Time" ? "FULL_TIME" : undefined,
+          jobType:
+            j.categories?.commitment === "Full-Time" ? "FULL_TIME" : undefined,
           postedAt: j.createdAt ? new Date(j.createdAt) : undefined,
-          applyUrl: String(j.hostedUrl ?? `https://jobs.lever.co/${board}/${j.id}`),
+          applyUrl: String(
+            j.hostedUrl ?? `https://jobs.lever.co/${board}/${j.id}`,
+          ),
         });
       }
     });

@@ -46,7 +46,9 @@ export default function EditResumePage() {
       <div className="min-h-screen bg-bg flex items-center justify-center">
         <div className="bg-surface border-4 border-black rounded-[24px] brutal-shadow-lg px-10 py-12 text-center max-w-md">
           <FileText className="w-10 h-10 mx-auto mb-4" />
-          <h1 className="text-headline font-extrabold mb-3">Resume not found</h1>
+          <h1 className="text-headline font-extrabold mb-3">
+            Resume not found
+          </h1>
           <Link
             href="/resumes"
             className="inline-flex items-center gap-2 bg-black text-white font-extrabold px-6 py-3 rounded-full border-3 border-black text-label uppercase tracking-widest"
@@ -60,11 +62,7 @@ export default function EditResumePage() {
 
   return (
     <div className="h-screen overflow-hidden flex flex-col bg-bg">
-      <ResumeEditor
-        resumeId={id}
-        initialData={data}
-        initialTitle={title}
-      />
+      <ResumeEditor resumeId={id} initialData={data} initialTitle={title} />
     </div>
   );
 }

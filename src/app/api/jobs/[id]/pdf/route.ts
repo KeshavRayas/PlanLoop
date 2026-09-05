@@ -13,7 +13,10 @@ export const maxDuration = 300;
 
 export async function GET(_req: Request, ctx: { params: Params }) {
   const { id } = await ctx.params;
-  const job = await prisma.job.findUnique({ where: { id }, select: { id: true } });
+  const job = await prisma.job.findUnique({
+    where: { id },
+    select: { id: true },
+  });
   if (!job) return Response.json({ error: "Not found" }, { status: 404 });
   try {
     return Response.json({ ...(await getPdfState(id)), cached: true });
@@ -42,7 +45,10 @@ export async function POST(req: Request, ctx: { params: Params }) {
     }
     const { pdfPath, ats } = await renderPdf(id);
     const state = await getPdfState(id);
-    return Response.json({ ...state, pdfPath, ats, cached: false }, { status: 201 });
+    return Response.json(
+      { ...state, pdfPath, ats, cached: false },
+      { status: 201 },
+    );
   } catch (err) {
     if (err instanceof NothingToRenderError) {
       return Response.json({ error: err.message }, { status: 404 });

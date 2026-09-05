@@ -44,9 +44,13 @@ export { setDefaultProvider };
  * between multiple resumes (production) and keeps tests hermetic.
  */
 export async function getBaseResume() {
-  const profile = await prisma.profile.findFirst({ orderBy: { updatedAt: "desc" } });
+  const profile = await prisma.profile.findFirst({
+    orderBy: { updatedAt: "desc" },
+  });
   if (profile?.baseResumeId) {
-    const pinned = await prisma.resume.findUnique({ where: { id: profile.baseResumeId } });
+    const pinned = await prisma.resume.findUnique({
+      where: { id: profile.baseResumeId },
+    });
     if (pinned) return pinned;
   }
   return prisma.resume.findFirst({ orderBy: { updatedAt: "desc" } });
@@ -56,7 +60,8 @@ export async function getBaseResume() {
 export async function requireBaseResumeContent() {
   const base = await getBaseResume();
   const content = base?.content as ResumeData | null;
-  if (!base || !content || !hasResumeContent(content)) throw new EmptyResumeError();
+  if (!base || !content || !hasResumeContent(content))
+    throw new EmptyResumeError();
   return { base, content };
 }
 
@@ -95,7 +100,7 @@ export async function getTailoredVersions(jobId: string) {
  */
 export async function tailorResume(
   jobId: string,
-  provider: LlmProvider = getDefaultProvider()
+  provider: LlmProvider = getDefaultProvider(),
 ): Promise<{ tailored: TailoredResumeData & { id: string }; cached: false }> {
   const job = await prisma.job.findUnique({
     where: { id: jobId },
@@ -119,7 +124,11 @@ export async function tailorResume(
     evidence,
   });
 
-  const raw = await generateJsonSanitized(provider, TAILOR_SYSTEM_PROMPT, prompt);
+  const raw = await generateJsonSanitized(
+    provider,
+    TAILOR_SYSTEM_PROMPT,
+    prompt,
+  );
   const { data, raw: validRaw } = await parseWithSingleRetry({
     schema: tailoredResumeSchema,
     raw,
@@ -139,17 +148,19 @@ async function persistValidated(
   baseResumeId: string,
   data: TailoredResumeData,
   evidenceById: Map<string, string>,
-  raw: unknown
+  raw: unknown,
 ): Promise<{ tailored: TailoredResumeData & { id: string }; cached: false }> {
   // Canonical boundary: validate + persist the canonical shape so the
   // renderer never sees model field-name variants. Raw output kept for audit.
   const canonical = canonicalizeTailored(data);
   const problems = validateTailoredResume(
     { sections: canonical.sections } as TailoredResumeData,
-    evidenceById
+    evidenceById,
   );
   if (problems.length > 0) {
-    console.error(`[tailor] provenance invalid for job ${jobId}: ${JSON.stringify(problems).slice(0, 1000)}`);
+    console.error(
+      `[tailor] provenance invalid for job ${jobId}: ${JSON.stringify(problems).slice(0, 1000)}`,
+    );
     throw new TailorValidationError(problems.map((p) => p.text).join("; "));
   }
   const saved = await prisma.$transaction(async (tx) => {
@@ -176,7 +187,11 @@ async function persistValidated(
     });
   });
   return {
-    tailored: { sections: canonical.sections, id: saved.id, version: saved.version } as TailoredResumeData & { id: string; version: number },
+    tailored: {
+      sections: canonical.sections,
+      id: saved.id,
+      version: saved.version,
+    } as TailoredResumeData & { id: string; version: number },
     cached: false as const,
   };
 }

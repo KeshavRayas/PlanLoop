@@ -1,7 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { setDefaultProvider } from "@/lib/cover/service";
-import { GET as coverGET, POST as coverPOST } from "@/app/api/jobs/[id]/cover/route";
+import {
+  GET as coverGET,
+  POST as coverPOST,
+} from "@/app/api/jobs/[id]/cover/route";
 import type { LlmProvider } from "@/lib/llm/types";
 
 // ─── Phase 3A: cover-letter route semantics (DB-backed) ───────────────────────
@@ -19,7 +22,11 @@ const throwingProvider: LlmProvider = {
   },
 };
 
-const created = { companies: [] as string[], jobs: [] as string[], resumes: [] as string[] };
+const created = {
+  companies: [] as string[],
+  jobs: [] as string[],
+  resumes: [] as string[],
+};
 
 async function makeCompany() {
   const t = tag();
@@ -55,10 +62,29 @@ async function makeBaseResume() {
       skills: ["Go"],
       content: {
         sections: [
-          { id: "t_sum", type: "summary", title: "Summary", items: [{ id: "t_s1", content: "Test engineer with Go." }] },
           {
-            id: "t_exp", type: "experience", title: "Experience",
-            items: [{ id: "t_e1", company: "T", title: "Dev", location: "", startDate: "", endDate: "", current: false, description: "", bulletPoints: ["Built things with Go."] }],
+            id: "t_sum",
+            type: "summary",
+            title: "Summary",
+            items: [{ id: "t_s1", content: "Test engineer with Go." }],
+          },
+          {
+            id: "t_exp",
+            type: "experience",
+            title: "Experience",
+            items: [
+              {
+                id: "t_e1",
+                company: "T",
+                title: "Dev",
+                location: "",
+                startDate: "",
+                endDate: "",
+                current: false,
+                description: "",
+                bulletPoints: ["Built things with Go."],
+              },
+            ],
           },
         ],
       },
@@ -126,38 +152,59 @@ afterEach(async () => {
 
 describe("cover route 404/422 semantics", () => {
   it("GET 404s for a missing job", async () => {
-    const res = await coverGET(new Request("http://test/"), ctxFor("nope") as never);
+    const res = await coverGET(
+      new Request("http://test/"),
+      ctxFor("nope") as never,
+    );
     expect(res.status).toBe(404);
   });
 
   it("GET 404s when the job has no cover letter yet", async () => {
     const c = await makeCompany();
     const j = await makeJob(c.id);
-    const res = await coverGET(new Request("http://test/"), ctxFor(j.id) as never);
+    const res = await coverGET(
+      new Request("http://test/"),
+      ctxFor(j.id) as never,
+    );
     expect(res.status).toBe(404);
-    expect(((await res.json()) as { error: string }).error).toMatch(/no cover letter/i);
+    expect(((await res.json()) as { error: string }).error).toMatch(
+      /no cover letter/i,
+    );
   });
 
   it("POST 404s for a missing job without calling the model", async () => {
-    const res = await coverPOST(new Request("http://test/", { method: "POST" }), ctxFor("nope") as never);
+    const res = await coverPOST(
+      new Request("http://test/", { method: "POST" }),
+      ctxFor("nope") as never,
+    );
     expect(res.status).toBe(404);
   });
 
   it("POST 422s without a JobAnalysis (never re-analyzes, no model call)", async () => {
     const c = await makeCompany();
     const j = await makeJob(c.id);
-    const res = await coverPOST(new Request("http://test/", { method: "POST" }), ctxFor(j.id) as never);
+    const res = await coverPOST(
+      new Request("http://test/", { method: "POST" }),
+      ctxFor(j.id) as never,
+    );
     expect(res.status).toBe(422);
-    expect(((await res.json()) as { error: string }).error).toMatch(/before writing a cover letter/i);
+    expect(((await res.json()) as { error: string }).error).toMatch(
+      /before writing a cover letter/i,
+    );
   });
 
   it("POST 422s with analysis but no current tailored resume", async () => {
     const c = await makeCompany();
     const j = await makeJob(c.id);
     await makeAnalysis(j.id);
-    const res = await coverPOST(new Request("http://test/", { method: "POST" }), ctxFor(j.id) as never);
+    const res = await coverPOST(
+      new Request("http://test/", { method: "POST" }),
+      ctxFor(j.id) as never,
+    );
     expect(res.status).toBe(422);
-    expect(((await res.json()) as { error: string }).error).toMatch(/before writing a cover letter/i);
+    expect(((await res.json()) as { error: string }).error).toMatch(
+      /before writing a cover letter/i,
+    );
   });
 });
 
@@ -168,7 +215,10 @@ describe("cover route cached reads", () => {
     const base = await makeBaseResume();
     const saved = await makeCover(j.id, base.id);
 
-    const res = await coverGET(new Request("http://test/"), ctxFor(j.id) as never);
+    const res = await coverGET(
+      new Request("http://test/"),
+      ctxFor(j.id) as never,
+    );
     expect(res.status).toBe(200);
     const body = (await res.json()) as { id: string; cached: boolean };
     expect(body.id).toBe(saved.id);
@@ -181,7 +231,10 @@ describe("cover route cached reads", () => {
     const base = await makeBaseResume();
     const saved = await makeCover(j.id, base.id);
 
-    const res = await coverPOST(new Request("http://test/", { method: "POST" }), ctxFor(j.id) as never);
+    const res = await coverPOST(
+      new Request("http://test/", { method: "POST" }),
+      ctxFor(j.id) as never,
+    );
     expect(res.status).toBe(200);
     const body = (await res.json()) as { id: string; cached: boolean };
     expect(body.id).toBe(saved.id);
@@ -197,7 +250,7 @@ describe("cover route cached reads", () => {
 
     const res = await coverPOST(
       new Request("http://test/?refresh=1", { method: "POST" }),
-      ctxFor(j.id) as never
+      ctxFor(j.id) as never,
     );
     // Throwing stub: without a tailored resume the 422 fires first here
     // (proves refresh skipped the cached-read path, which would be 200).

@@ -5,7 +5,10 @@ import { tailorResume } from "@/lib/tailor/service";
 import { renderPdf } from "@/lib/pdf/service";
 import { checkUrl } from "@/lib/liveness";
 import { getTopMatches } from "@/lib/repositories/matches.repository";
-import { POST as decisionPOST, GET as decisionGET } from "@/app/api/jobs/[id]/decision/route";
+import {
+  POST as decisionPOST,
+  GET as decisionGET,
+} from "@/app/api/jobs/[id]/decision/route";
 import { POST as judgePOST } from "@/app/api/jobs/[id]/judge/route";
 import type { LlmProvider } from "@/lib/llm/types";
 
@@ -30,7 +33,12 @@ const garbageProvider: LlmProvider = {
   },
 };
 
-const created = { companies: [] as string[], jobs: [] as string[], resumes: [] as string[], runs: [] as string[] };
+const created = {
+  companies: [] as string[],
+  jobs: [] as string[],
+  resumes: [] as string[],
+  runs: [] as string[],
+};
 let previousPin: { id: string; baseResumeId: string | null } | null = null;
 
 async function makeCompany() {
@@ -42,7 +50,10 @@ async function makeCompany() {
   return c;
 }
 
-async function makeJob(companyId: string, overrides: Record<string, unknown> = {}) {
+async function makeJob(
+  companyId: string,
+  overrides: Record<string, unknown> = {},
+) {
   const t = tag();
   const j = await prisma.job.create({
     data: {
@@ -68,17 +79,51 @@ async function makeBaseResume() {
       skills: ["Go"],
       content: {
         sections: [
-          { id: "t_sum", type: "summary", title: "Summary", items: [{ id: "t_s1", content: "Test engineer with Go." }] },
           {
-            id: "t_exp", type: "experience", title: "Experience",
-            items: [{ id: "t_e1", company: "T", title: "Dev", location: "", startDate: "", endDate: "", current: false, description: "", bulletPoints: ["bullet_t_01: Built things with Go."] }],
+            id: "t_sum",
+            type: "summary",
+            title: "Summary",
+            items: [{ id: "t_s1", content: "Test engineer with Go." }],
           },
           {
-            id: "t_edu", type: "education", title: "Education",
-            items: [{ id: "t_d1", school: "S", degree: "B", field: "", startDate: "", endDate: "", gpa: "", description: "" }],
+            id: "t_exp",
+            type: "experience",
+            title: "Experience",
+            items: [
+              {
+                id: "t_e1",
+                company: "T",
+                title: "Dev",
+                location: "",
+                startDate: "",
+                endDate: "",
+                current: false,
+                description: "",
+                bulletPoints: ["bullet_t_01: Built things with Go."],
+              },
+            ],
           },
           {
-            id: "t_skl", type: "skills", title: "Skills",
+            id: "t_edu",
+            type: "education",
+            title: "Education",
+            items: [
+              {
+                id: "t_d1",
+                school: "S",
+                degree: "B",
+                field: "",
+                startDate: "",
+                endDate: "",
+                gpa: "",
+                description: "",
+              },
+            ],
+          },
+          {
+            id: "t_skl",
+            type: "skills",
+            title: "Skills",
             items: [{ id: "t_k1", category: "L", skills: ["Go"] }],
           },
         ],
@@ -88,10 +133,15 @@ async function makeBaseResume() {
   created.resumes.push(r.id);
   // Pin the profile to the fixture resume so services never depend on
   // timestamp ordering against real resumes. Restored in afterEach.
-  const profile = await prisma.profile.findFirst({ orderBy: { updatedAt: "desc" } });
+  const profile = await prisma.profile.findFirst({
+    orderBy: { updatedAt: "desc" },
+  });
   if (profile) {
     previousPin = { id: profile.id, baseResumeId: profile.baseResumeId };
-    await prisma.profile.update({ where: { id: profile.id }, data: { baseResumeId: r.id } });
+    await prisma.profile.update({
+      where: { id: profile.id },
+      data: { baseResumeId: r.id },
+    });
   }
   return r;
 }
@@ -118,25 +168,85 @@ async function makeAnalysis(jobId: string) {
 function validTailoredFixture() {
   return {
     sections: [
-      { id: "t_sum", type: "summary", title: "Summary", items: [{ id: "t_s1", kind: "summary", fields: { content: "Test engineer with Go." }, provenance: { sourceIds: ["t_s1"], change: "UNCHANGED" } }] },
-      { id: "t_exp", type: "experience", title: "Experience", items: [{ id: "t_e1", kind: "experience", fields: { title: "Dev", company: "T" }, provenance: { sourceIds: ["t_e1"], change: "REWRITE" } }] },
-      { id: "t_edu", type: "education", title: "Education", items: [{ id: "t_d1", kind: "education", fields: { school: "S" }, provenance: { sourceIds: ["t_d1"], change: "REWRITE" } }] },
-      { id: "t_skl", type: "skills", title: "Skills", items: [{ id: "t_k1", kind: "skills", fields: { category: "L", skills: ["Go"] }, provenance: { sourceIds: ["t_k1"], change: "UNCHANGED" } }] },
+      {
+        id: "t_sum",
+        type: "summary",
+        title: "Summary",
+        items: [
+          {
+            id: "t_s1",
+            kind: "summary",
+            fields: { content: "Test engineer with Go." },
+            provenance: { sourceIds: ["t_s1"], change: "UNCHANGED" },
+          },
+        ],
+      },
+      {
+        id: "t_exp",
+        type: "experience",
+        title: "Experience",
+        items: [
+          {
+            id: "t_e1",
+            kind: "experience",
+            fields: { title: "Dev", company: "T" },
+            provenance: { sourceIds: ["t_e1"], change: "REWRITE" },
+          },
+        ],
+      },
+      {
+        id: "t_edu",
+        type: "education",
+        title: "Education",
+        items: [
+          {
+            id: "t_d1",
+            kind: "education",
+            fields: { school: "S" },
+            provenance: { sourceIds: ["t_d1"], change: "REWRITE" },
+          },
+        ],
+      },
+      {
+        id: "t_skl",
+        type: "skills",
+        title: "Skills",
+        items: [
+          {
+            id: "t_k1",
+            kind: "skills",
+            fields: { category: "L", skills: ["Go"] },
+            provenance: { sourceIds: ["t_k1"], change: "UNCHANGED" },
+          },
+        ],
+      },
     ],
   };
 }
 
 function stubTailored(output: unknown): LlmProvider {
-  return { name: "tailor-stub", async generateJson() { return output; } };
+  return {
+    name: "tailor-stub",
+    async generateJson() {
+      return output;
+    },
+  };
 }
 
 const ctxFor = (id: string) => ({ params: Promise.resolve({ id }) });
-async function postJson(route: (req: Request, ctx: never) => Promise<Response>, id: string, body: unknown) {
+async function postJson(
+  route: (req: Request, ctx: never) => Promise<Response>,
+  id: string,
+  body: unknown,
+) {
   const res = await route(
     new Request("http://test/", { method: "POST", body: JSON.stringify(body) }),
-    ctxFor(id) as never
+    ctxFor(id) as never,
   );
-  return { status: res.status, body: (await res.json()) as Record<string, unknown> };
+  return {
+    status: res.status,
+    body: (await res.json()) as Record<string, unknown>,
+  };
 }
 
 afterEach(async () => {
@@ -166,7 +276,9 @@ describe("analyze failure preservation", () => {
     const c = await makeCompany();
     const j = await makeJob(c.id);
     await expect(analyzeJob(j.id, throwingProvider)).rejects.toThrow();
-    expect(await prisma.jobAnalysis.findUnique({ where: { jobId: j.id } })).toBeNull();
+    expect(
+      await prisma.jobAnalysis.findUnique({ where: { jobId: j.id } }),
+    ).toBeNull();
   });
 
   it("keeps the previous analysis when re-analyze fails", async () => {
@@ -174,7 +286,9 @@ describe("analyze failure preservation", () => {
     const j = await makeJob(c.id);
     const before = await makeAnalysis(j.id);
     await expect(analyzeJob(j.id, throwingProvider)).rejects.toThrow();
-    const after = await prisma.jobAnalysis.findUnique({ where: { jobId: j.id } });
+    const after = await prisma.jobAnalysis.findUnique({
+      where: { jobId: j.id },
+    });
     expect(after?.id).toBe(before.id);
     expect(after?.summary).toBe("Fixture analysis.");
     expect(after?.updatedAt.getTime()).toBe(before.updatedAt.getTime());
@@ -187,7 +301,9 @@ describe("tailor failure preservation + versioning", () => {
     const j = await makeJob(c.id);
     await makeAnalysis(j.id);
     await expect(tailorResume(j.id, garbageProvider)).rejects.toThrow();
-    expect(await prisma.tailoredResume.count({ where: { jobId: j.id } })).toBe(0);
+    expect(await prisma.tailoredResume.count({ where: { jobId: j.id } })).toBe(
+      0,
+    );
   });
 
   it("keeps v1 byte-identical when re-tailor is structurally invalid", async () => {
@@ -195,18 +311,29 @@ describe("tailor failure preservation + versioning", () => {
     const j = await makeJob(c.id);
     await makeAnalysis(j.id);
     await tailorResume(j.id, stubTailored(validTailoredFixture()));
-    const v1before = await prisma.tailoredResume.findFirst({ where: { jobId: j.id } });
+    const v1before = await prisma.tailoredResume.findFirst({
+      where: { jobId: j.id },
+    });
 
     const bad = validTailoredFixture();
-    bad.sections[0].items[0].provenance = { sourceIds: ["bullet_nope_99"], change: "REWRITE" };
-    await expect(tailorResume(j.id, stubTailored(bad))).rejects.toThrow(/provenance|validation/);
+    bad.sections[0].items[0].provenance = {
+      sourceIds: ["bullet_nope_99"],
+      change: "REWRITE",
+    };
+    await expect(tailorResume(j.id, stubTailored(bad))).rejects.toThrow(
+      /provenance|validation/,
+    );
 
-    const rows = await prisma.tailoredResume.findMany({ where: { jobId: j.id } });
+    const rows = await prisma.tailoredResume.findMany({
+      where: { jobId: j.id },
+    });
     expect(rows).toHaveLength(1);
     expect(rows[0].id).toBe(v1before?.id);
     expect(rows[0].isCurrent).toBe(true);
     expect(rows[0].version).toBe(1);
-    expect(JSON.stringify(rows[0].content)).toBe(JSON.stringify(v1before?.content));
+    expect(JSON.stringify(rows[0].content)).toBe(
+      JSON.stringify(v1before?.content),
+    );
   });
 
   it("accumulates versions with exactly one current (invariant)", async () => {
@@ -231,7 +358,9 @@ describe("pdf failure preservation", () => {
   it("marks FAILED without touching content on invalid stored content", async () => {
     const c = await makeCompany();
     const j = await makeJob(c.id);
-    const base = await prisma.resume.findFirst({ orderBy: { updatedAt: "desc" } });
+    const base = await prisma.resume.findFirst({
+      orderBy: { updatedAt: "desc" },
+    });
     const row = await prisma.tailoredResume.create({
       data: {
         jobId: j.id,
@@ -244,9 +373,13 @@ describe("pdf failure preservation", () => {
       },
     });
     await expect(renderPdf(j.id)).rejects.toThrow();
-    const after = await prisma.tailoredResume.findUnique({ where: { id: row.id } });
+    const after = await prisma.tailoredResume.findUnique({
+      where: { id: row.id },
+    });
     expect(after?.renderStatus).toBe("FAILED");
-    expect(JSON.stringify(after?.content)).toBe(JSON.stringify({ sections: [] }));
+    expect(JSON.stringify(after?.content)).toBe(
+      JSON.stringify({ sections: [] }),
+    );
   });
 });
 
@@ -258,7 +391,10 @@ describe("decision lifecycle", () => {
     expect(opened.status).toBe(201);
     expect(opened.body.status).toBe("OPENED");
 
-    const getRes = await decisionGET(new Request("http://test/"), ctxFor(j.id) as never);
+    const getRes = await decisionGET(
+      new Request("http://test/"),
+      ctxFor(j.id) as never,
+    );
     expect(((await getRes.json()) as { status: string }).status).toBe("OPENED");
 
     const applied = await postJson(decisionPOST, j.id, { status: "APPLIED" });
@@ -277,14 +413,27 @@ describe("judge is observational", () => {
     const missing = await postJson(judgePOST, hi.id, { verdict: "GOOD" });
     expect(missing.status).toBe(404);
 
-    const run = await prisma.nightlyRun.create({ data: { startedAt: new Date(), success: true } });
+    const run = await prisma.nightlyRun.create({
+      data: { startedAt: new Date(), success: true },
+    });
     created.runs.push(run.id);
-    for (const [job, score] of [[hi, 0.9], [lo, 0.5]] as const) {
+    for (const [job, score] of [
+      [hi, 0.9],
+      [lo, 0.5],
+    ] as const) {
       await prisma.jobMatch.create({
         data: {
-          jobId: job.id, score, matchedSkills: [], missingSkills: [],
-          skillOverlap: 0.5, salaryFit: "UNKNOWN", salaryScore: 0.5,
-          recencyDecay: 0.5, sourceTrust: 0.5, levelFit: 0.5, reasons: [],
+          jobId: job.id,
+          score,
+          matchedSkills: [],
+          missingSkills: [],
+          skillOverlap: 0.5,
+          salaryFit: "UNKNOWN",
+          salaryScore: 0.5,
+          recencyDecay: 0.5,
+          sourceTrust: 0.5,
+          levelFit: 0.5,
+          reasons: [],
           nightlyRunId: run.id,
         },
       });

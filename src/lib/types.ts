@@ -1,4 +1,10 @@
-import type { JobSource, CompanyType, ExperienceLevel, JobType, WorkMode } from "@/generated/prisma/enums";
+import type {
+  JobSource,
+  CompanyType,
+  ExperienceLevel,
+  JobType,
+  WorkMode,
+} from "@/generated/prisma/enums";
 
 export type RawJob = {
   externalId: string;

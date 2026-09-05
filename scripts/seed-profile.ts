@@ -102,7 +102,7 @@ async function main() {
       skills: profile.skills.length,
       locations: profile.locations,
       workModes: profile.workModes,
-    })
+    }),
   );
   await prisma.$disconnect();
 }

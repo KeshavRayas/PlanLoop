@@ -1,0 +1,13 @@
+.next/
+coverage/
+out/
+build/
+public/pdf.worker.min.mjs
+src/generated/
+*.tsbuildinfo
+next-env.d.ts
+# vendored / cached artifacts, not source
+.agents/
+.lavish/
+.gnhf/
+.opencode/
